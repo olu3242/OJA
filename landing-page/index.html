@@ -4,368 +4,617 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Oja — The Sysco of African Food</title>
-<meta name="description" content="Oja is the AI-powered, just-in-time supply chain for authentic African raw foods. Stores never stock out. Families never drive across town. Nothing goes to waste.">
+<meta name="description" content="Oja is the AI-powered, just-in-time supply chain for authentic African staple foods — starting with garri. Never run out. Never overstock.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --green:#14532d;
-    --green-deep:#0c3b1f;
-    --orange:#ea7317;
-    --orange-soft:#fcd9b8;
-    --cream:#fdf9f0;
-    --ink:#1d1b16;
-    --ink-soft:#57534e;
-    --line:#e7e0d2;
-    --radius:14px;
+    --cream:#F3ECDD;
+    --cream-dim:#EAE1CD;
+    --charcoal:#241F1A;
+    --terracotta:#C1552F;
+    --terracotta-dark:#9E4325;
+    --indigo:#232C4D;
+    --ochre:#D9A441;
+    --leaf:#4F7355;
+    --line:rgba(36,31,26,0.14);
+    --radius:2px;
   }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
   body{
-    font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
-    color:var(--ink);background:var(--cream);line-height:1.6;
+    margin:0;
+    background:var(--cream);
+    color:var(--charcoal);
+    font-family:'DM Sans', sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
   }
-  img{max-width:100%}
-  a{color:inherit}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  .mono{font-family:'JetBrains Mono', monospace;}
+  a{color:inherit;}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 32px;}
+  img,svg{max-width:100%;display:block;}
 
-  /* Nav */
-  header{
-    position:sticky;top:0;z-index:50;background:rgba(253,249,240,.92);
-    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  /* Skip link */
+  .skip-link{position:absolute;left:-999px;top:0;background:var(--indigo);color:var(--cream);padding:10px 16px;z-index:999;}
+  .skip-link:focus{left:16px;top:16px;}
+
+  /* NAV */
+  header.nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(243,236,221,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
   }
-  nav{display:flex;align-items:center;justify-content:space-between;height:68px}
-  .logo{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;color:var(--green);text-decoration:none}
-  .logo span{color:var(--orange)}
-  .nav-links{display:flex;gap:28px;align-items:center;list-style:none}
-  .nav-links a{text-decoration:none;font-size:.95rem;font-weight:500;color:var(--ink-soft)}
-  .nav-links a:hover{color:var(--green)}
+  .nav-inner{
+    max-width:1160px;margin:0 auto;padding:18px 32px;
+    display:flex;align-items:center;justify-content:space-between;gap:24px;
+  }
+  .logo{
+    display:flex;align-items:center;gap:10px;
+    font-family:'Fraunces', serif;font-weight:700;font-size:22px;
+    text-decoration:none;color:var(--charcoal);
+  }
+  .logo .mark{
+    width:30px;height:30px;border-radius:50%;
+    background:conic-gradient(from 90deg, var(--terracotta), var(--ochre), var(--leaf), var(--indigo), var(--terracotta));
+    display:inline-block;
+  }
+  nav.links{display:flex;gap:32px;align-items:center;}
+  nav.links a{
+    text-decoration:none;font-size:15px;font-weight:500;color:var(--charcoal);
+    opacity:0.78;transition:opacity .15s ease;
+  }
+  nav.links a:hover, nav.links a:focus-visible{opacity:1;}
   .btn{
-    display:inline-block;padding:12px 24px;border-radius:999px;font-weight:700;
-    text-decoration:none;font-size:.95rem;transition:transform .15s ease,box-shadow .15s ease;
-    border:none;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;
+    padding:11px 22px;border-radius:var(--radius);
+    font-weight:700;font-size:14.5px;text-decoration:none;
+    border:1.5px solid transparent;cursor:pointer;
+    font-family:'DM Sans', sans-serif;
   }
-  .btn-primary{background:var(--orange);color:#fff;box-shadow:0 4px 14px rgba(234,115,23,.35)}
-  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(234,115,23,.45)}
-  .btn-ghost{border:2px solid var(--green);color:var(--green)}
-  .btn-ghost:hover{background:var(--green);color:#fff}
-  .nav-cta{padding:9px 20px}
-  @media(max-width:720px){.nav-links li:not(:last-child){display:none}}
+  .btn-primary{background:var(--terracotta);color:var(--cream);}
+  .btn-primary:hover{background:var(--terracotta-dark);}
+  .btn-ghost{border-color:var(--charcoal);color:var(--charcoal);background:transparent;}
+  .btn-ghost:hover{background:var(--charcoal);color:var(--cream);}
+  .nav-cta{display:flex;align-items:center;gap:14px;}
+  .menu-toggle{display:none;background:none;border:none;cursor:pointer;padding:6px;}
+  .menu-toggle span{display:block;width:24px;height:2px;background:var(--charcoal);margin:5px 0;}
 
-  /* Hero */
-  .hero{padding:88px 0 72px;text-align:center;position:relative;overflow:hidden}
-  .hero::before{
-    content:"";position:absolute;inset:0;pointer-events:none;
-    background:
-      radial-gradient(600px 300px at 15% 10%, rgba(20,83,45,.07), transparent 70%),
-      radial-gradient(500px 280px at 85% 20%, rgba(234,115,23,.09), transparent 70%);
+  /* HERO */
+  .hero{
+    position:relative;overflow:hidden;
+    padding:96px 0 80px;
+    border-bottom:1px solid var(--line);
+  }
+  .hero-pattern{
+    position:absolute;inset:0;opacity:0.5;pointer-events:none;
+  }
+  .hero-grid{
+    position:relative;z-index:1;
+    display:grid;grid-template-columns:1.1fr 0.9fr;gap:56px;align-items:center;
   }
   .eyebrow{
-    display:inline-block;background:var(--orange-soft);color:#8a4a0b;
-    font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-    padding:6px 16px;border-radius:999px;margin-bottom:22px;
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'JetBrains Mono', monospace;font-size:12.5px;letter-spacing:0.06em;
+    text-transform:uppercase;color:var(--terracotta-dark);
+    background:rgba(193,85,47,0.1);
+    border:1px solid rgba(193,85,47,0.25);
+    padding:6px 12px;border-radius:20px;margin-bottom:22px;
   }
-  h1{
-    font-size:clamp(2.3rem,5.5vw,3.7rem);line-height:1.1;letter-spacing:-.03em;
-    font-weight:800;color:var(--green-deep);max-width:820px;margin:0 auto 20px;
+  .hero h1{
+    font-size:clamp(38px, 5vw, 58px);
+    line-height:1.04;
+    margin-bottom:22px;
   }
-  h1 em{font-style:normal;color:var(--orange)}
-  .hero p.sub{max-width:640px;margin:0 auto 34px;font-size:1.15rem;color:var(--ink-soft)}
-  .hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-  .hero-note{margin-top:16px;font-size:.85rem;color:var(--ink-soft)}
-  .ticker{
-    margin:64px auto 0;max-width:880px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  .hero h1 em{
+    font-style:italic;color:var(--terracotta);
   }
-  .ticker span{
-    background:#fff;border:1px solid var(--line);border-radius:999px;
-    padding:7px 16px;font-size:.88rem;color:var(--ink-soft);
+  .hero p.lede{
+    font-size:19px;max-width:520px;opacity:0.85;margin-bottom:34px;
+  }
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:36px;}
+  .hero-stats{display:flex;gap:36px;flex-wrap:wrap;}
+  .stat{}
+  .stat .num{font-family:'Fraunces', serif;font-size:28px;font-weight:600;color:var(--indigo);}
+  .stat .label{font-size:13px;opacity:0.65;font-family:'JetBrains Mono', monospace;}
+
+  /* Signature: JIT pulse diagram */
+  .pulse-card{
+    background:var(--indigo);color:var(--cream);
+    border-radius:6px;padding:34px 28px;
+    box-shadow:0 30px 60px -20px rgba(35,44,77,0.45);
+  }
+  .pulse-title{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.08em;opacity:.6;margin-bottom:22px;}
+  .pulse-track{position:relative;height:2px;background:rgba(243,236,221,0.18);margin:38px 0 30px;border-radius:2px;}
+  .pulse-track .dot{
+    position:absolute;top:50%;width:10px;height:10px;border-radius:50%;
+    background:var(--ochre);transform:translate(-50%,-50%);
+    animation:travel 5.5s ease-in-out infinite;
+    box-shadow:0 0 0 6px rgba(217,164,65,0.18);
+  }
+  @keyframes travel{
+    0%{left:2%;background:var(--terracotta);}
+    30%{left:34%;background:var(--ochre);}
+    65%{left:68%;background:var(--leaf);}
+    100%{left:98%;background:var(--cream);}
+  }
+  .pulse-stops{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11.5px;opacity:.75;margin-top:-16px;}
+  .pulse-stops span{max-width:70px;}
+  .pulse-foot{margin-top:28px;padding-top:22px;border-top:1px solid rgba(243,236,221,0.15);font-size:14px;opacity:.85;}
+
+  @media (prefers-reduced-motion: reduce){
+    .pulse-track .dot{animation:none;left:50%;}
   }
 
-  /* Sections */
-  section{padding:78px 0}
-  .section-head{text-align:center;max-width:640px;margin:0 auto 52px}
-  .kicker{color:var(--orange);font-weight:700;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase}
-  h2{font-size:clamp(1.7rem,3.5vw,2.4rem);letter-spacing:-.02em;color:var(--green-deep);margin:10px 0 14px;line-height:1.2}
-  .section-head p{color:var(--ink-soft)}
+  /* SECTION helpers */
+  section{padding:88px 0;}
+  .section-head{max-width:640px;margin-bottom:52px;}
+  .section-head .eyebrow{margin-bottom:16px;}
+  .section-head h2{font-size:clamp(28px,3.4vw,40px);line-height:1.12;}
+  .section-head p{font-size:17px;opacity:0.78;margin-top:16px;}
 
-  .grid{display:grid;gap:22px}
-  .grid-3{grid-template-columns:repeat(3,1fr)}
-  .grid-2{grid-template-columns:repeat(2,1fr)}
-  @media(max-width:860px){.grid-3,.grid-2{grid-template-columns:1fr}}
+  /* PROBLEM */
+  .problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+  .problem-card{background:var(--cream);padding:32px 28px;}
+  .problem-card .icon{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--terracotta-dark);margin-bottom:16px;}
+  .problem-card h3{font-size:19px;margin-bottom:10px;}
+  .problem-card p{font-size:15px;opacity:0.75;margin:0;}
 
-  .card{
-    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
-    padding:30px 26px;
+  /* HOW IT WORKS */
+  .how{background:var(--cream-dim);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;}
+  .step{position:relative;padding-top:6px;}
+  .step-num{font-family:'Fraunces',serif;font-size:15px;color:var(--terracotta);border:1.5px solid var(--terracotta);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;}
+  .step h3{font-size:18px;margin-bottom:8px;}
+  .step p{font-size:14.5px;opacity:0.75;margin:0;}
+
+  /* SEGMENTS */
+  .segments{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .segment-card{
+    border:1px solid var(--line);padding:30px 26px;border-radius:6px;
+    background:var(--cream);transition:transform .18s ease, box-shadow .18s ease;
   }
-  .card .num{
-    display:inline-flex;align-items:center;justify-content:center;
-    width:38px;height:38px;border-radius:10px;background:var(--green);color:#fff;
-    font-weight:800;margin-bottom:16px;
-  }
-  .card h3{font-size:1.15rem;color:var(--green-deep);margin-bottom:8px;letter-spacing:-.01em}
-  .card p{font-size:.95rem;color:var(--ink-soft)}
+  .segment-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px -24px rgba(36,31,26,0.35);}
+  .segment-card .tag{font-family:'JetBrains Mono',monospace;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--leaf);margin-bottom:14px;display:block;}
+  .segment-card h3{font-size:21px;margin-bottom:10px;}
+  .segment-card p{font-size:15px;opacity:0.78;margin-bottom:18px;}
+  .segment-card ul{margin:0;padding-left:18px;font-size:14px;opacity:0.85;}
+  .segment-card li{margin-bottom:6px;}
 
-  .problem{background:var(--green-deep);color:#f4f1e8}
-  .problem .kicker{color:var(--orange-soft)}
-  .problem h2{color:#fff}
-  .problem .section-head p{color:#cfd8cc}
-  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;max-width:880px;margin:0 auto}
-  @media(max-width:720px){.stat-row{grid-template-columns:1fr}}
-  .stat{
-    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);
-    border-radius:var(--radius);padding:28px 24px;text-align:center;
+  /* PRICING */
+  .pricing{background:var(--indigo);color:var(--cream);}
+  .pricing .section-head p{color:var(--cream);opacity:0.72;}
+  .pricing .section-head .eyebrow{background:rgba(243,236,221,0.1);border-color:rgba(243,236,221,0.25);color:var(--ochre);}
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .price-card{
+    border:1px solid rgba(243,236,221,0.18);border-radius:6px;padding:30px 26px;
+    background:rgba(243,236,221,0.04);
   }
-  .stat b{display:block;font-size:2rem;color:var(--orange-soft);letter-spacing:-.02em;margin-bottom:6px}
-  .stat span{font-size:.92rem;color:#cfd8cc}
-
-  /* Audience split */
-  .aud .card{border-top:4px solid var(--orange)}
-  .aud .card:nth-child(2){border-top-color:var(--green)}
-  .aud ul{list-style:none;margin-top:14px}
-  .aud li{padding:7px 0 7px 26px;position:relative;font-size:.95rem;color:var(--ink-soft)}
-  .aud li::before{content:"✓";position:absolute;left:0;color:var(--orange);font-weight:800}
-  .aud .card:nth-child(2) li::before{color:var(--green)}
+  .price-card.featured{border-color:var(--ochre);background:rgba(217,164,65,0.08);}
+  .price-card .tier{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;opacity:.65;margin-bottom:14px;}
+  .price-card .amount{font-family:'Fraunces',serif;font-size:34px;font-weight:600;margin-bottom:4px;}
+  .price-card .amount span{font-family:'DM Sans',sans-serif;font-size:14px;opacity:.6;font-weight:400;}
+  .price-card p.desc{font-size:14px;opacity:.72;margin-bottom:20px;}
+  .price-card ul{list-style:none;margin:0 0 24px;padding:0;font-size:14px;}
+  .price-card li{padding:7px 0;border-top:1px solid rgba(243,236,221,0.12);opacity:.88;}
+  .price-card li:first-child{border-top:none;}
+  .price-note{font-size:13px;opacity:.55;margin-top:28px;max-width:640px;}
 
   /* FAQ */
-  .faq{max-width:760px;margin:0 auto}
-  details{
-    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
-    padding:20px 24px;margin-bottom:12px;
+  .faq-list{max-width:760px;}
+  .faq-item{border-bottom:1px solid var(--line);}
+  .faq-q{
+    width:100%;text-align:left;background:none;border:none;cursor:pointer;
+    padding:22px 0;display:flex;justify-content:space-between;align-items:center;gap:16px;
+    font-family:'Fraunces',serif;font-size:18px;color:var(--charcoal);
   }
-  summary{
-    cursor:pointer;font-weight:700;color:var(--green-deep);list-style:none;
-    display:flex;justify-content:space-between;align-items:center;gap:16px;
+  .faq-q .plus{
+    font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--terracotta);
+    transition:transform .2s ease;flex-shrink:0;
   }
-  summary::-webkit-details-marker{display:none}
-  summary::after{content:"+";font-size:1.4rem;color:var(--orange);font-weight:400;flex-shrink:0}
-  details[open] summary::after{content:"–"}
-  details p{margin-top:12px;color:var(--ink-soft);font-size:.96rem}
+  .faq-item.open .faq-q .plus{transform:rotate(45deg);}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .faq-a p{font-size:15.5px;opacity:0.78;padding-bottom:22px;margin:0;max-width:620px;}
 
   /* CTA band */
   .cta-band{
-    background:linear-gradient(120deg,var(--orange) 0%,#d95f0e 100%);
-    border-radius:20px;padding:56px 40px;text-align:center;color:#fff;
+    background:var(--terracotta);color:var(--cream);text-align:center;
+    padding:80px 0;
   }
-  .cta-band h2{color:#fff}
-  .cta-band p{max-width:520px;margin:0 auto 28px;color:#ffe9d6}
-  .cta-band .btn{background:#fff;color:#a34a05}
-  .cta-band .btn:hover{transform:translateY(-2px)}
+  .cta-band h2{font-size:clamp(28px,4vw,42px);margin-bottom:18px;}
+  .cta-band p{font-size:17px;opacity:0.9;max-width:520px;margin:0 auto 32px;}
+  .cta-band .btn-primary{background:var(--indigo);}
+  .cta-band .btn-primary:hover{background:#1a2038;}
+  .cta-band form{display:flex;gap:10px;max-width:420px;margin:0 auto;flex-wrap:wrap;justify-content:center;}
+  .cta-band input[type=email]{
+    flex:1;min-width:220px;padding:13px 16px;border-radius:var(--radius);border:1.5px solid rgba(243,236,221,0.4);
+    background:rgba(243,236,221,0.08);color:var(--cream);font-family:'DM Sans',sans-serif;font-size:14.5px;
+  }
+  .cta-band input[type=email]::placeholder{color:rgba(243,236,221,0.6);}
 
-  /* Footer */
-  footer{border-top:1px solid var(--line);padding:48px 0 36px;background:#faf5ea}
-  .foot{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap}
-  .foot .logo{font-size:1.25rem}
-  .foot p{font-size:.88rem;color:var(--ink-soft);max-width:340px;margin-top:10px}
-  .foot-links{display:flex;gap:48px;flex-wrap:wrap}
-  .foot-links h4{font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;color:var(--green-deep);margin-bottom:12px}
-  .foot-links ul{list-style:none}
-  .foot-links li{margin-bottom:8px}
-  .foot-links a{font-size:.92rem;color:var(--ink-soft);text-decoration:none}
-  .foot-links a:hover{color:var(--green)}
-  .legal{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);font-size:.82rem;color:var(--ink-soft);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  /* FOOTER */
+  footer{background:var(--charcoal);color:var(--cream);padding:64px 0 28px;}
+  .footer-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:40px;margin-bottom:56px;}
+  .footer-brand .logo{color:var(--cream);}
+  .footer-brand p{font-size:14.5px;opacity:0.65;margin-top:16px;max-width:280px;}
+  .footer-col h4{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;opacity:.55;margin-bottom:16px;}
+  .footer-col ul{list-style:none;margin:0;padding:0;}
+  .footer-col li{margin-bottom:11px;}
+  .footer-col a{text-decoration:none;font-size:14.5px;opacity:0.82;}
+  .footer-col a:hover{opacity:1;text-decoration:underline;}
+  .footer-bottom{
+    border-top:1px solid rgba(243,236,221,0.14);padding-top:24px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+    font-size:13px;opacity:0.55;font-family:'JetBrains Mono',monospace;
+  }
+
+  /* Responsive */
+  @media (max-width:920px){
+    .hero-grid{grid-template-columns:1fr;}
+    .problem-grid{grid-template-columns:1fr;}
+    .steps{grid-template-columns:1fr 1fr;}
+    .segments{grid-template-columns:1fr;}
+    .price-grid{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width:720px){
+    nav.links{display:none;}
+    .menu-toggle{display:block;}
+    .nav-cta .btn-ghost{display:none;}
+    .footer-grid{grid-template-columns:1fr;}
+    .steps{grid-template-columns:1fr;}
+  }
+
+  :focus-visible{outline:2px solid var(--terracotta);outline-offset:2px;}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 
-<header>
-  <div class="wrap">
-    <nav>
-      <a class="logo" href="#top">Oja<span>.</span></a>
-      <ul class="nav-links">
-        <li><a href="#how">How it works</a></li>
-        <li><a href="#who">Who it's for</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a class="btn btn-primary nav-cta" href="#waitlist">Join the waitlist</a></li>
-      </ul>
+<header class="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo"><span class="mark" aria-hidden="true"></span>Oja</a>
+    <nav class="links" aria-label="Primary">
+      <a href="#how-it-works">How it works</a>
+      <a href="#segments">Who it's for</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
     </nav>
+    <div class="nav-cta">
+      <a href="#waitlist" class="btn btn-ghost">Partner with us</a>
+      <a href="#waitlist" class="btn btn-primary">Join the waitlist</a>
+    </div>
+    <button class="menu-toggle" aria-label="Open menu"><span></span><span></span><span></span></button>
   </div>
 </header>
 
-<main id="top">
-
+<main id="main">
   <!-- HERO -->
   <section class="hero">
-    <div class="wrap">
-      <span class="eyebrow">Oja — Yoruba for “market”</span>
-      <h1>Authentic African food, <em>always in stock.</em></h1>
-      <p class="sub">
-        Oja is the AI-powered, just-in-time supply chain for African raw foods in North America —
-        connecting farms, processors, and importers directly to stores, restaurants, and your kitchen.
-        No stockouts. No waste. No guessing.
-      </p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="#waitlist">Join the waitlist</a>
-        <a class="btn btn-ghost" href="#how">See how it works</a>
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">AI-powered · Just-in-time · Starting with Garri</span>
+        <h1>Never run out of garri. <br><em>Never overstock it either.</em></h1>
+        <p class="lede">Oja is the AI-powered supply chain that gets garri — the staple no West African household wants to run out of — to grocers, restaurants, and households before they do. One staple, done properly, before we do anything else.</p>
+        <div class="hero-actions">
+          <a href="#waitlist" class="btn btn-primary">Join the household waitlist</a>
+          <a href="#waitlist" class="btn btn-ghost">I run a store or restaurant</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><div class="num">1</div><div class="label">staple: garri</div></div>
+          <div class="stat"><div class="num">95%</div><div class="label">target fill-rate</div></div>
+          <div class="stat"><div class="num">JIT</div><div class="label">not bulk guessing</div></div>
+        </div>
       </div>
-      <div class="hero-note">Launching first in Houston · Stores &amp; restaurants get priority onboarding</div>
-      <div class="ticker" aria-label="Example products">
-        <span>Garri</span><span>Egusi</span><span>Palm oil</span><span>Stockfish</span>
-        <span>Plantain flour</span><span>Fufu</span><span>Ogbono</span><span>Crayfish</span>
-        <span>Jollof rice sets</span><span>Fresh cassava</span><span>Scotch bonnet</span><span>Injera teff</span>
+      <div class="pulse-card">
+        <div class="pulse-title">Live demand flow — Garri, Metro 1</div>
+        <div class="pulse-track"><div class="dot"></div></div>
+        <div class="pulse-stops">
+          <span>Supplier</span>
+          <span>Cross-dock</span>
+          <span>Route</span>
+          <span>Doorstep</span>
+        </div>
+        <div class="pulse-foot mono">Forecast confidence: 94% · Next replenishment: pre-positioned before stockout</div>
       </div>
     </div>
   </section>
 
   <!-- PROBLEM -->
-  <section class="problem">
+  <section aria-labelledby="problem-head">
     <div class="wrap">
       <div class="section-head">
-        <span class="kicker">The problem</span>
-        <h2>The African food supply chain runs on guesswork</h2>
-        <p>Stores over-order and stock out in the same week. Importers ship blind. Families drive across town for staples that may not be on the shelf.</p>
+        <span class="eyebrow">The problem</span>
+        <h2 id="problem-head">Everyone in the garri supply chain is guessing — alone.</h2>
+        <p>Stores over-order and under-order the same week. Families drive across town chasing a bag of garri. Importers ship blind. Nobody has visibility into what anyone else actually needs.</p>
       </div>
-      <div class="stat-row">
-        <div class="stat"><b>Stockouts</b><span>Top staples like garri and egusi disappear from shelves for weeks while demand goes unserved.</span></div>
-        <div class="stat"><b>Spoilage</b><span>Perishables rot in transit and on shelves because inventory never matches real consumption.</span></div>
-        <div class="stat"><b>Markups</b><span>Online resellers charge 2–3× retail — and still run out — because nobody can see demand coming.</span></div>
+      <div class="problem-grid">
+        <div class="problem-card">
+          <div class="icon mono">01 / HOUSEHOLDS</div>
+          <h3>Chasing staples, store to store</h3>
+          <p>Hours spent driving store to store to find garri in stock — then buying an oversized bag "just in case," which just moves the waste home.</p>
+        </div>
+        <div class="problem-card">
+          <div class="icon mono">02 / STORES & RESTAURANTS</div>
+          <h3>Manual ordering, chronic stockouts</h3>
+          <p>Phone-call reordering with no demand data means top sellers run out while slow movers pile up as dead stock.</p>
+        </div>
+        <div class="problem-card">
+          <div class="icon mono">03 / SUPPLIERS</div>
+          <h3>Shipping on intuition</h3>
+          <p>Importers and processors have zero downstream visibility, so containers are sized on gut feel, not real demand.</p>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- HOW IT WORKS -->
-  <section id="how">
+  <section class="how" id="how-it-works" aria-labelledby="how-head">
     <div class="wrap">
       <div class="section-head">
-        <span class="kicker">How it works</span>
-        <h2>Demand intelligence first. Logistics second.</h2>
-        <p>The same just-in-time principle Sysco applies to restaurant supply — rebuilt for the African food ecosystem.</p>
+        <span class="eyebrow">How Oja works</span>
+        <h2 id="how-head">One demand-intelligence layer. Four moving parts.</h2>
       </div>
-      <div class="grid grid-3">
-        <div class="card">
-          <span class="num">1</span>
-          <h3>Tell us your pantry</h3>
-          <p>Households set a pantry profile — the staples you cook with and how fast you go through them. Stores and restaurants set standing weekly orders. That's the demand signal.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num mono">1</div>
+          <h3>Pantry Profile</h3>
+          <p>Every household, store, and restaurant tells Oja what it actually consumes — once. Not a one-off order, a living profile.</p>
         </div>
-        <div class="card">
-          <span class="num">2</span>
-          <h3>AI forecasts the market</h3>
-          <p>Our demand engine predicts what each neighborhood will need weeks ahead — by product, season, and celebration — so the right food ships before shelves go empty.</p>
+        <div class="step">
+          <div class="step-num mono">2</div>
+          <h3>AI forecast</h3>
+          <p>Our demand engine predicts what each account will need, weeks ahead — down to the SKU and the region.</p>
         </div>
-        <div class="card">
-          <span class="num">3</span>
-          <h3>Just-in-time delivery</h3>
-          <p>Regional micro-warehouses stock exactly what's forecast, then deliver on a predictable cadence — to store backrooms, restaurant kitchens, and your front door.</p>
+        <div class="step">
+          <div class="step-num mono">3</div>
+          <h3>JIT positioning</h3>
+          <p>Regional cross-docks hold exactly enough buffer stock, restocked on a forecast-driven cadence — not a fixed guess.</p>
+        </div>
+        <div class="step">
+          <div class="step-num mono">4</div>
+          <h3>Fulfillment</h3>
+          <p>Predictable delivery — weekly to stores and restaurants, subscription cadence to households, before anyone runs dry.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- WHO IT'S FOR -->
-  <section id="who" style="padding-top:0">
+  <!-- SEGMENTS -->
+  <section id="segments" aria-labelledby="segments-head">
     <div class="wrap">
       <div class="section-head">
-        <span class="kicker">Who it's for</span>
-        <h2>Built for the whole market</h2>
+        <span class="eyebrow">Built for the whole chain</span>
+        <h2 id="segments-head">Who Oja serves</h2>
       </div>
-      <div class="grid grid-2 aud">
-        <div class="card">
-          <h3>Stores &amp; restaurants</h3>
-          <p>One supplier. One weekly delivery. Wholesale prices — and data on what your customers actually buy.</p>
+      <div class="segments">
+        <div class="segment-card">
+          <span class="tag">Households</span>
+          <h3>Garri that just arrives</h3>
+          <p>Set your Pantry Profile once. Skip, swap, or pause anytime — but you'll rarely need to, because Oja ships your garri before you run out.</p>
           <ul>
-            <li>Standing weekly orders with stockout protection on your top sellers</li>
-            <li>Wholesale pricing with net payment terms</li>
-            <li>Sell-through insights: what to stock more of, what to drop</li>
-            <li>Lot-level traceability on every delivery</li>
+            <li>Bi-weekly or monthly delivery</li>
+            <li>Referral credit for every household you bring in</li>
+            <li>First delivery discounted</li>
           </ul>
         </div>
-        <div class="card">
-          <h3>Households &amp; communities</h3>
-          <p>Your African pantry, always full — delivered on your schedule at fair, transparent prices.</p>
+        <div class="segment-card">
+          <span class="tag">Stores & Restaurants</span>
+          <h3>A supplier that predicts, not just delivers</h3>
+          <p>Standing purchase orders at wholesale tiers, backed by a free stockout audit so you can see exactly what you're losing today.</p>
           <ul>
-            <li>Pantry subscription you review and confirm before every delivery</li>
-            <li>Freshness guarantee — full refund, no return needed</li>
-            <li>Group orders for churches, associations, and buying clubs</li>
-            <li>Authentic sourcing, from trusted farms and processors</li>
+            <li>Weekly reliability-SLA delivery</li>
+            <li>Volume-tiered wholesale pricing</li>
+            <li>Priority routing at higher volume</li>
+          </ul>
+        </div>
+        <div class="segment-card">
+          <span class="tag">Community & Bulk</span>
+          <h3>Event-ready, without the scramble</h3>
+          <p>Churches and organizations get lead-time-based pricing — the earlier you plan, the better the price, and the smoother the event.</p>
+          <ul>
+            <li>Bulk order desk</li>
+            <li>Discount ladder by lead time</li>
+            <li>Dedicated event coordination</li>
           </ul>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing" aria-labelledby="pricing-head">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Pricing</span>
+        <h2 id="pricing-head">Priced to reward predictability</h2>
+        <p>The more consistent your Pantry Profile or standing order, the better your price — because predictability is what makes just-in-time work.</p>
+      </div>
+      <div class="price-grid">
+        <div class="price-card">
+          <div class="tier mono">Starter</div>
+          <div class="amount">$24<span>–$34 / mo</span></div>
+          <p class="desc">For singles and students. 3–5 lb of garri, shipped monthly with margin-safe delivery included.</p>
+          <ul>
+            <li>Monthly delivery</li>
+            <li>Skip or pause anytime</li>
+            <li>10–15% off first delivery</li>
+          </ul>
+        </div>
+        <div class="price-card featured">
+          <div class="tier mono">Family</div>
+          <div class="amount">$49<span>–$79 / mo</span></div>
+          <p class="desc">For couples and small families. 10–15 lb of garri, monthly or every 3 weeks.</p>
+          <ul>
+            <li>Bi-weekly or monthly cadence</li>
+            <li>Referral credit included</li>
+            <li>Choose white or yellow/Ijebu, coarse or fine</li>
+          </ul>
+        </div>
+        <div class="price-card">
+          <div class="tier mono">Stock-Up</div>
+          <div class="amount">$89<span>–$119 / mo</span></div>
+          <p class="desc">For large families, shared households, and high-use garri homes. 20–25 lb shipped.</p>
+          <ul>
+            <li>Best margin-safe household value</li>
+            <li>Monthly or bi-weekly cadence</li>
+            <li>Lower per-lb price through bigger shipments</li>
+          </ul>
+        </div>
+      </div>
+      <p class="price-note">Every plan is priced all-in: supplier cost, packaging, shipping, payment fees, a spoilage/loss allowance, and a sustainable margin are all included — no surprise fees at the door. Oja doesn't compete to be the cheapest garri seller; it's the reliable monthly pantry-staple subscription that's never out of stock. Final checkout may vary by delivery zone, local route availability, and pack size.</p>
     </div>
   </section>
 
   <!-- FAQ -->
-  <section id="faq" style="padding-top:0">
+  <section id="faq" aria-labelledby="faq-head">
     <div class="wrap">
       <div class="section-head">
-        <span class="kicker">FAQ</span>
-        <h2>Questions, answered</h2>
+        <span class="eyebrow">FAQ</span>
+        <h2 id="faq-head">Questions, answered</h2>
       </div>
-      <div class="faq">
-        <details>
-          <summary>What exactly does Oja sell?</summary>
-          <p>Authentic African raw foods — grains and flours (garri, fufu, plantain flour), oils, dried fish and proteins (stockfish, crayfish), spices, fresh produce, and frozen goods. We curate every product and its source; this isn't an open marketplace of resellers.</p>
-        </details>
-        <details>
-          <summary>Is this a subscription? What if I don't want a box that month?</summary>
-          <p>You're always in control. A pantry profile generates a suggested basket on your schedule, and you review, edit, skip, or confirm before anything ships. You can also order one-off with no subscription at all.</p>
-        </details>
-        <details>
-          <summary>I own an African grocery store. Are you competing with me?</summary>
-          <p>No — stores are our core customers and partners. Oja replaces the guesswork of ordering from multiple importers with one reliable weekly delivery at wholesale prices, plus data on what your customers want. Many stores will also serve as neighborhood pickup points.</p>
-        </details>
-        <details>
-          <summary>Where do you deliver?</summary>
-          <p>We're launching metro by metro, starting in Houston, followed by Atlanta, the DC–Maryland–Virginia area, and Toronto. Join the waitlist and we'll open your zone as the network reaches your city.</p>
-        </details>
-        <details>
-          <summary>How do you keep food fresh and authentic?</summary>
-          <p>Just-in-time logistics means we stock micro-warehouses to forecasted demand instead of letting inventory sit for months. Every lot is tracked from supplier to doorstep with expiry-first handling, and perishables carry a freshness guarantee — if it's not right, you're refunded, no return needed.</p>
-        </details>
-        <details>
-          <summary>How is Oja different from ordering on a reseller site?</summary>
-          <p>Resellers buy retail, mark it up 2–3×, and still run out of stock. Oja operates the supply chain itself — from importer relationships to regional warehouses to delivery — with AI demand forecasting keeping the right products in stock at fair prices.</p>
-        </details>
-        <details>
-          <summary>Can my church or association order together?</summary>
-          <p>Yes — group orders are core to Oja. Communities aggregate baskets into one bulk delivery at tiered discounts, perfect for congregations, student associations, and buying clubs.</p>
-        </details>
+      <div class="faq-list" id="faq-list">
+        <div class="faq-item open">
+          <button class="faq-q" aria-expanded="true">
+            What makes Oja different from a regular grocery delivery app?
+            <span class="plus" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-a"><p>Generalist delivery apps react to orders. Oja anticipates them — every household and store maintains a Pantry Profile, and our AI forecasts what you'll need before you run out, so inventory is pre-positioned rather than sourced on demand.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            Why does Oja only carry garri right now?
+            <span class="plus" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-a"><p>Garri is the staple West African households most dread running out of — so it's the best place to prove the model. We're launching with white and yellow/Ijebu garri, in coarse and fine grind, before expanding to other staples like egusi and palm oil once the loop is proven.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            I own a grocery store. How does Oja help me?
+            <span class="plus" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-a"><p>Oja becomes your supplier, not your competitor. You get a standing purchase order at wholesale pricing, a free stockout audit showing what you're currently losing to out-of-stock top sellers, and a reliability SLA you can plan your shelves around.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            Can I pause or change my household subscription?
+            <span class="plus" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-a"><p>Yes — skip a delivery, swap your garri variant (white or yellow/Ijebu, coarse or fine), or adjust quantities anytime from your account. Your Pantry Profile is a living preference, not a locked-in order.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            Where is Oja launching first?
+            <span class="plus" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-a"><p>We're launching in a single beachhead metro with dense West and East African communities to prove the model before expanding city by city. Join the waitlist and we'll notify you as soon as Oja is live in your area.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            How does the AI forecasting actually work?
+            <span class="plus" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-a"><p>Every account's consumption pattern feeds a demand model that predicts SKU-level needs by household, store, and region — including seasonal spikes around holidays and events. The more accounts on Oja in a region, the sharper the forecast gets for everyone.</p></div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- CTA -->
-  <section id="waitlist" style="padding-top:0">
+  <section class="cta-band" id="waitlist" aria-labelledby="cta-head">
     <div class="wrap">
-      <div class="cta-band">
-        <h2>Be first in line when Oja opens in your city</h2>
-        <p>Join the waitlist as a household, store, or restaurant. Early stores and restaurants get priority onboarding and founding-partner pricing.</p>
-        <a class="btn" href="mailto:hello@oja.market?subject=Oja%20Waitlist">Join the waitlist</a>
-      </div>
+      <h2 id="cta-head">Be first in line when Oja launches near you</h2>
+      <p>Join the waitlist as a household, or reach out as a store, restaurant, or supply partner — either way, you'll help shape the beachhead launch.</p>
+      <form onsubmit="event.preventDefault(); this.querySelector('button').textContent='You\'re on the list ✓';">
+        <input type="email" placeholder="you@email.com" required aria-label="Email address">
+        <button type="submit" class="btn btn-primary">Notify me</button>
+      </form>
     </div>
   </section>
-
 </main>
 
 <footer>
   <div class="wrap">
-    <div class="foot">
-      <div>
-        <a class="logo" href="#top">Oja<span>.</span></a>
-        <p>The AI-powered, just-in-time supply chain for authentic African raw foods across the United States and Canada.</p>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="logo"><span class="mark" aria-hidden="true"></span>Oja</a>
+        <p>The AI-powered, just-in-time supply chain for authentic African staple foods — starting with garri. Never run out. Never overstock.</p>
       </div>
-      <div class="foot-links">
-        <div>
-          <h4>Platform</h4>
-          <ul>
-            <li><a href="#how">How it works</a></li>
-            <li><a href="#who">For stores</a></li>
-            <li><a href="#who">For households</a></li>
-            <li><a href="#faq">FAQ</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4>Company</h4>
-          <ul>
-            <li><a href="mailto:hello@oja.market">Contact</a></li>
-            <li><a href="mailto:suppliers@oja.market">Become a supplier</a></li>
-            <li><a href="mailto:partners@oja.market">Community partnerships</a></li>
-          </ul>
-        </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#how-it-works">How it works</a></li>
+          <li><a href="#segments">Who it's for</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Supply partners</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">TikTok</a></li>
+          <li><a href="#">WhatsApp community</a></li>
+          <li><a href="#waitlist">Join the waitlist</a></li>
+        </ul>
       </div>
     </div>
-    <div class="legal">
-      <span>© 2026 Oja · Zenith AI Automation Agency. All rights reserved.</span>
-      <span>Ọjà — where the market never runs dry.</span>
+    <div class="footer-bottom">
+      <span>© 2026 Oja. All rights reserved.</span>
+      <span>Built by Zenith AI Automation Agency</span>
     </div>
   </div>
 </footer>
 
+<script>
+  document.querySelectorAll('.faq-item').forEach(function(item){
+    var btn = item.querySelector('.faq-q');
+    var ans = item.querySelector('.faq-a');
+    function setState(open){
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      item.classList.toggle('open', open);
+      ans.style.maxHeight = open ? ans.scrollHeight + 'px' : '0px';
+    }
+    setState(item.classList.contains('open'));
+    btn.addEventListener('click', function(){
+      var willOpen = !item.classList.contains('open');
+      setState(willOpen);
+    });
+  });
+
+  var toggle = document.querySelector('.menu-toggle');
+  var links = document.querySelector('nav.links');
+  if(toggle){
+    toggle.addEventListener('click', function(){
+      var isOpen = links.style.display === 'flex';
+      links.style.display = isOpen ? 'none' : 'flex';
+      links.style.flexDirection = 'column';
+      links.style.position='absolute';
+      links.style.top='64px';
+      links.style.left='0';
+      links.style.right='0';
+      links.style.background='var(--cream)';
+      links.style.padding='20px 32px';
+      links.style.borderBottom='1px solid var(--line)';
+      links.style.gap='18px';
+    });
+  }
+</script>
 </body>
 </html>

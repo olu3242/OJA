@@ -1,72 +1,101 @@
 # Oja — Pricing Strategy
 
-**Version:** 0.1 (Draft) · **Last updated:** 2026-07-09
+> **MVP scope:** every price point in this document refers to Garri exclusively. Multi-SKU pricing logic is designed to generalize (see tier structure) but should not be built or marketed until a second SKU is approved per the PRD's SKU-graduation criteria.
 
----
+## 1. Pricing Philosophy
 
-## 1. Principles
+Oja prices to reward predictability. The more lead time and consistency a customer gives the AI demand engine (a stable Pantry Profile, a standing PO, advance notice on bulk events), the better price they receive — because predictability is exactly what makes the JIT model economically efficient. This is not just a pricing gimmick; it directly reinforces the product's core mechanic.
 
-1. **Transparent and fair, not cheapest.** The category's pain is unreliability and opaque markup, not absolute price. Oja prices visibly below online resellers, roughly at parity with good local stores, and earns margin through supply-chain efficiency rather than scarcity markup.
-2. **Reward committed demand.** The customer behaviors that power the forecast (subscriptions, standing orders, pre-orders) always get the best economics. Pricing _is_ the incentive design for the data flywheel.
-3. **Margin is made in the chain, not at checkout.** JIT + forecast accuracy reduce spoilage and working capital; that's the structural margin source that lets shelf prices stay fair.
-4. **Perishability-aware.** Fresh/frozen carry different margin structures and markdown ladders than shelf-stable staples.
+## 2. Cost Structure Inputs
 
-## 2. Cost Structure (per-order view, MVP metro)
+Unit pricing across all tiers is built up from:
 
-Landed cost (FOB + freight + customs + inbound) → warehouse cost (receive/QC/pick/pack, est. 6–9% of GMV at MVP volume) → last-mile (batch-routed; target $6–9/B2C drop, $12–18/B2B pallet-drop) → payment/platform (~3%) → spoilage reserve (perishables 4–10% by class, shelf-stable <1%).
+- **Landed cost of goods** — farm/processor price + export handling + ocean freight + import duties/customs
+- **Warehousing** — regional cross-dock storage, cold/dry storage fees
+- **Packaging** — bags, boxes, insulation for perishable-adjacent SKUs
+- **Last-mile fulfillment** — route-based delivery cost per stop, or carrier/parcel cost for household
+- **Payment processing fees**
+- **Returns/spoilage allowance**
+- **Marketing (CAC amortization)**
+- **Target gross margin and contribution to EBITDA**
 
-Target blended gross margin: **22–28% B2C, 14–18% B2B** at MVP; +4–6 pts by month 12 via forecast-driven buying and route density.
+## 3. B2C Household Pricing (Subscription) — Garri Only
 
-## 3. B2C Pricing
+| Tier                     | Est. Garri Weight/Delivery | Frequency                | Illustrative Price Range* | Target Gross Margin |
+| ------------------------ | -------------------------- | ------------------------ | ------------------------- | ------------------- |
+| Starter (Single/Student) | 3–5 lb                     | Monthly                  | $24–$34 shipped           | 32–38%              |
+| Family                   | 10–15 lb                   | Monthly or every 3 weeks | $49–$79 shipped           | 34–40%              |
+| Stock-Up / Large Family  | 20–25 lb                   | Monthly or bi-weekly     | $89–$119 shipped          | 36–42%              |
 
-### Oja Market (one-off)
+_Updated margin-protected ranges. These prices assume shipping is included for the lower 48 states and that Oja uses commercial parcel rates, route density, or local drop delivery where available. Final launch pricing must still be validated against actual landed Garri cost, packaging, payment fees, and zone-based carrier quotes._
 
-- Retail price = landed cost × class multiplier (shelf-stable ~1.45×, frozen ~1.55×, fresh ~1.65×), sanity-checked weekly against a basket of local-store and online-reseller prices (target: 10–20% under resellers, ±5% of local stores).
-- Delivery fee $5.99; free over $75. Delivery-window pricing: cheaper on high-density route days (nudges customers into batchable windows — pricing supports JIT).
+**Why the old pricing changed:** the prior $10–$18 Starter and $22–$45 Family ranges underpriced the shipped subscription. Online U.S. garri benchmarks commonly show about $12.99 for 5 lb, $25.99 for 10 lb, and $49.99 for 20 lb before/around shipping. Current USPS Ground Advantage starts at $7.90 retail and commercial marketplace tables show about $9.70 for 5 lb and $13.33 for 10 lb in low zones, while UPS/FedEx residential routes can be materially higher. A subscription price must therefore include a shipping buffer, payment fee buffer, packaging, shrink/spoilage allowance, CAC payback, and margin.
 
-### Oja Pantry (subscription) — flagship
+**Pricing formula:**
 
-- No membership fee at MVP (remove friction; the _data_ is the payment). Member pricing 5–8% below Market on subscribed SKUs.
-- Free delivery over $50; priority windows; freshness guarantee (refund without return).
-- Evaluate a paid membership ($9.99/mo with deeper perks) only after cycle-confirm retention > 80%.
+```text
+Subscription price =
+  landed product cost
++ packaging and label cost
++ carrier or local route cost
++ payment processing
++ shrink / replacement allowance
++ CAC amortization
++ target contribution margin
+```
 
-### Oja Together (group orders)
+**Margin rule:** do not sell any shipped household plan below a 30% gross-margin floor after shipping. If zone-based shipping pushes margin below the floor, either add a shipping surcharge, reduce package weight, move the household to a local delivery route, or require a higher-volume Stock-Up plan.
 
-- Tiered discount by aggregated order value: 5% at $300, 10% at $750, 15% at $1,500 — mirrors the wholesale ladder so groups feel wholesale-adjacent.
-- Single delivery point; optional coordinator credit (2%) instead of cash commission.
+**Mechanics:**
 
-## 4. B2B Pricing
+- First-delivery discount (10–15% off) to reduce activation friction.
+- Skip/pause/swap available anytime — flexibility protects retention without discounting the core price.
+- Referral credit (e.g., $10–15 credit per successful referral, capped) funds household-side growth loop.
+- Household margin improves over time as route density in a metro increases (delivery cost per stop falls) — savings can be selectively passed back as loyalty pricing.
 
-### Oja Wholesale (free tier)
+## 4. B2B Pricing — Retail Stores & Restaurants
 
-- Wholesale price ≈ landed cost × 1.18–1.25 depending on SKU velocity class. MOV $250/delivery. Payment on delivery (card/ACH).
+**Model:** Wholesale tiering by monthly volume commitment, structured as a standing PO with a base cadence (weekly recommended).
 
-### Oja Wholesale+ ($79/mo per location)
+| Volume Tier                           | Illustrative Monthly Spend Band | Discount off list wholesale | Notes                                        |
+| ------------------------------------- | ------------------------------- | --------------------------- | -------------------------------------------- |
+| Tier 1 (New/Small store)              | Entry-level                     | Base wholesale price        | Includes free "stockout audit" at onboarding |
+| Tier 2 (Established store)            | Mid-volume                      | 5–8% off base               | Priority routing slot                        |
+| Tier 3 (Multi-location / high-volume) | High-volume                     | 10–15% off base             | Dedicated account manager, custom SLA        |
 
-- Standing-order templates + sell-through analytics + net-15 terms (net-30 after 12 clean weeks) + stockout-protection SLA on up to 20 contracted SKUs (if Oja shorts a contracted SKU, 2× the shortfall value in credit).
-- Volume rebate: 1.5% quarterly rebate above $12k/quarter — paid as credit, reinforcing consolidation onto Oja.
-- The subscription fee is deliberately modest: its job is commitment and data, not revenue.
+**Restaurant pricing** mirrors Tier 1–2 structure but priced at case-level foodservice units rather than retail-pack units, with a reliability SLA (e.g., committed delivery window) as part of the offer — restaurants are paying as much for certainty as for price.
 
-## 5. Dynamic & Markdown Pricing (Phase 2+)
+## 5. Community / Bulk / Event Pricing
 
-- **Expiry-risk markdowns:** automated ladder for perishables as lots approach expiry (e.g., −15% at 40% shelf-life remaining, −30% at 20%), surfaced as "Fresh Deals" — converts potential spoilage into sales and price-sensitive acquisition.
-- **Pre-order pricing:** seasonal-event pre-orders (Ramadan, Christmas) priced 5% below in-season — pulls demand forward where forecasting is hardest.
-- **Surge honesty:** during supply shocks (import delays), show "supply constrained" messaging with modest increases and substitution suggestions rather than silent 2× markup — protecting the fairness brand.
+Lead-time-based discount ladder — the earlier an organization commits, the better the price, because it gives the AI engine and procurement team room to source efficiently:
 
-## 6. Supplier-Side Economics
+| Lead Time Given | Discount                                                     |
+| --------------- | ------------------------------------------------------------ |
+| 30+ days        | Best price tier                                              |
+| 14–29 days      | Mid price tier                                               |
+| <14 days        | Standard/rush pricing (no discount, subject to availability) |
 
-- Standard terms: net-30 on receipt-and-QC; **fast-pay option** (net-7 at 1.5% discount) — cheaper than factoring for suppliers, margin accretive for Oja.
-- Phase 3+: financing against Oja forward-demand commitments (fee-based), priority-allocation program.
+## 6. Wholesale / Enterprise Contracts
 
-## 7. Guardrails & Governance
+Custom-negotiated pricing for multi-location chains and institutional buyers, typically structured as:
 
-- Weekly competitive price index on top-40 SKUs; auto-flag any SKU drifting > 10% above local-store benchmark.
-- No SKU sold below fully-landed cost except explicit markdown-ladder or promo with expiry date.
-- Price changes on staples capped at ±7%/week to preserve trust; category-manager approval above that.
-- Every promo tagged with intent (acquisition / cycle-save / spoilage-avoid / density-building) so promo ROI is measurable against the demand engine's counterfactual forecast.
+- Annual or multi-quarter volume commitment
+- Quarterly price review tied to landed cost movement (currency, freight)
+- Dedicated forecasting support (Oja's demand model applied specifically to the account's location footprint)
 
-## 8. Open Questions
+## 7. Gift & Holiday Boxes (v2 seasonal line)
 
-1. Pantry membership fee: test in metro 2 or wait for retention proof?
-2. B2B rebate vs. straight lower price — which drives consolidation better for this buyer psychology?
-3. Delivery-fee structure in low-density suburbs: subsidize for growth or gate behind group orders?
+Premium, higher-margin one-time purchase product (not subscription) timed to Christmas, Easter, Eid, and back-to-school — captures seasonal demand spikes and functions as a top-of-funnel acquisition product for the core subscription.
+
+## 8. Unit Economics Guardrails (to formalize in Financial Model)
+
+- **CAC targets:** community/referral-driven household CAC held well below first-year subscription contribution margin; direct-sales B2B CAC amortized against multi-year account LTV given lower store/restaurant churn once integrated.
+- **LTV\:CAC target:** ≥ 3:1 across blended household base by month 12.
+- **Target blended gross margin:** trending from high-20s% at launch (higher fulfillment cost per stop, low density) toward high-30s%+ as route density and supplier terms improve.
+- **Price reviews:** quarterly, tied to landed cost and freight movement — pricing is a living system, not a set-and-forget table.
+
+## 9. Pricing Risks & Guardrails
+
+- Avoid racing to the bottom against Costco/Sam's Club on raw unit price — Oja's value proposition is _availability + convenience + category depth_, not lowest price per pound.
+- Protect restaurant/store SLA pricing from erosion — reliability is the premium being sold, not just goods.
+- Monitor currency exposure on imported SKUs and build a pricing buffer rather than passing every FX swing directly to customers.

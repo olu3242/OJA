@@ -12,17 +12,18 @@ African food distribution in North America today runs on guesswork: independent 
 
 ## What's in this package
 
-| File / Folder                     | Contents                                                                                                                                                                   |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `docs/PRD.md`                     | Full Product Requirements Document                                                                                                                                         |
-| `docs/GTM.md`                     | Go-to-Market strategy                                                                                                                                                      |
-| `docs/PRODUCT_STRATEGY.md`        | Product strategy, tiers, roadmap                                                                                                                                           |
-| `docs/PRICING_STRATEGY.md`        | Pricing model across B2B and B2C                                                                                                                                           |
-| `docs/IMPLEMENTATION_STRATEGY.md` | 90-day MVP + phased rollout plan                                                                                                                                           |
-| `docs/ARCHITECTURE.md`            | System, data, and supply chain architecture diagrams                                                                                                                       |
-| `landing-page/index.html`         | Standalone marketing landing page (nav, hero, FAQ, footer)                                                                                                                 |
-| `package.json`                    | Project manifest for the landing page / future app shell                                                                                                                   |
-| `claude-fable-5/`                 | Execution package for building the real product with Claude Fable 5 — `CLAUDE.md` (agent brief), `EXECUTION_PLAN.md` (phased build tasks), `PROGRESS_LOG.md` (running log) |
+| File / Folder                       | Contents                                                                                                                                                                   |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/PRD.md`                       | Full Product Requirements Document                                                                                                                                         |
+| `docs/GTM.md`                       | Go-to-Market strategy                                                                                                                                                      |
+| `docs/PRODUCT_STRATEGY.md`          | Product strategy, tiers, roadmap                                                                                                                                           |
+| `docs/PRICING_STRATEGY.md`          | Pricing model across B2B and B2C (margin-protected)                                                                                                                        |
+| `docs/MARGIN_AND_SHIPPING_MODEL.md` | Margin & shipping protection model for the household subscription                                                                                                          |
+| `docs/IMPLEMENTATION_STRATEGY.md`   | 90-day MVP + phased rollout plan                                                                                                                                           |
+| `docs/ARCHITECTURE.md`              | System, data, and supply chain architecture diagrams                                                                                                                       |
+| `landing-page/index.html`           | Standalone marketing landing page (nav, hero, FAQ, footer)                                                                                                                 |
+| `package.json`                      | Project manifest for the landing page / future app shell                                                                                                                   |
+| `claude-fable-5/`                   | Execution package for building the real product with Claude Fable 5 — `CLAUDE.md` (agent brief), `EXECUTION_PLAN.md` (phased build tasks), `PROGRESS_LOG.md` (running log) |
 
 ## Building with Claude Fable 5
 

@@ -32,7 +32,7 @@ Logistics is the visible product; the demand graph is the company.
 ### B2C
 
 - **Oja Market** (free) — one-off ordering at retail prices.
-- **Oja Pantry** (subscription) — recurring basket with cycle-confirm flow, member pricing (~5–8% below Market), freshness guarantee, priority delivery windows. _The flagship — this is where demand signal comes from._
+- **Oja Pantry** (subscription) — recurring basket with cycle-confirm flow, freshness guarantee, priority delivery windows. Margin-protected monthly plans, all-in (shipping, packaging, supplier cost, payment fees, spoilage/loss allowance, and margin included): **Starter $24–$34/mo (3–5 lb shipped, singles/couples)**, **Family $49–$79/mo (10–15 lb shipped, families — hero plan)**, **Stock-Up $89–$119/mo (20–25 lb shipped, bulk households)**; see `PRICING_STRATEGY.md` and `MARGIN_AND_SHIPPING_MODEL.md`. Positioning: not the cheapest garri seller — the reliable monthly pantry-staple subscription. _The flagship — this is where demand signal comes from._
 - **Oja Together** (group buying) — community/church group orders at near-wholesale tiers; conversion funnel into Pantry.
 
 ### B2B

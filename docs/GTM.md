@@ -46,7 +46,7 @@ Sequence inside the metro:
 - **Church/association partnerships:** revenue share or fundraising tie-in ("your congregation's orders fund the building project"), on-site group-order Sundays.
 - **Aunty ambassadors:** respected community cooks get codes + commission; WhatsApp broadcast lists are the channel that actually converts in this demographic.
 - **Content:** short-form recipe + price-transparency content ("what stockfish should cost"); SEO pages per dish/ingredient.
-- **Launch offer:** first pantry box 20% off + freshness guarantee (full refund, no return needed).
+- **Launch offer:** first delivery 10–15% off (first delivery only — never a permanent discount on the recurring price, per `MARGIN_AND_SHIPPING_MODEL.md`) + freshness guarantee (full refund, no return needed).
 
 ### Suppliers
 

@@ -50,3 +50,17 @@ Entry template:
 - **Verified:** initial migration applied against a real Postgres 16; smoke test exercised create/relation/array-search/delete through `lib/db.ts`; typecheck, lint, format, and build all green.
 - **Next up:** Task 0.4 — schema v1 part 2 (orders, pantry, procurement, inventory, forecasts, demand_events).
 - **Blockers:** none. Note for CI (task 0.7): dev container had no Docker daemon — ran Postgres 16 directly via `initdb`/`pg_ctl`; CI should use a postgres service container.
+
+## 2026-07-09 — Margin-protected pricing update (out-of-plan chore)
+
+- **Tasks completed:** n/a (strategy update from `oja-margin-protected-package.zip`, not an EXECUTION_PLAN task)
+- **Decisions:**
+  - `docs/PRICING_STRATEGY.md` replaced with the margin-protected, Garri-first version: Starter $24–$34/mo (3–5 lb shipped), Family $49–$79/mo (10–15 lb, hero plan), Stock-Up $89–$119/mo (20–25 lb); 30% gross-margin floor after shipping; all-in pricing formula (product, packaging, shipping, payment fees, shrink, CAC, margin).
+  - New `docs/MARGIN_AND_SHIPPING_MODEL.md` (market anchors, shipping buffers, margin-protection rules).
+  - `landing-page/index.html` replaced with the package's garri-first page (pricing section carries the new tiers); price note expanded to enumerate included costs and the "not the cheapest garri seller — the reliable monthly pantry-staple subscription" positioning.
+  - `PRODUCT_STRATEGY.md` Oja Pantry tier and `GTM.md` launch offer (now first-delivery-only 10–15% discount) reconciled to the new model; README docs table updated.
+  - Known tension left intentionally: PRD still describes a ~150-SKU launch catalog while the new pricing doc scopes MVP pricing to Garri only — PRD update was explicitly out of scope for this change.
+  - No schema/seed changes needed: no prices are hardcoded in code or seed data yet (task 0.6 not started).
+- **Verified:** format, lint, typecheck, build all green; no test script exists yet (Vitest lands at 0.7).
+- **Next up:** Task 0.4 — schema v1 part 2.
+- **Blockers:** none.
