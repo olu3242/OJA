@@ -7,8 +7,8 @@ Work top-to-bottom within the current phase. Check tasks off (`[x]`) in the same
 ## Phase 0 — Scaffold & Foundations (Days 0–15)
 
 - [x] 0.1 Scaffold Next.js (App Router) + TypeScript + Tailwind + ESLint/Prettier; update root `package.json` (replace static-site scripts; keep `landing-page/` untouched)
-- [ ] 0.2 Add Prisma + Postgres; wire local dev via `docker-compose.yml` (postgres service) and `.env.example`
-- [ ] 0.3 Schema v1: `accounts` (+ roles enum: household/store/restaurant/community/warehouse/admin), `skus` (origin, local-name synonyms, unit size, perishability class, halal flag, compliance fields), `price_books` (retail/member/wholesale)
+- [x] 0.2 Add Prisma + Postgres; wire local dev via `docker-compose.yml` (postgres service) and `.env.example`
+- [x] 0.3 Schema v1: `accounts` (+ roles enum: household/store/restaurant/community/warehouse/admin), `skus` (origin, local-name synonyms, unit size, perishability class, halal flag, compliance fields), `price_books` (retail/member/wholesale)
 - [ ] 0.4 Schema v1 (cont.): `orders`/`order_lines`, `pantry_profiles`/`pantry_items`/`cycles`, `suppliers`/`purchase_orders`/`po_lines`, `warehouses`/`lots`/`inventory_txns`, `forecasts`, `demand_events` (append-only)
 - [ ] 0.5 tRPC setup with role-gated context; auth (email OTP or NextAuth credentials to start) + B2B verification flag
 - [ ] 0.6 Seed script: 1 warehouse, ~150-SKU launch catalog (grains & flours, tubers, oils, dried fish & proteins, spices, fresh, frozen) with realistic local-name pairs, 6 suppliers, price books

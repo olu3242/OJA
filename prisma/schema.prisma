@@ -1,0 +1,158 @@
+// Oja schema v1 — see docs/ARCHITECTURE.md §3 for the target data model.
+// Task 0.3 scope: accounts, skus, price_books. Order/pantry/inventory/
+// procurement/forecast/demand-event models land in task 0.4.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- accounts ----------
+
+enum AccountRole {
+  HOUSEHOLD
+  STORE
+  RESTAURANT
+  COMMUNITY
+  WAREHOUSE
+  ADMIN
+}
+
+enum NetTermsStatus {
+  NONE
+  REQUESTED
+  APPROVED
+  SUSPENDED
+}
+
+model Account {
+  id    String      @id @default(cuid())
+  role  AccountRole
+  email String      @unique
+  phone String?
+  name  String
+
+  // B2B fields — wholesale pricing must never render unless b2bVerified
+  businessName   String?
+  b2bVerified    Boolean        @default(false)
+  b2bVerifiedAt  DateTime?
+  netTermsStatus NetTermsStatus @default(NONE)
+
+  // Fulfillment context
+  deliveryZone String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+  @@map("accounts")
+}
+
+// ---------- skus ----------
+
+enum SkuCategory {
+  GRAINS_FLOURS
+  TUBERS
+  OILS
+  DRIED_FISH_PROTEINS
+  SPICES_SEASONINGS
+  FRESH_PRODUCE
+  FROZEN
+}
+
+enum PerishabilityClass {
+  SHELF_STABLE
+  REFRIGERATED
+  FROZEN
+  FRESH
+}
+
+model Sku {
+  id   String @id @default(cuid())
+  code String @unique // internal SKU code, e.g. "GAR-IJEBU-5KG"
+
+  // Naming: English name always paired with local names for search,
+  // e.g. nameEn "Melon seed", localNames ["Egusi", "Agushi"]
+  nameEn     String
+  localNames String[] @default([])
+
+  category      SkuCategory
+  perishability PerishabilityClass
+  brand         String?
+  originCountry String // ISO 3166-1 alpha-2, e.g. "NG"
+
+  // Unit definition — one Sku row per sellable unit size
+  unitSize        String // display, e.g. "5 kg bag"
+  unitWeightGrams Int?
+
+  halal         Boolean @default(false)
+  shelfLifeDays Int?
+
+  // Compliance (FDA / CFIA labeling — see PRD §5)
+  allergens            String[] @default([])
+  countryOfOriginLabel String?
+  fdaLabelingNotes     String?
+  importPermitRequired Boolean  @default(false)
+
+  // Substitution graph (self many-to-many, directed)
+  substitutes  Sku[] @relation("SkuSubstitutes")
+  substituteOf Sku[] @relation("SkuSubstitutes")
+
+  active Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  priceBookEntries PriceBookEntry[]
+
+  @@index([category])
+  @@index([active])
+  @@map("skus")
+}
+
+// ---------- price_books ----------
+
+enum PriceTier {
+  RETAIL // Oja Market one-off pricing
+  MEMBER // Oja Pantry subscriber pricing
+  WHOLESALE // verified B2B pricing
+}
+
+model PriceBook {
+  id            String    @id @default(cuid())
+  tier          PriceTier
+  name          String // e.g. "US retail 2026-Q3"
+  currency      String    @default("USD") // ISO 4217
+  active        Boolean   @default(true)
+  effectiveFrom DateTime  @default(now())
+
+  entries PriceBookEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tier, active])
+  @@map("price_books")
+}
+
+model PriceBookEntry {
+  id          String @id @default(cuid())
+  priceBookId String
+  skuId       String
+
+  unitPriceCents Int
+  minQty         Int @default(1) // quantity-break support
+
+  priceBook PriceBook @relation(fields: [priceBookId], references: [id], onDelete: Cascade)
+  sku       Sku       @relation(fields: [skuId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([priceBookId, skuId, minQty])
+  @@map("price_book_entries")
+}

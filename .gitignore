@@ -27,3 +27,6 @@ coverage/
 
 # Local agent settings
 .claude/settings.local.json
+
+# Prisma generated client
+/lib/generated/prisma
