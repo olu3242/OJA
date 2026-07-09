@@ -16,10 +16,14 @@
     "b2b2c"
   ],
   "scripts": {
-    "start": "npx serve landing-page",
-    "dev": "npx live-server landing-page",
-    "build": "echo \"static landing page — no build step required\"",
-    "lint": "echo \"add eslint config when app shell is scaffolded\""
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "landing": "npx serve landing-page"
   },
   "directories": {
     "docs": "docs"
@@ -27,5 +31,22 @@
   "engines": {
     "node": ">=18"
   },
-  "future_dependencies_notes": "This package.json currently scaffolds the static marketing site only. When the Customer/Admin/Warehouse app shell is built (see docs/IMPLEMENTATION_STRATEGY.md), add: next, react, react-dom, tailwindcss, @stripe/stripe-js, prisma, trpc."
+  "dependencies": {
+    "next": "16.2.10",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.10",
+    "eslint-config-prettier": "^10",
+    "prettier": "^3",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "future_dependencies_notes": "App shell scaffolded (Next.js App Router + Tailwind). Still to add per docs/IMPLEMENTATION_STRATEGY.md as tasks land: prisma, trpc, zod, @stripe/stripe-js, vitest, playwright."
 }

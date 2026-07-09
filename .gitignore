@@ -5,6 +5,12 @@ node_modules/
 .next/
 out/
 dist/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# Testing
+coverage/
 
 # Environment & secrets
 .env
@@ -18,3 +24,6 @@ dist/
 # Editor
 .vscode/
 .idea/
+
+# Local agent settings
+.claude/settings.local.json

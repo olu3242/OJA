@@ -19,26 +19,29 @@ Logistics is the visible product; the demand graph is the company.
 
 ## 2. The Moat (in order of durability)
 
-| Moat | Why it compounds |
-|---|---|
-| Demand graph (SKU × household × region × season) | Every cycle-confirm, skip, and substitution labels the dataset; no incumbent has per-household African-staple consumption data at any scale |
-| Committed demand % | Subscriptions and standing orders make forecast partially *contractual*, not statistical — structurally impossible for a spot-sales wholesaler to copy |
-| Supplier allocation | Forward visibility earns priority allocation and quality specs from the best importers/processors |
-| Community trust & brand | Church/association distribution is relationship-gated; slow to build, slow to lose |
-| Network density | Route density per zone drops delivery cost per order; winner-take-most per metro |
+| Moat                                             | Why it compounds                                                                                                                                       |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Demand graph (SKU × household × region × season) | Every cycle-confirm, skip, and substitution labels the dataset; no incumbent has per-household African-staple consumption data at any scale            |
+| Committed demand %                               | Subscriptions and standing orders make forecast partially _contractual_, not statistical — structurally impossible for a spot-sales wholesaler to copy |
+| Supplier allocation                              | Forward visibility earns priority allocation and quality specs from the best importers/processors                                                      |
+| Community trust & brand                          | Church/association distribution is relationship-gated; slow to build, slow to lose                                                                     |
+| Network density                                  | Route density per zone drops delivery cost per order; winner-take-most per metro                                                                       |
 
 ## 3. Product Tiers
 
 ### B2C
+
 - **Oja Market** (free) — one-off ordering at retail prices.
-- **Oja Pantry** (subscription) — recurring basket with cycle-confirm flow, member pricing (~5–8% below Market), freshness guarantee, priority delivery windows. *The flagship — this is where demand signal comes from.*
+- **Oja Pantry** (subscription) — recurring basket with cycle-confirm flow, member pricing (~5–8% below Market), freshness guarantee, priority delivery windows. _The flagship — this is where demand signal comes from._
 - **Oja Together** (group buying) — community/church group orders at near-wholesale tiers; conversion funnel into Pantry.
 
 ### B2B
+
 - **Oja Wholesale** (free tier) — wholesale catalog, weekly delivery, MOV applies.
 - **Oja Wholesale+** (paid tier) — standing-order templates, sell-through analytics dashboard, net-15/30 terms, dedicated rep, stockout-protection SLA on contracted top-SKUs.
 
 ### Supply side
+
 - **Oja Supplier Portal** (Phase 2+) — demand forecasts shared per SKU, forward commitments, faster payment rails. Fee-free initially; monetize later via financing/priority programs.
 
 ## 4. Roadmap Arc
@@ -69,9 +72,9 @@ Logistics is the visible product; the demand graph is the company.
 
 ## 7. Strategic Bets & Kill Criteria
 
-| Bet | Kill/pivot signal |
-|---|---|
-| Households will commit to pantry subscriptions | Cycle-confirm rate < 60% after 3 iterations of the flow |
-| Committed demand makes JIT viable at micro-warehouse scale | Spoilage + stockout costs exceed carrying-cost savings after 6 months |
-| Stores will share sell-through for better replenishment | < 30% of Wholesale+ accounts logging data by month 9 → lean harder on our own shipment data instead |
-| Community-institution channel beats paid acquisition | Blended community CAC exceeds paid CAC for 2 consecutive quarters |
+| Bet                                                        | Kill/pivot signal                                                                                   |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Households will commit to pantry subscriptions             | Cycle-confirm rate < 60% after 3 iterations of the flow                                             |
+| Committed demand makes JIT viable at micro-warehouse scale | Spoilage + stockout costs exceed carrying-cost savings after 6 months                               |
+| Stores will share sell-through for better replenishment    | < 30% of Wholesale+ accounts logging data by month 9 → lean harder on our own shipment data instead |
+| Community-institution channel beats paid acquisition       | Blended community CAC exceeds paid CAC for 2 consecutive quarters                                   |

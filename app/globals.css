@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fdf9f0;
+  --foreground: #1d1b16;
+}
+
+/* Oja brand tokens (mirrors landing-page palette) */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-oja-green: #14532d;
+  --color-oja-green-deep: #0c3b1f;
+  --color-oja-orange: #ea7317;
+  --color-oja-orange-soft: #fcd9b8;
+  --color-oja-cream: #fdf9f0;
+  --font-sans: "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}

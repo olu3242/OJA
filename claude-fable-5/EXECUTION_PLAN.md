@@ -6,7 +6,7 @@ Work top-to-bottom within the current phase. Check tasks off (`[x]`) in the same
 
 ## Phase 0 — Scaffold & Foundations (Days 0–15)
 
-- [ ] 0.1 Scaffold Next.js (App Router) + TypeScript + Tailwind + ESLint/Prettier; update root `package.json` (replace static-site scripts; keep `landing-page/` untouched)
+- [x] 0.1 Scaffold Next.js (App Router) + TypeScript + Tailwind + ESLint/Prettier; update root `package.json` (replace static-site scripts; keep `landing-page/` untouched)
 - [ ] 0.2 Add Prisma + Postgres; wire local dev via `docker-compose.yml` (postgres service) and `.env.example`
 - [ ] 0.3 Schema v1: `accounts` (+ roles enum: household/store/restaurant/community/warehouse/admin), `skus` (origin, local-name synonyms, unit size, perishability class, halal flag, compliance fields), `price_books` (retail/member/wholesale)
 - [ ] 0.4 Schema v1 (cont.): `orders`/`order_lines`, `pantry_profiles`/`pantry_items`/`cycles`, `suppliers`/`purchase_orders`/`po_lines`, `warehouses`/`lots`/`inventory_txns`, `forecasts`, `demand_events` (append-only)
@@ -50,7 +50,7 @@ Work top-to-bottom within the current phase. Check tasks off (`[x]`) in the same
 - [ ] 3.6 Accessibility + mobile pass on customer and warehouse surfaces
 - [ ] 3.7 **Gate G3 checklist**: seed-to-pilot data migration plan, throttled zone rollout switch, on-call notes
 
-## Phase 2 — Engine & Scale (Months 4–9) *(do not start before G3)*
+## Phase 2 — Engine & Scale (Months 4–9) _(do not start before G3)_
 
 - [ ] 4.1 Python demand-engine service (hierarchical time-series + events calendar: Ramadan, Christmas, Independence Days); shadow-mode vs. v0 before cutover
 - [ ] 4.2 POS sell-through ingestion (Square/Clover webhooks)
@@ -59,7 +59,7 @@ Work top-to-bottom within the current phase. Check tasks off (`[x]`) in the same
 - [ ] 4.5 Supplier portal alpha: shared forecasts, forward commitments, fast-pay election
 - [ ] 4.6 Wholesale+ tier: standing-order SLA tracking, sell-through analytics dashboard, quarterly rebate calc
 
-## Phase 3 — Up the Chain (Months 10–18) *(placeholder — re-plan after Phase 2)*
+## Phase 3 — Up the Chain (Months 10–18) _(placeholder — re-plan after Phase 2)_
 
 - [ ] 5.1 Container-consolidation planner over aggregate forecasts
 - [ ] 5.2 Expiry-risk markdown ladder automation ("Fresh Deals")
