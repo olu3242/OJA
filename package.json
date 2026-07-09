@@ -1,0 +1,31 @@
+{
+  "name": "oja-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Oja — AI-powered just-in-time supply chain platform for authentic African raw foods. The Sysco of African food.",
+  "author": "Zenith AI Automation Agency",
+  "license": "UNLICENSED",
+  "homepage": "https://oja.market",
+  "keywords": [
+    "african-food",
+    "supply-chain",
+    "jit-logistics",
+    "ai-demand-forecasting",
+    "food-distribution",
+    "marketplace",
+    "b2b2c"
+  ],
+  "scripts": {
+    "start": "npx serve landing-page",
+    "dev": "npx live-server landing-page",
+    "build": "echo \"static landing page — no build step required\"",
+    "lint": "echo \"add eslint config when app shell is scaffolded\""
+  },
+  "directories": {
+    "docs": "docs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "future_dependencies_notes": "This package.json currently scaffolds the static marketing site only. When the Customer/Admin/Warehouse app shell is built (see docs/IMPLEMENTATION_STRATEGY.md), add: next, react, react-dom, tailwindcss, @stripe/stripe-js, prisma, trpc."
+}

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oja — The Sysco of African Food</title>
+<meta name="description" content="Oja is the AI-powered, just-in-time supply chain for authentic African raw foods. Stores never stock out. Families never drive across town. Nothing goes to waste.">
+<style>
+  :root{
+    --green:#14532d;
+    --green-deep:#0c3b1f;
+    --orange:#ea7317;
+    --orange-soft:#fcd9b8;
+    --cream:#fdf9f0;
+    --ink:#1d1b16;
+    --ink-soft:#57534e;
+    --line:#e7e0d2;
+    --radius:14px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+    color:var(--ink);background:var(--cream);line-height:1.6;
+  }
+  img{max-width:100%}
+  a{color:inherit}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  /* Nav */
+  header{
+    position:sticky;top:0;z-index:50;background:rgba(253,249,240,.92);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  }
+  nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .logo{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;color:var(--green);text-decoration:none}
+  .logo span{color:var(--orange)}
+  .nav-links{display:flex;gap:28px;align-items:center;list-style:none}
+  .nav-links a{text-decoration:none;font-size:.95rem;font-weight:500;color:var(--ink-soft)}
+  .nav-links a:hover{color:var(--green)}
+  .btn{
+    display:inline-block;padding:12px 24px;border-radius:999px;font-weight:700;
+    text-decoration:none;font-size:.95rem;transition:transform .15s ease,box-shadow .15s ease;
+    border:none;cursor:pointer;
+  }
+  .btn-primary{background:var(--orange);color:#fff;box-shadow:0 4px 14px rgba(234,115,23,.35)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(234,115,23,.45)}
+  .btn-ghost{border:2px solid var(--green);color:var(--green)}
+  .btn-ghost:hover{background:var(--green);color:#fff}
+  .nav-cta{padding:9px 20px}
+  @media(max-width:720px){.nav-links li:not(:last-child){display:none}}
+
+  /* Hero */
+  .hero{padding:88px 0 72px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(600px 300px at 15% 10%, rgba(20,83,45,.07), transparent 70%),
+      radial-gradient(500px 280px at 85% 20%, rgba(234,115,23,.09), transparent 70%);
+  }
+  .eyebrow{
+    display:inline-block;background:var(--orange-soft);color:#8a4a0b;
+    font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    padding:6px 16px;border-radius:999px;margin-bottom:22px;
+  }
+  h1{
+    font-size:clamp(2.3rem,5.5vw,3.7rem);line-height:1.1;letter-spacing:-.03em;
+    font-weight:800;color:var(--green-deep);max-width:820px;margin:0 auto 20px;
+  }
+  h1 em{font-style:normal;color:var(--orange)}
+  .hero p.sub{max-width:640px;margin:0 auto 34px;font-size:1.15rem;color:var(--ink-soft)}
+  .hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .hero-note{margin-top:16px;font-size:.85rem;color:var(--ink-soft)}
+  .ticker{
+    margin:64px auto 0;max-width:880px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  }
+  .ticker span{
+    background:#fff;border:1px solid var(--line);border-radius:999px;
+    padding:7px 16px;font-size:.88rem;color:var(--ink-soft);
+  }
+
+  /* Sections */
+  section{padding:78px 0}
+  .section-head{text-align:center;max-width:640px;margin:0 auto 52px}
+  .kicker{color:var(--orange);font-weight:700;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase}
+  h2{font-size:clamp(1.7rem,3.5vw,2.4rem);letter-spacing:-.02em;color:var(--green-deep);margin:10px 0 14px;line-height:1.2}
+  .section-head p{color:var(--ink-soft)}
+
+  .grid{display:grid;gap:22px}
+  .grid-3{grid-template-columns:repeat(3,1fr)}
+  .grid-2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:860px){.grid-3,.grid-2{grid-template-columns:1fr}}
+
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:30px 26px;
+  }
+  .card .num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:38px;height:38px;border-radius:10px;background:var(--green);color:#fff;
+    font-weight:800;margin-bottom:16px;
+  }
+  .card h3{font-size:1.15rem;color:var(--green-deep);margin-bottom:8px;letter-spacing:-.01em}
+  .card p{font-size:.95rem;color:var(--ink-soft)}
+
+  .problem{background:var(--green-deep);color:#f4f1e8}
+  .problem .kicker{color:var(--orange-soft)}
+  .problem h2{color:#fff}
+  .problem .section-head p{color:#cfd8cc}
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;max-width:880px;margin:0 auto}
+  @media(max-width:720px){.stat-row{grid-template-columns:1fr}}
+  .stat{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);
+    border-radius:var(--radius);padding:28px 24px;text-align:center;
+  }
+  .stat b{display:block;font-size:2rem;color:var(--orange-soft);letter-spacing:-.02em;margin-bottom:6px}
+  .stat span{font-size:.92rem;color:#cfd8cc}
+
+  /* Audience split */
+  .aud .card{border-top:4px solid var(--orange)}
+  .aud .card:nth-child(2){border-top-color:var(--green)}
+  .aud ul{list-style:none;margin-top:14px}
+  .aud li{padding:7px 0 7px 26px;position:relative;font-size:.95rem;color:var(--ink-soft)}
+  .aud li::before{content:"✓";position:absolute;left:0;color:var(--orange);font-weight:800}
+  .aud .card:nth-child(2) li::before{color:var(--green)}
+
+  /* FAQ */
+  .faq{max-width:760px;margin:0 auto}
+  details{
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 24px;margin-bottom:12px;
+  }
+  summary{
+    cursor:pointer;font-weight:700;color:var(--green-deep);list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:16px;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";font-size:1.4rem;color:var(--orange);font-weight:400;flex-shrink:0}
+  details[open] summary::after{content:"–"}
+  details p{margin-top:12px;color:var(--ink-soft);font-size:.96rem}
+
+  /* CTA band */
+  .cta-band{
+    background:linear-gradient(120deg,var(--orange) 0%,#d95f0e 100%);
+    border-radius:20px;padding:56px 40px;text-align:center;color:#fff;
+  }
+  .cta-band h2{color:#fff}
+  .cta-band p{max-width:520px;margin:0 auto 28px;color:#ffe9d6}
+  .cta-band .btn{background:#fff;color:#a34a05}
+  .cta-band .btn:hover{transform:translateY(-2px)}
+
+  /* Footer */
+  footer{border-top:1px solid var(--line);padding:48px 0 36px;background:#faf5ea}
+  .foot{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap}
+  .foot .logo{font-size:1.25rem}
+  .foot p{font-size:.88rem;color:var(--ink-soft);max-width:340px;margin-top:10px}
+  .foot-links{display:flex;gap:48px;flex-wrap:wrap}
+  .foot-links h4{font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;color:var(--green-deep);margin-bottom:12px}
+  .foot-links ul{list-style:none}
+  .foot-links li{margin-bottom:8px}
+  .foot-links a{font-size:.92rem;color:var(--ink-soft);text-decoration:none}
+  .foot-links a:hover{color:var(--green)}
+  .legal{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);font-size:.82rem;color:var(--ink-soft);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="#top">Oja<span>.</span></a>
+      <ul class="nav-links">
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#who">Who it's for</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a class="btn btn-primary nav-cta" href="#waitlist">Join the waitlist</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">Oja — Yoruba for “market”</span>
+      <h1>Authentic African food, <em>always in stock.</em></h1>
+      <p class="sub">
+        Oja is the AI-powered, just-in-time supply chain for African raw foods in North America —
+        connecting farms, processors, and importers directly to stores, restaurants, and your kitchen.
+        No stockouts. No waste. No guessing.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#waitlist">Join the waitlist</a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
+      </div>
+      <div class="hero-note">Launching first in Houston · Stores &amp; restaurants get priority onboarding</div>
+      <div class="ticker" aria-label="Example products">
+        <span>Garri</span><span>Egusi</span><span>Palm oil</span><span>Stockfish</span>
+        <span>Plantain flour</span><span>Fufu</span><span>Ogbono</span><span>Crayfish</span>
+        <span>Jollof rice sets</span><span>Fresh cassava</span><span>Scotch bonnet</span><span>Injera teff</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="problem">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">The problem</span>
+        <h2>The African food supply chain runs on guesswork</h2>
+        <p>Stores over-order and stock out in the same week. Importers ship blind. Families drive across town for staples that may not be on the shelf.</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><b>Stockouts</b><span>Top staples like garri and egusi disappear from shelves for weeks while demand goes unserved.</span></div>
+        <div class="stat"><b>Spoilage</b><span>Perishables rot in transit and on shelves because inventory never matches real consumption.</span></div>
+        <div class="stat"><b>Markups</b><span>Online resellers charge 2–3× retail — and still run out — because nobody can see demand coming.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">How it works</span>
+        <h2>Demand intelligence first. Logistics second.</h2>
+        <p>The same just-in-time principle Sysco applies to restaurant supply — rebuilt for the African food ecosystem.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <span class="num">1</span>
+          <h3>Tell us your pantry</h3>
+          <p>Households set a pantry profile — the staples you cook with and how fast you go through them. Stores and restaurants set standing weekly orders. That's the demand signal.</p>
+        </div>
+        <div class="card">
+          <span class="num">2</span>
+          <h3>AI forecasts the market</h3>
+          <p>Our demand engine predicts what each neighborhood will need weeks ahead — by product, season, and celebration — so the right food ships before shelves go empty.</p>
+        </div>
+        <div class="card">
+          <span class="num">3</span>
+          <h3>Just-in-time delivery</h3>
+          <p>Regional micro-warehouses stock exactly what's forecast, then deliver on a predictable cadence — to store backrooms, restaurant kitchens, and your front door.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHO IT'S FOR -->
+  <section id="who" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">Who it's for</span>
+        <h2>Built for the whole market</h2>
+      </div>
+      <div class="grid grid-2 aud">
+        <div class="card">
+          <h3>Stores &amp; restaurants</h3>
+          <p>One supplier. One weekly delivery. Wholesale prices — and data on what your customers actually buy.</p>
+          <ul>
+            <li>Standing weekly orders with stockout protection on your top sellers</li>
+            <li>Wholesale pricing with net payment terms</li>
+            <li>Sell-through insights: what to stock more of, what to drop</li>
+            <li>Lot-level traceability on every delivery</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Households &amp; communities</h3>
+          <p>Your African pantry, always full — delivered on your schedule at fair, transparent prices.</p>
+          <ul>
+            <li>Pantry subscription you review and confirm before every delivery</li>
+            <li>Freshness guarantee — full refund, no return needed</li>
+            <li>Group orders for churches, associations, and buying clubs</li>
+            <li>Authentic sourcing, from trusted farms and processors</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">FAQ</span>
+        <h2>Questions, answered</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>What exactly does Oja sell?</summary>
+          <p>Authentic African raw foods — grains and flours (garri, fufu, plantain flour), oils, dried fish and proteins (stockfish, crayfish), spices, fresh produce, and frozen goods. We curate every product and its source; this isn't an open marketplace of resellers.</p>
+        </details>
+        <details>
+          <summary>Is this a subscription? What if I don't want a box that month?</summary>
+          <p>You're always in control. A pantry profile generates a suggested basket on your schedule, and you review, edit, skip, or confirm before anything ships. You can also order one-off with no subscription at all.</p>
+        </details>
+        <details>
+          <summary>I own an African grocery store. Are you competing with me?</summary>
+          <p>No — stores are our core customers and partners. Oja replaces the guesswork of ordering from multiple importers with one reliable weekly delivery at wholesale prices, plus data on what your customers want. Many stores will also serve as neighborhood pickup points.</p>
+        </details>
+        <details>
+          <summary>Where do you deliver?</summary>
+          <p>We're launching metro by metro, starting in Houston, followed by Atlanta, the DC–Maryland–Virginia area, and Toronto. Join the waitlist and we'll open your zone as the network reaches your city.</p>
+        </details>
+        <details>
+          <summary>How do you keep food fresh and authentic?</summary>
+          <p>Just-in-time logistics means we stock micro-warehouses to forecasted demand instead of letting inventory sit for months. Every lot is tracked from supplier to doorstep with expiry-first handling, and perishables carry a freshness guarantee — if it's not right, you're refunded, no return needed.</p>
+        </details>
+        <details>
+          <summary>How is Oja different from ordering on a reseller site?</summary>
+          <p>Resellers buy retail, mark it up 2–3×, and still run out of stock. Oja operates the supply chain itself — from importer relationships to regional warehouses to delivery — with AI demand forecasting keeping the right products in stock at fair prices.</p>
+        </details>
+        <details>
+          <summary>Can my church or association order together?</summary>
+          <p>Yes — group orders are core to Oja. Communities aggregate baskets into one bulk delivery at tiered discounts, perfect for congregations, student associations, and buying clubs.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="waitlist" style="padding-top:0">
+    <div class="wrap">
+      <div class="cta-band">
+        <h2>Be first in line when Oja opens in your city</h2>
+        <p>Join the waitlist as a household, store, or restaurant. Early stores and restaurants get priority onboarding and founding-partner pricing.</p>
+        <a class="btn" href="mailto:hello@oja.market?subject=Oja%20Waitlist">Join the waitlist</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <a class="logo" href="#top">Oja<span>.</span></a>
+        <p>The AI-powered, just-in-time supply chain for authentic African raw foods across the United States and Canada.</p>
+      </div>
+      <div class="foot-links">
+        <div>
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="#how">How it works</a></li>
+            <li><a href="#who">For stores</a></li>
+            <li><a href="#who">For households</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="mailto:hello@oja.market">Contact</a></li>
+            <li><a href="mailto:suppliers@oja.market">Become a supplier</a></li>
+            <li><a href="mailto:partners@oja.market">Community partnerships</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© 2026 Oja · Zenith AI Automation Agency. All rights reserved.</span>
+      <span>Ọjà — where the market never runs dry.</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
