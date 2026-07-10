@@ -175,3 +175,35 @@ export async function placePoAction(formData: FormData) {
   await c.admin.placePo({ poId: String(formData.get("poId")) });
   redirect("/admin");
 }
+
+// Group orders (tasks 3.3 / 4.4)
+export async function groupCreateAction(formData: FormData) {
+  const c = await caller();
+  const g = await c.group.create({
+    address: {
+      line1: String(formData.get("line1")),
+      city: String(formData.get("city")),
+      state: String(formData.get("state")).toUpperCase(),
+      zip: String(formData.get("zip")),
+    },
+  });
+  redirect(`/group/${g.code}`);
+}
+
+export async function groupJoinAction(formData: FormData) {
+  const c = await caller();
+  const code = String(formData.get("code"));
+  await c.group.join({
+    code,
+    plan: formData.get("plan") as "STARTER" | "FAMILY" | "STOCK_UP",
+    variety: formData.get("variety") as "WHITE_IJEBU" | "YELLOW",
+  });
+  redirect(`/group/${code}`);
+}
+
+export async function groupCloseAction(formData: FormData) {
+  const c = await caller();
+  const code = String(formData.get("code"));
+  await c.group.close({ code });
+  redirect(`/group/${code}`);
+}

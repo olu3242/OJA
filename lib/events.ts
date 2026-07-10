@@ -3,6 +3,7 @@ import type { Prisma } from "@/lib/generated/prisma/client";
 
 export type DemandEventType =
   | "SUBSCRIBE"
+  | "SELL_THROUGH"
   | "CONFIRM"
   | "EDIT"
   | "SKIP"

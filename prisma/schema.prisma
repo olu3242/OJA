@@ -15,6 +15,7 @@ datasource db {
 
 enum AccountRole {
   HOUSEHOLD
+  SUPPLIER
   STORE
   RESTAURANT
   COMMUNITY
@@ -44,6 +45,9 @@ model Account {
 
   // Fulfillment context
   deliveryZone String?
+
+  // Supplier-portal link (Phase 2, task 4.5)
+  supplierId String?
 
   subscriptions Subscription[]
   orders        Order[]
@@ -99,6 +103,7 @@ model Sku {
   allergens            String[] @default([])
   countryOfOriginLabel String?
   fdaLabelingNotes     String?
+  cfiaLabelingNotes    String? // Canada (Phase 3, task 5.3)
   importPermitRequired Boolean  @default(false)
 
   // Substitution graph (self many-to-many, directed)
@@ -319,6 +324,7 @@ model Subscription {
   cadenceDays Int                @default(30)
   qtyLbs      Int
   priceCents  Int
+  currency    String             @default("USD")
   status      SubscriptionStatus @default(ACTIVE)
   pausedAt    DateTime?
   cancelledAt DateTime?
@@ -383,6 +389,7 @@ model Order {
   city           String
   state          String
   zip            String
+  country        String      @default("US")
   carrier        String?
   trackingCode   String?
   shippedAt      DateTime?
@@ -462,6 +469,7 @@ model Forecast {
 
 enum DemandEventType {
   SUBSCRIBE
+  SELL_THROUGH
   CONFIRM
   EDIT
   SKIP
@@ -536,4 +544,49 @@ model TransferOrder {
   updatedAt DateTime @updatedAt
 
   @@map("transfer_orders")
+}
+
+// ---------- group buying (tasks 3.3 / 4.4) ----------
+
+enum GroupOrderStatus {
+  OPEN
+  CLOSED
+  FULFILLED
+}
+
+model GroupOrder {
+  id           String           @id @default(cuid())
+  code         String           @unique // shareable link slug
+  creatorId    String
+  status       GroupOrderStatus @default(OPEN)
+  // Single delivery point (community/church drop)
+  addressLine1 String
+  city         String
+  state        String
+  zip          String
+  orderId      String? // aggregated order once closed
+
+  members GroupOrderMember[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("group_orders")
+}
+
+model GroupOrderMember {
+  id           String       @id @default(cuid())
+  groupOrderId String
+  accountId    String
+  plan         PlanTier
+  variety      GarriVariety
+  priceCents   Int
+  qtyLbs       Int
+
+  groupOrder GroupOrder @relation(fields: [groupOrderId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([groupOrderId, accountId])
+  @@map("group_order_members")
 }

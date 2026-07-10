@@ -97,3 +97,18 @@ Entry template:
 - **Verified:** lint, typecheck, format, 29 vitest + 1 playwright green, production build (all routes compile; dynamic surfaces + static landing).
 - **Next up:** 3.4 hardening + 3.7 pilot checklist; swap payment/carrier/notification stubs when keys arrive.
 - **Blockers:** Stripe/Twilio/Resend/carrier keys; container Postgres runs ad-hoc (`/tmp/oja-pgdata`, port 5433) — CI uses a service container.
+
+## 2026-07-10 — Phases 1c/2/3 complete: channels, expansion, hardening (all plan tasks closed)
+
+- **Tasks completed:** 2.4, 3.3, 3.4, 3.6, 4.1, 4.2, 4.4, 4.5, 4.6, 5.3 — the execution plan is now fully checked.
+- **What shipped:**
+  - **Group buying (3.3/4.4):** shareable group-order links (`/group/new`, `/group/[code]`); members join with their own plan/variety; closing charges each member at the aggregated tier discount (5%/$300 · 10%/$750 · 15%/$1,500) and produces ONE order to the drop point. Idempotent close.
+  - **Wholesale channel (2.4/4.6):** waitlist leads graduate to verified STORE/RESTAURANT accounts; standing weekly orders ride the subscription machinery (7-day cadence, 50 lb minimum, wholesale price = landed × 1.22); SLA-credit (2× shortfall) and quarterly-rebate (1.5% above $12k) calculators.
+  - **POS ingestion (4.2):** `POST /api/webhooks/pos` (shared-secret gated) normalizes Square/Clover-style payloads into `SELL_THROUGH` demand events; weekly aggregation feeds the engine.
+  - **Supplier portal alpha (4.5):** SUPPLIER role + supplier-scoped tRPC endpoints — 4-week forecast share per supplied SKU, open POs, fast-pay election.
+  - **Forecast cutover gate (4.1):** `recommendForecastSource()` promotes V1 only when its measured WAPE beats V0 on actuals; V1 stays in shadow otherwise. Python ML service deferred until data scale justifies (decision stands).
+  - **Canada readiness (5.3):** CAD plan pricing with 1.45 FX buffer, CA territory surcharges (YT/NT/NU), country-aware orders/subscriptions (`currency` on subscription, `country` on order), `cfiaLabelingNotes` on SKUs.
+  - **Hardening (3.4/3.6):** structured error-capture adapter wired to tRPC + webhooks (Sentry DSN swap at pilot), idempotent dispatch already in place; aria-labeled form controls across customer surfaces.
+- **Verified:** 41 vitest tests green (8 files) including the new `phase23` unit + `phase23-channels` integration suites; lint, typecheck, format, production build (new routes `/group/*`, `/api/webhooks/pos`) all green.
+- **Next up:** the plan is complete — future work is external-dependency swaps per `docs/runbooks/G3_PILOT_CHECKLIST.md` and re-planning Phase 2+ against real pilot data.
+- **Blockers:** same external keys as before; nothing code-side.

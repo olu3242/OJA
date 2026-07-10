@@ -245,3 +245,14 @@ export async function draftPoFromSuggestions(
     include: { lines: true },
   });
 }
+
+/**
+ * V1 cutover gate (task 4.1): promote the events-calendar forecast only when
+ * its measured WAPE beats v0 on real actuals — shadow mode until then.
+ */
+export async function recommendForecastSource(now = new Date()) {
+  const [v0, v1] = await Promise.all([wape("V0", now), wape("V1", now)]);
+  const recommended: "V0" | "V1" =
+    v0 != null && v1 != null && v1 < v0 ? "V1" : "V0";
+  return { recommended, wapeV0: v0, wapeV1: v1 };
+}

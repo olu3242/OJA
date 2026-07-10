@@ -4,8 +4,11 @@ import {
   FIRST_DELIVERY_DISCOUNT,
   GARRI_SKU_CODES,
   PLANS,
+  planPrice,
+  regionSurchargeCents,
+  SUPPORTED_COUNTRIES,
+  type Country,
   type PlanTier,
-  zoneSurchargeCents,
 } from "@/lib/pricing";
 import { payments } from "./payments";
 import { notify } from "./notifications";
@@ -27,12 +30,22 @@ export async function subscribe(input: {
   variety: Variety;
   grind?: Grind;
   cadenceDays?: number;
-  address: { line1: string; city: string; state: string; zip: string };
+  address: {
+    line1: string;
+    city: string;
+    state: string;
+    zip: string;
+    country?: Country;
+  };
 }) {
   const plan = PLANS[input.plan];
   const sku = await skuForVariety(input.variety);
-  const surcharge = zoneSurchargeCents(input.address.state);
-  const priceCents = plan.defaultPriceCents + surcharge;
+  const country = input.address.country ?? "US";
+  if (!SUPPORTED_COUNTRIES.includes(country))
+    throw new Error(`Unsupported country ${country}`);
+  const base = planPrice(input.plan, country);
+  const surcharge = regionSurchargeCents(country, input.address.state);
+  const priceCents = base.cents + surcharge;
 
   await payments.createSubscription({
     accountId: input.accountId,
@@ -49,6 +62,7 @@ export async function subscribe(input: {
       cadenceDays: input.cadenceDays ?? 30,
       qtyLbs: plan.defaultLbs,
       priceCents,
+      currency: base.currency,
       cycles: { create: { scheduledFor: new Date() } },
     },
     include: { cycles: true },

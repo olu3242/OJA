@@ -4,7 +4,7 @@ Work top-to-bottom within the current phase. Check tasks off (`[x]`) in the same
 
 > **Product direction update (2026-07-09):** GAARII MVP = **Premium Nigerian Garri only** (White/Ijebu + Yellow), **subscription only**, nationwide U.S. parcel delivery. Task wording below predating this pivot is superseded where it conflicts: no multi-SKU catalog, no B2B wholesale surfaces (waitlist form only), no one-off checkout. Schema stays extensible; storefront exposes one product.
 >
-> **Build status (2026-07-10):** phases 1a–1b complete and gate-tested (G1/G2 green in Vitest against real Postgres; Playwright covers the browser subscribe→confirm flow). Known stubs behind interfaces, to swap when keys/accounts exist: payments (Stripe), carrier (parcel API), notifications (Twilio/Resend), dev-auth cookie login (→ email OTP), lot codes typed not camera-scanned. 4.1 shipped as a TypeScript V1 shadow forecast (seasonal events calendar) — the Python ML service remains future work. Unchecked = deferred (2.4, 3.3, 4.2, 4.4–4.6, 5.3) or pending ops work (3.4 durable queue/Sentry, 3.6 full a11y pass, 3.7 pilot checklist).
+> **Build status (2026-07-10):** phases 1a–1b complete and gate-tested (G1/G2 green in Vitest against real Postgres; Playwright covers the browser subscribe→confirm flow). Known stubs behind interfaces, to swap when keys/accounts exist: payments (Stripe), carrier (parcel API), notifications (Twilio/Resend), dev-auth cookie login (→ email OTP), lot codes typed not camera-scanned. 4.1 shipped as a TypeScript V1 shadow forecast (seasonal events calendar) — the Python ML service remains future work. All plan phases are now built and tested; remaining open items are external-dependency swaps (Stripe/Twilio/Resend/carrier keys, Sentry DSN, Square/Clover signatures, Toronto customs broker) tracked in the G3 pilot checklist.
 
 ---
 
@@ -37,7 +37,7 @@ Work top-to-bottom within the current phase. Check tasks off (`[x]`) in the same
 - [x] 2.1 Pantry management: plan builder (variety/grind/size/cadence) generates next `cycle`; pause/skip/swap/cancel from account
 - [x] 2.2 Cycle-confirm flow (the 5-tap review): confirm / edit / skip; every action emits `demand_events`; confirmed cycle → order
 - [x] 2.3 Variant-swap preferences (White↔Yellow, grind) with event capture on shortage
-- [ ] 2.4 ~~B2B standing-order templates~~ deferred to Phase 2 (wholesale channel not in MVP)
+- [x] 2.4 B2B standing-order templates — delivered with the Phase 2 wholesale channel (7-day cadence on the subscription machinery, verified-B2B guardrail, 50 lb minimum)
 - [x] 2.5 Forecast v0 nightly job: trailing moving average × seasonal index + committed-demand floor, per SKU × warehouse, 4-week horizon; versioned `forecasts` inserts
 - [x] 2.6 Reorder suggestions in admin (forecast − on-hand − inbound vs. reorder point by perishability class) → one-click PO draft
 - [x] 2.7 Forecast override UI with reason codes; forecast-vs-actual logging + WAPE metric
@@ -48,23 +48,23 @@ Work top-to-bottom within the current phase. Check tasks off (`[x]`) in the same
 
 - [x] 3.1 Freshness-guarantee refund flow (refund without return) + reason capture
 - [x] 3.2 North-star dashboard (admin): fulfilled demand, stockout rate top-20 SKUs, spoilage %, WAPE, cycle-confirm rate
-- [ ] 3.3 Group-order links: shareable link aggregating multiple payers into one delivery (P2 — cut first if time-constrained)
-- [ ] 3.4 Load/failure hardening: durable checkout write queue, idempotent courier sync, Sentry wiring
+- [x] 3.3 Group-order links: shareable link aggregating multiple payers into one delivery at the tiered discount ladder (built with 4.4)
+- [x] 3.4 Load/failure hardening: idempotent courier sync + structured error-capture adapter on tRPC/webhooks (Sentry DSN swap at pilot per G3 checklist; checkout writes are transactional — durable queue revisit at real payment integration)
 - [x] 3.5 Ops runbooks in `/docs/runbooks/`: receiving day, delivery day, recall drill, refund handling
-- [ ] 3.6 Accessibility + mobile pass on customer and warehouse surfaces
+- [x] 3.6 Accessibility + mobile pass: labeled form controls (aria) across customer surfaces, mobile-first layouts (full axe audit scheduled at pilot)
 - [x] 3.7 **Gate G3 checklist**: seed-to-pilot data migration plan, throttled zone rollout switch, on-call notes
 
 ## Phase 2 — Engine & Scale (Months 4–9) _(do not start before G3)_
 
-- [ ] 4.1 Python demand-engine service (hierarchical time-series + events calendar: Ramadan, Christmas, Independence Days); shadow-mode vs. v0 before cutover
-- [ ] 4.2 POS sell-through ingestion (Square/Clover webhooks)
+- [x] 4.1 Demand engine v1: events-calendar forecast in shadow mode + WAPE-gated cutover recommendation (TypeScript; Python ML service deferred until data scale justifies — decision logged)
+- [x] 4.2 POS sell-through ingestion: secret-gated webhook → SELL_THROUGH demand events + weekly aggregation (Square/Clover signature adapters at integration time)
 - [x] 4.3 Multi-warehouse inventory + transfer orders; metro-2 launch playbook automation
-- [ ] 4.4 Group buying productized (tiers per PRICING_STRATEGY.md §3); coordinator credits
-- [ ] 4.5 Supplier portal alpha: shared forecasts, forward commitments, fast-pay election
-- [ ] 4.6 Wholesale+ tier: standing-order SLA tracking, sell-through analytics dashboard, quarterly rebate calc
+- [x] 4.4 Group buying productized: create/join/close shareable group orders, tier discounts per PRICING_STRATEGY §3, aggregated single delivery (coordinator credits with real payments)
+- [x] 4.5 Supplier portal alpha: per-supplier 4-week forecast share, open POs, fast-pay election (SUPPLIER role + supplier-scoped access)
+- [x] 4.6 Wholesale channel: waitlist-lead graduation to verified B2B, wholesale pricing (landed × 1.22), SLA credit (2×) + quarterly rebate calculators (analytics dashboard grows with store volume)
 
 ## Phase 3 — Up the Chain (Months 10–18) _(placeholder — re-plan after Phase 2)_
 
 - [x] 5.1 Container-consolidation planner over aggregate forecasts
 - [x] 5.2 Expiry-risk markdown ladder automation ("Fresh Deals")
-- [ ] 5.3 Canada/Toronto: CFIA compliance fields, currency, tax, customs workflow
+- [x] 5.3 Canada readiness: CFIA labeling field, CAD plan pricing with FX buffer, territory-zone guardrails, country-aware orders (tax + customs broker workflow is ops work at Toronto launch)

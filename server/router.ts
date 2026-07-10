@@ -17,6 +17,9 @@ import * as inventory from "./services/inventory";
 import * as metrics from "./services/metrics";
 import * as markdown from "./services/markdown";
 import * as container from "./services/container";
+import * as group from "./services/group";
+import * as wholesale from "./services/wholesale";
+import * as supplier from "./services/supplier";
 
 const staff = roleProcedure("WAREHOUSE", "ADMIN");
 const admin = roleProcedure("ADMIN");
@@ -257,9 +260,101 @@ export const appRouter = router({
     containerPlan: admin
       .input(z.object({ warehouseId: z.string() }))
       .query(({ input }) => container.containerPlan(input.warehouseId)),
+    approveWholesaleLead: admin
+      .input(z.object({ leadId: z.string() }))
+      .mutation(({ input }) => wholesale.approveWholesaleLead(input.leadId)),
+    recommendForecastSource: admin.query(() =>
+      forecast.recommendForecastSource(),
+    ),
     wholesaleLeads: admin.query(() =>
       db.wholesaleLead.findMany({ orderBy: { createdAt: "desc" } }),
     ),
+  }),
+  group: router({
+    create: authedProcedure
+      .input(
+        z.object({
+          address: z.object({
+            line1: z.string().min(1),
+            city: z.string().min(1),
+            state: z.string().length(2),
+            zip: z.string().min(5),
+          }),
+        }),
+      )
+      .mutation(({ ctx, input }) =>
+        group.createGroupOrder(ctx.account.id, input.address),
+      ),
+    join: authedProcedure
+      .input(
+        z.object({
+          code: z.string(),
+          plan: planSchema,
+          variety: varietySchema,
+        }),
+      )
+      .mutation(({ ctx, input }) =>
+        group.joinGroupOrder(
+          input.code,
+          ctx.account.id,
+          input.plan,
+          input.variety,
+        ),
+      ),
+    close: authedProcedure
+      .input(z.object({ code: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const g = await db.groupOrder.findUniqueOrThrow({
+          where: { code: input.code },
+        });
+        if (g.creatorId !== ctx.account.id && ctx.account.role !== "ADMIN") {
+          throw new Error("Only the group creator can close it");
+        }
+        return group.closeGroupOrder(input.code);
+      }),
+    get: publicProcedure
+      .input(z.object({ code: z.string() }))
+      .query(({ input }) =>
+        db.groupOrder.findUniqueOrThrow({
+          where: { code: input.code },
+          include: { members: true },
+        }),
+      ),
+  }),
+
+  wholesaleChannel: router({
+    createStandingOrder: roleProcedure("STORE", "RESTAURANT")
+      .input(
+        z.object({ variety: varietySchema, qtyLbs: z.number().int().min(50) }),
+      )
+      .mutation(({ ctx, input }) =>
+        wholesale.createStandingOrder({ accountId: ctx.account.id, ...input }),
+      ),
+  }),
+
+  supplier: router({
+    portal: roleProcedure("SUPPLIER", "ADMIN")
+      .input(z.object({ supplierId: z.string() }))
+      .query(async ({ ctx, input }) => {
+        if (
+          ctx.account.role === "SUPPLIER" &&
+          ctx.account.supplierId !== input.supplierId
+        ) {
+          throw new Error("Not your supplier record");
+        }
+        return supplier.supplierPortalView(input.supplierId);
+      }),
+    electFastPay: roleProcedure("SUPPLIER", "ADMIN")
+      .input(z.object({ supplierId: z.string(), fastPay: z.boolean() }))
+      .mutation(async ({ ctx, input }) => {
+        if (
+          ctx.account.role === "SUPPLIER" &&
+          ctx.account.supplierId !== input.supplierId
+        ) {
+          throw new Error("Not your supplier record");
+        }
+        return supplier.electFastPay(input.supplierId, input.fastPay);
+      }),
   }),
 });
 

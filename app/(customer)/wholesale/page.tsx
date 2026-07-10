@@ -29,6 +29,7 @@ export default async function WholesalePage({
             name="businessName"
             required
             placeholder="Business name"
+            aria-label="Business name"
             className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
           />
           <input
@@ -36,10 +37,12 @@ export default async function WholesalePage({
             type="email"
             required
             placeholder="Business email"
+            aria-label="Business email"
             className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
           />
           <select
             name="businessType"
+            aria-label="Business type"
             className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
           >
             <option value="store">Grocery store</option>
@@ -49,6 +52,7 @@ export default async function WholesalePage({
           </select>
           <textarea
             name="message"
+            aria-label="Message"
             placeholder="Anything we should know? (optional)"
             className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
             rows={3}

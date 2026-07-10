@@ -87,3 +87,34 @@ export function meetsMarginFloor(
 ): boolean {
   return grossMargin(priceCents, allInCostCents) >= MARGIN_FLOOR;
 }
+
+// ---- Canada readiness (task 5.3, Phase 3) ----
+// CAD prices carry an FX + brokerage buffer over USD (PRICING_STRATEGY §9:
+// build a buffer rather than passing every FX swing to customers).
+export const SUPPORTED_COUNTRIES = ["US", "CA"] as const;
+export type Country = (typeof SUPPORTED_COUNTRIES)[number];
+export const CAD_MULTIPLIER = 1.45;
+const CA_SURCHARGE_REGIONS: Record<string, number> = {
+  YT: 2000,
+  NT: 2000,
+  NU: 2000,
+};
+
+export function planPrice(
+  plan: PlanTier,
+  country: Country,
+): { currency: string; cents: number } {
+  const usd = PLANS[plan].defaultPriceCents;
+  if (country === "CA") {
+    return {
+      currency: "CAD",
+      cents: Math.round((usd * CAD_MULTIPLIER) / 100) * 100,
+    };
+  }
+  return { currency: "USD", cents: usd };
+}
+
+export function regionSurchargeCents(country: Country, region: string): number {
+  if (country === "CA") return CA_SURCHARGE_REGIONS[region.toUpperCase()] ?? 0;
+  return zoneSurchargeCents(region);
+}

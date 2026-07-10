@@ -53,6 +53,7 @@ export default async function SubscribePage() {
           </legend>
           <select
             name="variety"
+            aria-label="Garri variety"
             className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
           >
             <option value="WHITE_IJEBU">White Garri (Ijebu)</option>
@@ -60,6 +61,7 @@ export default async function SubscribePage() {
           </select>
           <select
             name="grind"
+            aria-label="Grind"
             className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
           >
             <option value="COARSE">Coarse</option>
@@ -75,12 +77,14 @@ export default async function SubscribePage() {
             name="line1"
             required
             placeholder="Street address"
+            aria-label="Street address"
             className="rounded-lg border border-oja-green/30 bg-white px-4 py-3 sm:col-span-2"
           />
           <input
             name="city"
             required
             placeholder="City"
+            aria-label="City"
             className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
           />
           <div className="grid grid-cols-2 gap-3">
@@ -89,12 +93,14 @@ export default async function SubscribePage() {
               required
               maxLength={2}
               placeholder="State (TX)"
+              aria-label="State"
               className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
             />
             <input
               name="zip"
               required
               placeholder="ZIP"
+              aria-label="ZIP code"
               className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
             />
           </div>

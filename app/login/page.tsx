@@ -14,12 +14,14 @@ export default function LoginPage() {
           name="email"
           required
           placeholder="you@email.com"
+          aria-label="Email address"
           className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
         />
         <input
           type="text"
           name="name"
           placeholder="Your name (optional)"
+          aria-label="Your name"
           className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
         />
         <button
