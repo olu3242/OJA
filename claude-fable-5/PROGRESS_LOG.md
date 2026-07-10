@@ -64,3 +64,18 @@ Entry template:
 - **Verified:** format, lint, typecheck, build all green; no test script exists yet (Vitest lands at 0.7).
 - **Next up:** Task 0.4 — schema v1 part 2.
 - **Blockers:** none.
+
+## 2026-07-10 — Product direction pivot: GAARII single-product subscription MVP
+
+- **Tasks completed:** 0.6 (early — garri-only seed script); out-of-plan repositioning across docs + landing page
+- **Decisions:**
+  - **The MVP is no longer a Nigerian grocery marketplace.** GAARII sells one product — Premium Nigerian Garri (White/Ijebu + Yellow) — subscription only, nationwide U.S., monthly deliveries, pause/skip/cancel anytime. Positioning: "America's first premium Garri subscription."
+  - Roadmap locked in all strategy docs: Phase 1 garri only → Phase 2 Nigerian pantry staples (egusi, beans, rice, elubo, fufu, plantain flour, palm oil) + B2B wholesale from waitlist → Phase 3 AI-powered pantry (assistant, auto-replenishment, consumption forecasting, recipes, heritage gifting).
+  - Naming convention: **GAARII** = consumer brand; **Oja** = platform/company name (README brand note).
+  - Schema untouched (already extensible); `prisma/seed.ts` created seeding exactly the two garri SKUs and deactivating any others; wired via `prisma.config.ts` (`tsx prisma/seed.ts`); idempotent, verified against local Postgres twice.
+  - Landing page: hero/nav per direction (How It Works · Subscriptions · Why GAARII · Pricing · FAQ), plans described as Premium Garri quantities only, B2B removed from copy (wholesale-waitlist FAQ instead); design system unchanged.
+  - EXECUTION_PLAN: banner supersedes pre-pivot wording; 1.1–1.3 and 2.1–2.4 reworded (single-product storefront, subscription checkout, wholesale waitlist form; B2B standing orders deferred to Phase 2).
+  - B2B/community/enterprise pricing sections retained in PRICING_STRATEGY.md but explicitly marked Phase 2+/3+ (documented playbooks, not built).
+- **Verified:** format, lint, typecheck, seed (idempotent, 2 active SKUs), build all green; tests N/A (Vitest lands at 0.7).
+- **Next up:** Task 0.4 — schema v1 part 2 (subscription/cycle models should follow PRD v0.2's plan structure).
+- **Blockers:** none.

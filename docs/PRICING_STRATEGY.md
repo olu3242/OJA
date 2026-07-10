@@ -1,10 +1,10 @@
-# Oja — Pricing Strategy
+# GAARII — Pricing Strategy
 
-> **MVP scope:** every price point in this document refers to Garri exclusively. Multi-SKU pricing logic is designed to generalize (see tier structure) but should not be built or marketed until a second SKU is approved per the PRD's SKU-graduation criteria.
+> **MVP scope:** GAARII sells one product — Premium Nigerian Garri — by subscription only. Every price point in this document refers to Garri exclusively, and the household subscription (§3) is the only pricing live in the MVP. B2B, community/bulk, and enterprise pricing (§4–6) are **Phase 2+ playbooks**, documented now so the model generalizes, but not built or marketed until a second SKU is approved per the PRD's graduation criteria (PRD §8). GAARII does not compete as the cheapest garri seller — it is the reliable monthly pantry-staple subscription.
 
 ## 1. Pricing Philosophy
 
-Oja prices to reward predictability. The more lead time and consistency a customer gives the AI demand engine (a stable Pantry Profile, a standing PO, advance notice on bulk events), the better price they receive — because predictability is exactly what makes the JIT model economically efficient. This is not just a pricing gimmick; it directly reinforces the product's core mechanic.
+GAARII prices to reward predictability. The more consistency a subscriber gives the AI demand engine (a stable plan, steady cadence), the better the economics — because predictability is exactly what makes the JIT model efficient. Subscription-only selling makes this structural: every customer is committed demand. The plans below differ **only in quantity of Premium Garri** — same product, same quality, same all-in treatment of costs.
 
 ## 2. Cost Structure Inputs
 
@@ -19,15 +19,15 @@ Unit pricing across all tiers is built up from:
 - **Marketing (CAC amortization)**
 - **Target gross margin and contribution to EBITDA**
 
-## 3. B2C Household Pricing (Subscription) — Garri Only
+## 3. Garri Plans (Household Subscription) — the only MVP pricing
 
-| Tier                     | Est. Garri Weight/Delivery | Frequency                | Illustrative Price Range* | Target Gross Margin |
-| ------------------------ | -------------------------- | ------------------------ | ------------------------- | ------------------- |
-| Starter (Single/Student) | 3–5 lb                     | Monthly                  | $24–$34 shipped           | 32–38%              |
-| Family                   | 10–15 lb                   | Monthly or every 3 weeks | $49–$79 shipped           | 34–40%              |
-| Stock-Up / Large Family  | 20–25 lb                   | Monthly or bi-weekly     | $89–$119 shipped          | 36–42%              |
+| Plan                       | Premium Garri per Delivery | Frequency                | Illustrative Price Range* | Target Gross Margin |
+| -------------------------- | -------------------------- | ------------------------ | ------------------------- | ------------------- |
+| Starter (singles/couples)  | 3–5 lb of Premium Garri    | Monthly                  | $24–$34 shipped           | 32–38%              |
+| Family (hero plan)         | 10–15 lb of Premium Garri  | Monthly or every 3 weeks | $49–$79 shipped           | 34–40%              |
+| Stock-Up (bulk households) | 20–25 lb of Premium Garri  | Monthly or bi-weekly     | $89–$119 shipped          | 36–42%              |
 
-_Updated margin-protected ranges. These prices assume shipping is included for the lower 48 states and that Oja uses commercial parcel rates, route density, or local drop delivery where available. Final launch pricing must still be validated against actual landed Garri cost, packaging, payment fees, and zone-based carrier quotes._
+_Updated margin-protected ranges. These prices assume shipping is included for the lower 48 states and that GAARII uses commercial parcel rates, route density, or local drop delivery where available. Final launch pricing must still be validated against actual landed Garri cost, packaging, payment fees, and zone-based carrier quotes._
 
 **Why the old pricing changed:** the prior $10–$18 Starter and $22–$45 Family ranges underpriced the shipped subscription. Online U.S. garri benchmarks commonly show about $12.99 for 5 lb, $25.99 for 10 lb, and $49.99 for 20 lb before/around shipping. Current USPS Ground Advantage starts at $7.90 retail and commercial marketplace tables show about $9.70 for 5 lb and $13.33 for 10 lb in low zones, while UPS/FedEx residential routes can be materially higher. A subscription price must therefore include a shipping buffer, payment fee buffer, packaging, shrink/spoilage allowance, CAC payback, and margin.
 
@@ -53,7 +53,7 @@ Subscription price =
 - Referral credit (e.g., $10–15 credit per successful referral, capped) funds household-side growth loop.
 - Household margin improves over time as route density in a metro increases (delivery cost per stop falls) — savings can be selectively passed back as loyalty pricing.
 
-## 4. B2B Pricing — Retail Stores & Restaurants
+## 4. B2B Pricing — Retail Stores & Restaurants _(Phase 2+ — waitlist only in MVP)_
 
 **Model:** Wholesale tiering by monthly volume commitment, structured as a standing PO with a base cadence (weekly recommended).
 
@@ -65,7 +65,7 @@ Subscription price =
 
 **Restaurant pricing** mirrors Tier 1–2 structure but priced at case-level foodservice units rather than retail-pack units, with a reliability SLA (e.g., committed delivery window) as part of the offer — restaurants are paying as much for certainty as for price.
 
-## 5. Community / Bulk / Event Pricing
+## 5. Community / Bulk / Event Pricing _(Phase 2+)_
 
 Lead-time-based discount ladder — the earlier an organization commits, the better the price, because it gives the AI engine and procurement team room to source efficiently:
 
@@ -75,13 +75,13 @@ Lead-time-based discount ladder — the earlier an organization commits, the bet
 | 14–29 days      | Mid price tier                                               |
 | <14 days        | Standard/rush pricing (no discount, subject to availability) |
 
-## 6. Wholesale / Enterprise Contracts
+## 6. Wholesale / Enterprise Contracts _(Phase 3+)_
 
 Custom-negotiated pricing for multi-location chains and institutional buyers, typically structured as:
 
 - Annual or multi-quarter volume commitment
 - Quarterly price review tied to landed cost movement (currency, freight)
-- Dedicated forecasting support (Oja's demand model applied specifically to the account's location footprint)
+- Dedicated forecasting support (the platform's demand model applied specifically to the account's location footprint)
 
 ## 7. Gift & Holiday Boxes (v2 seasonal line)
 
@@ -96,6 +96,6 @@ Premium, higher-margin one-time purchase product (not subscription) timed to Chr
 
 ## 9. Pricing Risks & Guardrails
 
-- Avoid racing to the bottom against Costco/Sam's Club on raw unit price — Oja's value proposition is _availability + convenience + category depth_, not lowest price per pound.
+- Avoid racing to the bottom against Costco/Sam's Club on raw unit price — GAARII's value proposition is _availability + convenience + reliability_, not lowest price per pound.
 - Protect restaurant/store SLA pricing from erosion — reliability is the premium being sold, not just goods.
 - Monitor currency exposure on imported SKUs and build a pricing buffer rather than passing every FX swing directly to customers.

@@ -1,78 +1,79 @@
-# Oja — Go-to-Market Strategy
+# GAARII — Go-to-Market Strategy
 
-**Version:** 0.1 (Draft) · **Last updated:** 2026-07-09
+**Version:** 0.2 (Draft — single-product subscription MVP) · **Last updated:** 2026-07-09
+
+> **MVP scope:** GAARII sells one product — Premium Nigerian Garri — by subscription only, shipped nationwide across the U.S. This GTM is for that product. B2B wholesale and multi-staple GTM are Phase 2+.
 
 ---
 
 ## 1. Market
 
-- ~4.6M sub-Saharan African immigrants in the US (plus second generation and Caribbean/Black-American crossover demand), heavily clustered in a handful of metros: Houston/DFW, Atlanta, DC-Maryland-Virginia (DMV), NYC/NJ, Minneapolis, Chicago, Toronto, Montreal.
-- The category is served today by: (a) ~3,000+ independent African/Caribbean grocery stores, (b) a fragmented importer/wholesaler layer, (c) high-markup online resellers with unreliable stock.
-- Estimated addressable spend: African diaspora households spend disproportionately on groceries tied to home cuisine; even a conservative $150/month of "African-specific" basket per household across ~1.5M actively-cooking households implies a **$2.7B+/yr** retail category in North America, before B2B restaurant/catering volume.
+- ~4.6M sub-Saharan African immigrants in the US (plus second generation and Caribbean/Black-American crossover demand), clustered in Houston/DFW, Atlanta, DC-Maryland-Virginia (DMV), NYC/NJ, Minneapolis, Chicago — but **nationwide parcel delivery means the MVP is not metro-gated**: every Nigerian household in the lower 48 is addressable from day one.
+- Garri today is bought from: (a) independent African grocery stores with unpredictable stock and quality, (b) online resellers/Amazon sellers at steep markups with unknown freshness (~$12.99/5 lb, ~$25.99/10 lb, ~$49.99/20 lb market anchors).
+- Garri is the highest-frequency Nigerian staple — consumed weekly in most households — making it the strongest possible wedge product for a subscription.
 
-**Wedge:** nobody owns the demand data. Sysco won restaurant supply with logistics scale; Oja's wedge is _demand intelligence first, logistics second_ — start where forecast advantage matters most (staples with steady consumption) and expand outward.
+**Wedge:** nobody owns household demand data for African staples, and nobody has made a single staple _reliable_. GAARII's wedge is one product, subscription-only, quality-controlled — demand intelligence first, assortment later.
 
 ## 2. Positioning
 
-- **For B2B (stores, restaurants):** "Never stock out of your top sellers again. One supplier, one weekly delivery, wholesale prices, and data on what your customers actually buy."
-- **For B2C (households):** "Your African pantry, always full. Authentic staples, fair prices, delivered on your schedule."
-- **Against incumbents:** not another importer, and not a marketplace reseller — Oja is the operating system for the category. Stores are customers and partners, not roadkill.
+**"America's first premium Garri subscription."**
 
-Brand: _Oja_ = market. Tone: proudly African, modern, trustworthy, abundant. The anti-"ethnic aisle."
+- **For households:** "Premium Nigerian garri — White (Ijebu) or Yellow — delivered monthly, nationwide. Pause, skip, or cancel anytime. Never run out again."
+- **Against resellers:** not the cheapest per pound — the one you can count on: controlled sourcing, batch quality checks, all-in pricing with no surprise shipping fees.
+- **Against stores:** a complement, not a rival — GAARII covers the staple you refuse to run out of; the store remains for everything else (and becomes a wholesale customer in Phase 2).
 
-## 3. Beachhead & Sequencing
+Brand: _GAARII_ — proudly Nigerian, modern, premium, dependable. One product, done properly. (Oja remains the platform/company name.)
 
-**Metro 1 (MVP, days 0–90): Houston** (alternative: Atlanta — decide via supplier-side diligence).
-Rationale: largest Nigerian population in the US, dense store/restaurant clusters (Bissonnet/Harwin corridor), port city (import logistics), favorable warehouse costs.
+## 3. Launch Sequencing
 
-Sequence inside the metro:
+Nationwide shipping from one 3PL node — sequencing is by **community, not geography**:
 
-1. **10 anchor B2B accounts** (stores + restaurants) signed before the warehouse opens — standing weekly orders provide baseline volume that de-risks JIT.
-2. **Community-institution launch for B2C**: churches, mosques, Nigerian/Ghanaian/Ethiopian associations, African student unions. Group-buy events → pantry-profile signups.
-3. **Digital fill-in**: geo-targeted Instagram/TikTok/WhatsApp content (recipes, "restock day" drops), diaspora food creators, Google Search for high-intent terms ("buy garri Houston").
+1. **Founding subscribers (days 0–30):** friends-and-family + diaspora WhatsApp networks; 200 founding subscriptions at first-delivery discount, feedback loop on packaging/grind/quality.
+2. **Community-institution wave (days 30–90):** Nigerian churches, mosques, associations, student unions — bulk-signup drives ("get your congregation's pantries handled"), ambassador codes.
+3. **Digital scale (day 60+):** geo-targeted Instagram/TikTok/WhatsApp content, diaspora food creators, Google Search for high-intent terms ("buy garri online", "ijebu garri USA"), SEO pages per variety and dish (eba, garri soakings).
 
-**Metro 2 (months 6–9): Atlanta.** **Metro 3 (months 10–15): DMV.** **Canada (months 12–18): Toronto.** Expansion trigger: Metro N-1 hits ≥ 60% forecast-covered demand and positive contribution margin.
+Phase 2 triggers (per PRD graduation criteria) unlock staple #2 and the B2B wholesale waitlist conversion.
 
 ## 4. Acquisition Playbooks
 
-### B2B (direct sales, founder-led at first)
+### Households (community-led growth — the core)
 
-- Hit list of every African grocery + restaurant in metro (map scrape + community knowledge). In-person visits; offer: free stockout audit → 2 free weeks of top-5 staple replenishment → standing order.
-- Kill the spreadsheet/WhatsApp order: onboarding = we build their order template for them in one visit.
-- Referral: $250 credit per referred B2B account that completes 4 weekly orders.
-
-### B2C (community-led growth)
-
-- **Church/association partnerships:** revenue share or fundraising tie-in ("your congregation's orders fund the building project"), on-site group-order Sundays.
+- **Church/association partnerships:** fundraising tie-ins ("subscriptions credit the building project"), on-site signup Sundays.
 - **Aunty ambassadors:** respected community cooks get codes + commission; WhatsApp broadcast lists are the channel that actually converts in this demographic.
-- **Content:** short-form recipe + price-transparency content ("what stockfish should cost"); SEO pages per dish/ingredient.
-- **Launch offer:** first delivery 10–15% off (first delivery only — never a permanent discount on the recurring price, per `MARGIN_AND_SHIPPING_MODEL.md`) + freshness guarantee (full refund, no return needed).
+- **Content:** short-form garri content (drinking garri taste tests, eba technique, white-vs-yellow explainers, price-transparency: "what premium garri should cost").
+- **Launch offer:** first delivery 10–15% off (first delivery only — never a permanent discount on the recurring price, per `MARGIN_AND_SHIPPING_MODEL.md`) + quality guarantee (full refund, no return needed).
+- **Referral loop:** capped referral credit per successful referral, funded from CAC budget, not product margin.
+
+### Stores & restaurants (deferred channel)
+
+- MVP: wholesale-interest **waitlist only** — collect the pipeline, sell nothing wholesale yet.
+- Phase 2: founder-led direct sales to the waitlist (stockout audit → standing order playbook).
 
 ### Suppliers
 
-- Court 2–3 importers per top-20 SKU with the pitch: _forward demand visibility + faster payment_ in exchange for priority allocation and quality specs. Suppliers are recruited before customers see an empty shelf, never after.
+- Court 2–3 vetted Nigerian processors per variety (White Ijebu, Yellow) with the pitch: _forward demand visibility + faster payment_ in exchange for priority allocation and one strict quality spec. Suppliers are locked before launch, never after a stockout.
 
 ## 5. Retention & Expansion Loops
 
-- Pantry cycle confirm flow (5-taps-or-less) is the core retention surface; skipped cycles trigger win-back with substitution suggestions, not generic discounts.
-- B2B QBR-lite: monthly one-pager per store — "your top movers, your stockouts avoided, what to add." Data becomes the lock-in.
-- Group orders convert participants → individual subscribers (each group order captures N new addresses + baskets).
-- Seasonal moments (Ramadan, Easter, Christmas, Independence Days, wedding season) get dedicated catalogs and pre-order campaigns — these are also the demand engine's hardest tests, so pre-orders double as forecast insurance.
+- Cycle-confirm flow (5 taps or less) is the core retention surface; skips trigger cadence-adjustment win-backs (smaller plan, slower cadence), not generic discounts.
+- Pause/skip/cancel friction stays near zero — flexibility is the retention strategy for a single-product subscription.
+- Seasonal moments (Christmas, Ramadan, Independence Day, wedding season) get pre-order pushes and gifting prompts — also the demand engine's hardest tests.
+- Every subscriber is a warm lead for Phase 2 staples: "you trust our garri — here's our egusi" beats any cold launch.
 
 ## 6. Budget & Targets (first 12 months, directional)
 
-| Channel                         | Budget share | Primary KPI                  |
-| ------------------------------- | ------------ | ---------------------------- |
-| Founder-led B2B sales           | 25%          | 60 active B2B accounts       |
-| Community partnerships & events | 25%          | 800 subscribers sourced      |
-| Ambassadors/referrals           | 15%          | 25% of new B2C via referral  |
-| Paid social + search            | 20%          | CAC < $35 B2C blended        |
-| Content/SEO/brand               | 15%          | 30% organic share of signups |
+| Channel                         | Budget share | Primary KPI                         |
+| ------------------------------- | ------------ | ----------------------------------- |
+| Community partnerships & events | 35%          | 800 subscribers sourced             |
+| Ambassadors/referrals           | 20%          | 25% of new subscribers via referral |
+| Paid social + search            | 25%          | Blended CAC < $35                   |
+| Content/SEO/brand               | 20%          | 30% organic share of signups        |
 
-Guardrails: B2C CAC payback < 3 pantry cycles; B2B CAC payback < 6 weekly orders.
+Guardrails: CAC payback < 3 subscription cycles; LTV:CAC ≥ 3:1 by month 12; no acquisition promo that breaches the 30% GM floor.
 
 ## 7. Risks
 
-- **Channel conflict:** stores fearing disintermediation → lead B2B-first publicly; B2C delivery zones initially complement (suburbs) rather than cannibalize store trade areas; offer stores pickup-point economics.
-- **Trust:** cash-and-relationship category → in-person presence, community anchors, freshness guarantee, WhatsApp-native support.
-- **Price perception:** undercutting resellers while staying above race-to-bottom; publish transparent pricing (see PRICING_STRATEGY.md).
+- **Single-product objection ("I need more than garri"):** positioning leans into it — "one product, done properly"; Phase 2 staples are the answer, on our timeline, not a reason to dilute the MVP.
+- **Trust:** cash-and-relationship category → community anchors, quality guarantee, WhatsApp-native support, transparent all-in pricing.
+- **Price perception vs. resellers:** publish the premium story (sourcing, QC, shipping included) rather than racing to the bottom; see `PRICING_STRATEGY.md` and `MARGIN_AND_SHIPPING_MODEL.md`.
+- **Store relations:** stores may see a subscription as competition → consistent "complement now, wholesale partner in Phase 2" messaging + the waitlist as proof.

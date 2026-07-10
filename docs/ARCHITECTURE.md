@@ -1,8 +1,10 @@
-# Oja — Architecture
+# Oja Platform — Architecture (powering GAARII)
 
 **Version:** 0.1 (Draft) · **Last updated:** 2026-07-09
 
 System, data, and supply-chain architecture for the Oja platform. Diagrams are Mermaid (render on GitHub).
+
+> **MVP scope note:** the platform is deliberately product-agnostic (SKUs, catalog, plans, ledger generalize to any staple), but the GAARII MVP exposes **exactly two sellable SKUs — Premium White Garri (Ijebu) and Premium Yellow Garri — by subscription only, shipped nationwide as parcels**. B2B surfaces, multi-SKU catalog, and route-based delivery described below are platform capabilities scheduled for Phase 2+; do not build or expose them in the MVP.
 
 ---
 

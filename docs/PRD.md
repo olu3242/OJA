@@ -1,6 +1,6 @@
-# Oja — Product Requirements Document (PRD)
+# GAARII — Product Requirements Document (PRD)
 
-**Version:** 0.1 (Draft)
+**Version:** 0.2 (Draft) — repositioned to single-product subscription MVP
 **Owner:** Zenith AI Automation Agency
 **Last updated:** 2026-07-09
 
@@ -8,194 +8,204 @@
 
 ## 1. Overview
 
-Oja (Yoruba: _"market"_) is an AI-powered, just-in-time (JIT) supply chain platform for authentic African raw foods in North America — "the Sysco of African food." It connects farms, processors, and importers to grocery stores, restaurants, churches, and households, using demand forecasting to move the right SKUs, in the right quantities, at the right time.
+**GAARII is a single-product subscription company.** The MVP sells exactly one product — **Premium Nigerian Garri**, in White (Ijebu) and Yellow varieties — as a monthly, nationwide-U.S. subscription with pantry management built in (pause/skip/cancel anytime). It is **not** a Nigerian grocery marketplace, and the MVP deliberately excludes every other product category.
+
+GAARII is the consumer brand of the Oja platform (Yoruba: _"market"_). The underlying platform — catalog, inventory ledger, AI demand engine, JIT procurement — is built product-agnostic so later phases can expand into the full Nigerian pantry, but the MVP exposes only garri. The long-term "Sysco of African food" ambition survives as platform architecture, not as MVP scope.
+
+**Positioning:** _America's first premium Garri subscription._ GAARII does not compete to be the cheapest garri seller; it is the reliable monthly pantry-staple subscription.
 
 ### 1.1 Problem
 
-African food distribution in North America runs on guesswork:
+Getting good garri in America is harder than it should be:
 
-- **Stores** over-order slow movers and stock out of staples (garri, egusi, palm oil, stockfish) in the same week, because ordering is based on memory and gut feel.
-- **Importers** ship blind — container decisions are made months ahead with no downstream demand signal, so gluts and shortages alternate.
-- **Restaurants and caterers** have no reliable wholesale channel; they buy retail at retail prices when their supplier runs dry.
-- **Households** drive across town chasing fresh cassava or plantain that may or may not be in stock, or pay 2–3× markup on marketplace resellers.
-- **Spoilage** is severe: perishables (fresh produce, frozen fish, fresh peppers) rot in transit or on shelves because inventory isn't matched to consumption.
+- **The hunt** — households drive store to store chasing a bag that may or may not be in stock, then over-buy "just in case," moving the waste home.
+- **The markup** — online resellers charge steep markups for garri of unknown age and origin, and still run out.
+- **The quality lottery** — no controlled specification: one bag is perfect drinking garri, the next is sour, gritty, or stale.
+- **The chain is blind** — upstream, importers and processors ship on gut feel with zero downstream demand visibility, which is why availability and freshness are so erratic.
 
-The root cause is a missing **demand-intelligence layer**. Everyone in the chain is guessing.
+The root cause is a missing **demand-intelligence layer** — and the fastest way to prove one is with a single high-frequency staple, not a 150-SKU catalog.
 
 ### 1.2 Solution
 
-Oja is a B2B2C platform with three pillars:
+A subscription-first, single-SKU-family product with three pillars:
 
-1. **Demand signal capture** — customers log recurring consumption ("pantry profiles") rather than only placing one-off orders. Stores share sell-through; households set replenishment cadences.
-2. **AI demand engine** — forecasts SKU-level demand by region and by account weeks ahead, factoring seasonality (Ramadan, Christmas, Nigerian Independence Day, wedding season), community events, and price elasticity.
-3. **JIT logistics network** — pre-positions inventory at regional micro-warehouses (cross-docks) sized to forecast, then routes last-mile delivery to stores, restaurants, and homes on a predictable cadence.
+1. **Committed demand** — subscribers choose a Garri plan (variety, grind, quantity tier, monthly cadence). Pause/skip/swap/cancel actions keep the signal honest and are captured as demand events.
+2. **AI demand engine** — forecasts garri consumption per household and region weeks ahead, including seasonal/celebration spikes (Christmas, Ramadan, Nigerian Independence Day, wedding season).
+3. **JIT procurement & fulfillment** — inventory from vetted Nigerian processors is pre-positioned to forecast, kept fresh (never warehouse-stale), and shipped monthly as parcels nationwide.
 
 ### 1.3 Goals (12 months post-MVP)
 
-| Goal                              | Metric                              | Target                                  |
-| --------------------------------- | ----------------------------------- | --------------------------------------- |
-| Prove demand-signal model         | Accounts with active pantry profile | 2,000 households, 60 stores/restaurants |
-| Reduce stockouts for B2B accounts | Stockout rate on top-20 SKUs        | < 5% (baseline est. 25–40%)             |
-| Reduce waste                      | Spoilage as % of perishable GMV     | < 8%                                    |
-| Forecast quality                  | WAPE on 4-week SKU-region forecast  | < 25%                                   |
-| Unit economics                    | Contribution margin per order       | Positive by month 9                     |
+| Goal                      | Metric                                          | Target                      |
+| ------------------------- | ----------------------------------------------- | --------------------------- |
+| Prove subscription demand | Active paying subscribers                       | 1,500 households            |
+| Retention                 | Month-3 subscriber retention                    | ≥ 75%                       |
+| Reliability               | On-time delivery rate                           | ≥ 97%                       |
+| Forecast quality          | WAPE on 4-week regional garri forecast          | < 20%                       |
+| Freshness/waste           | Spoilage + write-off as % of COGS               | < 3% (shelf-stable product) |
+| Unit economics            | Gross margin per shipped order (after shipping) | ≥ 30% floor, 34–40% target  |
 
-### 1.4 Non-goals (v1)
+### 1.4 Non-goals (MVP)
 
+- **No products other than Premium Garri.** Egusi, beans, rice, yam flour (elubo), fufu, plantain flour, palm oil are Phase 2 — planned, not built.
+- **No marketplace.** GAARII curates, owns, and sells one product; third parties list nothing.
+- **No B2B/wholesale channel in the MVP.** Stores and restaurants join a wholesale waitlist; the channel opens in a later phase.
+- **No one-off retail ordering.** Subscription only.
 - No cooked/prepared food or meal kits.
-- No international consumer shipping (US + Canada only).
-- No open marketplace where third parties list arbitrary products — Oja curates and owns the catalog.
-- No in-house farming; Oja is the distribution + intelligence layer.
+- No international shipping (U.S. only for MVP; Canada later).
+- No in-house farming; GAARII is the sourcing + intelligence + fulfillment layer.
 
 ---
 
 ## 2. Users & Personas
 
-### P1 — Store Owner ("Mama Ngozi", African grocery, Houston)
+### P1 — Household Subscriber ("Amara", nurse, Atlanta suburbs) — **the MVP persona**
 
-Runs a 2,500 sq ft store. Orders weekly from 3–4 importers by phone/WhatsApp. Pain: stockouts of staples, dead stock of misjudged items, no data. Needs: reliable weekly replenishment, wholesale pricing, sell-through insights.
+Cooks Nigerian food for a family of five, shops monthly at an African store 40 minutes away. Pain: distance, stockouts, price opacity, inconsistent quality. Needs: premium garri that just arrives monthly, flexible control (pause/skip/swap), fair all-in pricing.
 
-### P2 — Restaurant / Caterer ("Kwame", Ghanaian restaurant, Toronto)
+### P2 — Single/Student ("Tunde", grad student, Houston)
 
-Needs consistent quality and quantity of raw inputs (goat, fufu flours, palm oil, peppers). Pain: supplier inconsistency forces retail-price emergency buys. Needs: standing orders, quality grading, invoicing/net terms.
+Cooks for one, low volume, price-aware but convenience-driven. Needs: small plan (3–5 lb), easy skip when traveling.
 
-### P3 — Household Subscriber ("Amara", nurse, Atlanta suburbs)
+### P3 — Bulk Household / Community Buyer ("Deacon Sam", DMV area)
 
-Cooks Nigerian food for a family of five, shops monthly at an African store 40 minutes away. Pain: distance, stockouts, price opacity. Needs: pantry subscription with flexible cadence, freshness guarantee, fair prices.
+Large family or shared household with high garri throughput; occasionally buys for church events. Needs: Stock-Up plan (20–25 lb), best per-lb value.
 
-### P4 — Community Buyer ("Deacon Sam", church in DMV area)
+### P4 — Supplier ("Adebayo Exports", Lagos processor) — supply side
 
-Buys in bulk for events and a community co-op buying club. Needs: group orders, bulk pricing, scheduled delivery windows.
+Ships garri to North America. Pain: no visibility into demand; payment delays. Needs: forward demand commitments, one clear quality spec, predictable payment.
 
-### P5 — Supplier ("Adebayo Exports", Lagos processor)
+### Deferred personas (Phase 2+)
 
-Ships garri, fufu flours, dried fish. Pain: no visibility into North American demand; payment delays. Needs: forward demand commitments, clear specs, predictable payment.
+- **Store owner / restaurant** — wholesale supply once the household loop is proven; collected on a wholesale waitlist during MVP.
 
 ### Internal personas
 
-- **Ops/Warehouse associate** — receives, quality-checks, picks, packs at micro-warehouse.
-- **Admin/Category manager** — manages catalog, pricing, supplier POs, forecast overrides.
+- **Ops/Warehouse associate** — receives, quality-checks, picks, packs.
+- **Admin/Category manager** — manages the garri SKUs, pricing, supplier POs, forecast overrides.
 
 ---
 
 ## 3. Product Scope
 
-### 3.1 MVP (Phase 1, ~90 days) — "Single-city pilot"
+### 3.1 MVP (Phase 1, ~90 days) — "Garri only, done properly"
 
-One metro (recommended: Houston or Atlanta), one micro-warehouse (3PL or leased cross-dock), ~150-SKU curated catalog.
+One fulfillment node (3PL), **two sellable SKUs** — Premium White Garri (Ijebu) and Premium Yellow Garri (grind as an option) — nationwide U.S. parcel delivery, subscription only.
 
-**F1. Catalog & Storefront**
+**F1. Product & Storefront**
 
-- Curated SKU catalog with African-food-specific taxonomy (grains & flours, tubers, oils, dried fish & proteins, spices & seasonings, fresh produce, frozen).
-- SKU attributes: origin country, brand, unit size, wholesale/retail price, perishability class, halal flag, substitutions.
-- Search + browse; bilingual-friendly naming (English + common local names, e.g. "Egusi (melon seed)").
+- Single-product storefront: variety (White Ijebu / Yellow), grind (coarse/fine), plan size.
+- SKU attributes retained from the platform schema: origin, unit size, perishability class, halal flag, compliance/labeling fields.
+- Bilingual-friendly naming (e.g., "Garri (Gari, Cassava Grits)").
 
-**F2. Ordering**
+**F2. Subscription plans (the only way to buy)**
 
-- B2C: cart checkout (Stripe), delivery-window selection.
-- B2B: wholesale price tier, minimum order value, PO reference, net-15 terms (manual approval in MVP).
-- Group/community orders: shareable order links that aggregate into one delivery (Phase 2 if time-constrained).
+- **Starter** — 3–5 lb of Premium Garri / month ($24–$34, shipped) — singles/couples.
+- **Family** — 10–15 lb / month or every 3 weeks ($49–$79, shipped) — hero plan.
+- **Stock-Up** — 20–25 lb / monthly or bi-weekly ($89–$119, shipped) — bulk households.
+- The only difference between plans is quantity. All-in pricing (product, packaging, shipping, payment fees, spoilage allowance, margin) per `PRICING_STRATEGY.md` / `MARGIN_AND_SHIPPING_MODEL.md`.
+- Stripe billing; 10–15% first-delivery discount only (never permanent).
 
-**F3. Pantry Profiles (demand signal — the moat)**
+**F3. Pantry management (demand signal — the moat)**
 
-- Household: select staples + consumption cadence ("5 kg garri / month"); generates a proposed recurring basket the user confirms/edits before each cycle (subscribe-with-review, not blind auto-ship).
-- Store/restaurant: standing weekly order template + optional sell-through entry (manual in MVP; POS integration later).
-- Every skip/edit/add is captured as a labeled demand signal.
+- Cycle-confirm flow before each delivery: confirm / edit (variety, grind, size) / skip — 5 taps or less.
+- Pause, skip, swap, cancel anytime; every action captured as a labeled demand event.
 
 **F4. Demand Engine v0**
 
-- MVP is heuristic + statistical, not deep ML: moving averages per SKU-region blended with pantry-profile commitments and manual category-manager adjustments.
-- Output: 4-week rolling SKU-level demand forecast per warehouse; reorder-point suggestions for procurement.
+- Heuristic + statistical: moving averages per region blended with active-subscription commitments and manual adjustments.
+- Output: 4-week rolling garri demand forecast per fulfillment node; reorder-point suggestions.
 - All forecasts logged vs. actuals from day one to train v1 models.
 
 **F5. Procurement & Inventory**
 
-- Supplier records, purchase orders, expected-arrival tracking.
-- Inventory ledger: receive → QC → putaway → pick → ship; lot/expiry tracking for perishables; FEFO (first-expired-first-out) picking.
+- Supplier records, purchase orders, expected-arrival tracking for the two garri SKUs.
+- Inventory ledger: receive → QC → putaway → pick → ship; lot tracking with FEFO picking (freshness discipline even for a shelf-stable product).
 
 **F6. Fulfillment**
 
-- Pick lists and packing flows (mobile-friendly web app for warehouse).
-- Delivery: route batching by zone + delivery day; third-party last-mile (e.g., local courier / Onfleet-style routing) in MVP.
-- Order tracking + SMS/email notifications.
+- Pick/pack flows (mobile-friendly warehouse app), parcel-carrier shipping (nationwide), tracking + SMS/email notifications.
 
 **F7. Admin Console**
 
-- Catalog, pricing, customers, orders, inventory, forecasts (with override), supplier POs.
+- SKUs, plan pricing, subscribers, orders, inventory, forecasts (with override), supplier POs.
 
-### 3.2 Phase 2 (months 4–9)
+### 3.2 Phase 2 — Nigerian pantry staples (post-garri proof)
 
-- ML forecast v1 (gradient-boosted / hierarchical time-series with seasonality + events calendar).
-- POS/sell-through integrations for stores (Square, Clover).
-- Second metro + inter-warehouse rebalancing.
-- Group buying, referral loops, church/association partnerships productized.
+- Add staples one at a time, each with its own sourcing spec and quality bar: **egusi, beans, rice, yam flour (elubo), fufu, plantain flour, palm oil**.
+- Multi-SKU subscription baskets; substitution preferences.
+- **B2B wholesale channel opens** (stores/restaurants from the waitlist; standing orders, wholesale tiers).
+- ML forecast v1 (hierarchical time-series with events calendar).
 - Supplier portal: forecast sharing, forward commitments.
 
-### 3.3 Phase 3 (months 10–18)
+### 3.3 Phase 3 — AI-powered pantry management
 
-- Import-level planning: container consolidation recommendations from aggregate forecast.
-- Dynamic pricing & markdown automation for expiry risk.
-- Cold-chain expansion; broader fresh/frozen assortment.
-- Canada launch (Toronto) with customs/compliance workflow.
+- **Complete Nigerian pantry** assortment.
+- **AI Pantry Assistant** — conversational management of the household's staple pantry.
+- **Smart auto-replenishment** — quantities and cadence adjust themselves from observed consumption.
+- **Family consumption forecasting** — per-household predictive modeling.
+- **Recipe recommendations** tied to pantry contents.
+- **Heritage gifting** — send a pantry subscription to family, students, new parents.
 
 ---
 
 ## 4. Functional Requirements (MVP detail)
 
-| ID    | Requirement                                                                                                                                          | Priority |
-| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| FR-1  | Customer can create account as Household, Store, Restaurant, or Community buyer; B2B requires business verification before wholesale pricing unlocks | P0       |
-| FR-2  | Customer can browse/search catalog with local-name synonyms                                                                                          | P0       |
-| FR-3  | Customer can place one-off order with Stripe payment; B2B can request net terms                                                                      | P0       |
-| FR-4  | Customer can create a pantry profile and receive a pre-filled recurring basket for confirmation each cycle                                           | P0       |
-| FR-5  | System generates 4-week SKU-region forecast, refreshed nightly                                                                                       | P0       |
-| FR-6  | Admin can create supplier POs from reorder suggestions and receive inventory against them                                                            | P0       |
-| FR-7  | Warehouse app supports receive/QC/pick/pack with lot + expiry and FEFO enforcement                                                                   | P0       |
-| FR-8  | Orders are batched into delivery routes by zone and window; customers get status notifications                                                       | P0       |
-| FR-9  | Admin can override any forecast/reorder point with a reason code (overrides logged for model training)                                               | P1       |
-| FR-10 | Store accounts can log weekly sell-through per SKU in < 3 minutes                                                                                    | P1       |
-| FR-11 | Substitution flow: if a SKU is short, customer's pre-approved substitutes apply automatically                                                        | P1       |
-| FR-12 | Group order links aggregate multiple payers into one fulfillment                                                                                     | P2       |
+| ID    | Requirement                                                                                                                        | Priority |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| FR-1  | Visitor can subscribe to a Garri plan (variety, grind, plan size, cadence) with Stripe billing                                     | P0       |
+| FR-2  | Subscriber can pause, skip, swap variant/grind/size, or cancel anytime from their account                                          | P0       |
+| FR-3  | Cycle-confirm flow runs before each delivery; confirm/edit/skip captured as demand events                                          | P0       |
+| FR-4  | System generates 4-week regional garri forecast, refreshed nightly, from subscriptions + history                                   | P0       |
+| FR-5  | Admin can create supplier POs from reorder suggestions and receive inventory against them                                          | P0       |
+| FR-6  | Warehouse app supports receive/QC/pick/pack with lot tracking and FEFO enforcement                                                 | P0       |
+| FR-7  | Orders ship via parcel carrier with tracking; subscribers get status notifications                                                 | P0       |
+| FR-8  | Admin can override any forecast/reorder point with a reason code (overrides logged)                                                | P1       |
+| FR-9  | First-delivery discount applies once; recurring price never silently discounted                                                    | P1       |
+| FR-10 | Zone-economics guardrail at signup: expensive zones get surcharge/slower cadence/higher minimum per `MARGIN_AND_SHIPPING_MODEL.md` | P1       |
+| FR-11 | Wholesale-interest waitlist form for stores/restaurants (no wholesale pricing exposed in MVP)                                      | P2       |
+| FR-12 | Referral credit per successful referral, capped, funded from CAC budget                                                            | P2       |
 
 ---
 
 ## 5. Non-functional Requirements
 
-- **Trust & food safety:** lot traceability end-to-end; recall query ("which orders contained lot X") in < 5 minutes; FDA/CFIA labeling compliance fields on every SKU.
-- **Reliability:** 99.5% storefront uptime; order capture must degrade gracefully (queue writes) if downstream services fail.
+- **Trust & food safety:** lot traceability end-to-end; recall query ("which orders contained lot X") in < 5 minutes; FDA labeling compliance fields on both SKUs.
+- **Reliability:** 99.5% storefront uptime; subscription billing and order capture degrade gracefully (queue writes) if downstream services fail.
 - **Performance:** storefront p95 < 1.5 s; forecast batch completes nightly within a 2-hour window.
 - **Security & privacy:** PCI via Stripe (no raw card data), role-based access (customer / warehouse / admin), PII encrypted at rest.
-- **Mobile-first:** all customer and warehouse surfaces usable on a phone; warehouse flows operable with one hand / gloves (large tap targets, barcode scan via camera).
-- **Data foundation:** every demand-relevant event (order, skip, edit, substitution, stockout view) captured in an analytics event stream from day one.
+- **Mobile-first:** subscription management and warehouse surfaces fully usable on a phone.
+- **Data foundation:** every demand-relevant event (confirm, skip, swap, pause, cancel, delivery outcome) captured in an append-only event stream from day one.
+- **Extensibility:** schema and services stay product-agnostic (SKU/catalog/plan abstractions) so Phase 2 staples are added by seeding data, not redesigning.
 
 ---
 
 ## 6. Key Metrics
 
-- **North star:** weekly fulfilled demand (kg + GMV) served without stockout or spoilage.
-- Forecast WAPE (SKU-region, 4-week horizon); % of demand covered by pantry profiles / standing orders (target 60%+ — this is what makes JIT work); stockout rate on top-20 SKUs; spoilage %; subscriber cycle retention (target 85%+ confirm rate); B2B account 4-week reorder rate; contribution margin per order.
+- **North star:** active subscriptions delivered on time without stockout or staleness.
+- Month-1/3/6 retention; cycle-confirm rate (target 85%+); pause/skip vs. cancel ratio; forecast WAPE; on-time delivery %; gross margin after shipping per order (≥ 30% floor); CAC payback in cycles; referral share of new subscribers.
 
 ---
 
 ## 7. Risks & Mitigations
 
-| Risk                                          | Mitigation                                                                                                                                                                  |
-| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Cold-start: no history to forecast from       | Pantry profiles + standing orders are _committed_ demand, not predicted; start catalog with shelf-stable staples (garri, flours, oils, dried fish) where mistakes are cheap |
-| Supply variability (import delays, customs)   | Multi-supplier per top SKU; safety stock policies by perishability class; substitution flows                                                                                |
-| Thin margins on staple goods                  | JIT reduces carrying + spoilage cost; blend margin with premium/fresh SKUs; B2B volume anchors                                                                              |
-| Trust — communities buy from people they know | Launch through churches, associations, and existing store partnerships (stores as customers _and_ pickup points), not against them                                          |
-| Regulatory (FDA import, state food handling)  | Licensed 3PL/commissary for MVP; compliance fields in catalog schema from day one                                                                                           |
+| Risk                                          | Mitigation                                                                                                            |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Single-product concentration                  | Deliberate: focus is the strategy. Phase 2 staples are pre-planned; the platform is already multi-SKU capable         |
+| Shipping cost erodes margin (heavy product)   | Margin-protection rules in `MARGIN_AND_SHIPPING_MODEL.md`: 30% GM floor, zone guardrails, Family as hero plan         |
+| Supply variability (import delays, customs)   | Two vetted suppliers per variety; safety stock (shelf-stable product makes this cheap); one strict quality spec       |
+| Subscription fatigue / churn                  | Pause/skip/swap friction kept near zero; win-back via cadence adjustment, not discounts                               |
+| Trust — communities buy from people they know | Diaspora-community launch (churches, associations, WhatsApp), freshness/quality guarantee, transparent all-in pricing |
+| Regulatory (FDA import, labeling)             | Licensed 3PL; compliance fields on both SKUs from day one                                                             |
 
 ---
 
 ## 8. Open Questions
 
-1. Launch metro: Houston vs. Atlanta vs. DMV (largest African diaspora density vs. logistics cost)?
-2. MVP last-mile: own vans vs. courier marketplace?
-3. Net-terms underwriting for B2B — manual only, or partner (e.g., B2B BNPL) at MVP?
-4. Do stores get a white-label storefront (stores as micro-fulfillment partners) in Phase 2 or 3?
+1. Grind (coarse/fine) as SKU attribute vs. separate SKUs — decide before seed data grows.
+2. 3PL location for parcel economics: central (Dallas/Memphis) vs. East Coast diaspora density?
+3. Exact price points within the published ranges — pending final landed-cost + carrier quotes.
+4. When does Phase 2 unlock? Proposed graduation criteria: 1,000+ active subscribers, ≥ 75% month-3 retention, GM ≥ 34% for two consecutive months.
 
 ---
 
-_Companion docs: [GTM.md](./GTM.md) · [PRODUCT_STRATEGY.md](./PRODUCT_STRATEGY.md) · [PRICING_STRATEGY.md](./PRICING_STRATEGY.md) · [IMPLEMENTATION_STRATEGY.md](./IMPLEMENTATION_STRATEGY.md) · [ARCHITECTURE.md](./ARCHITECTURE.md)_
+_Companion docs: [GTM.md](./GTM.md) · [PRODUCT_STRATEGY.md](./PRODUCT_STRATEGY.md) · [PRICING_STRATEGY.md](./PRICING_STRATEGY.md) · [MARGIN_AND_SHIPPING_MODEL.md](./MARGIN_AND_SHIPPING_MODEL.md) · [IMPLEMENTATION_STRATEGY.md](./IMPLEMENTATION_STRATEGY.md) · [ARCHITECTURE.md](./ARCHITECTURE.md)_

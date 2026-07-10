@@ -1,6 +1,8 @@
-# Oja — Execution Plan (Phased Build Tasks)
+# GAARII — Execution Plan (Phased Build Tasks)
 
 Work top-to-bottom within the current phase. Check tasks off (`[x]`) in the same commit that completes them. Phase gates map to `../docs/IMPLEMENTATION_STRATEGY.md` (G1/G2/G3). Scope authority: `../docs/PRD.md` §3–4. Invariants: `CLAUDE.md`.
+
+> **Product direction update (2026-07-09):** GAARII MVP = **Premium Nigerian Garri only** (White/Ijebu + Yellow), **subscription only**, nationwide U.S. parcel delivery. Task wording below predating this pivot is superseded where it conflicts: no multi-SKU catalog, no B2B wholesale surfaces (waitlist form only), no one-off checkout. Schema stays extensible; storefront exposes one product.
 
 ---
 
@@ -11,15 +13,15 @@ Work top-to-bottom within the current phase. Check tasks off (`[x]`) in the same
 - [x] 0.3 Schema v1: `accounts` (+ roles enum: household/store/restaurant/community/warehouse/admin), `skus` (origin, local-name synonyms, unit size, perishability class, halal flag, compliance fields), `price_books` (retail/member/wholesale)
 - [ ] 0.4 Schema v1 (cont.): `orders`/`order_lines`, `pantry_profiles`/`pantry_items`/`cycles`, `suppliers`/`purchase_orders`/`po_lines`, `warehouses`/`lots`/`inventory_txns`, `forecasts`, `demand_events` (append-only)
 - [ ] 0.5 tRPC setup with role-gated context; auth (email OTP or NextAuth credentials to start) + B2B verification flag
-- [ ] 0.6 Seed script: 1 warehouse, ~150-SKU launch catalog (grains & flours, tubers, oils, dried fish & proteins, spices, fresh, frozen) with realistic local-name pairs, 6 suppliers, price books
+- [x] 0.6 Seed script: garri-only seed — exactly 2 SKUs (Premium White Garri / Ijebu, Premium Yellow Garri), no other products (completed early, 2026-07-09, as part of the single-product repositioning; warehouse/supplier/price-book seed rows land with tasks 0.4+ when those models exist)
 - [ ] 0.7 Event emission helper (`emitDemandEvent`) + Vitest harness + Playwright skeleton; CI via GitHub Actions (lint, typecheck, test)
 - [ ] 0.8 Route groups + shells for the three surfaces: `(customer)`, `(warehouse)`, `(admin)` with role guards and mobile-first layout primitives
 
 ## Phase 1a — Order-to-Delivery Loop (Days 16–45 → Gate G1)
 
-- [ ] 1.1 Catalog browse/search with local-name synonym matching; SKU detail page (origin, halal, unit sizes, substitutes)
-- [ ] 1.2 Cart + checkout (Stripe test mode), delivery-window selection by zone; order confirmation + status page
-- [ ] 1.3 B2B: wholesale price tier rendering post-verification, MOV enforcement ($250), PO-reference field, manual net-terms approval queue in admin
+- [ ] 1.1 Single-product storefront: Premium Garri page — variety (White Ijebu / Yellow), grind, plan size selection (no catalog browse/marketplace UI)
+- [ ] 1.2 Subscription checkout (Stripe subscriptions, test mode) with zone-economics guardrail; confirmation + subscription status page
+- [ ] 1.3 Wholesale-interest waitlist form for stores/restaurants (no wholesale pricing or B2B surfaces in MVP — channel opens Phase 2)
 - [ ] 1.4 Procurement: supplier CRUD, PO creation, expected-arrival tracking
 - [ ] 1.5 Warehouse receiving: receive-against-PO flow with lot + expiry capture and QC pass/fail → `inventory_txns`
 - [ ] 1.6 Pick/pack: wave generation from open orders, FEFO-enforced pick lists, pack confirmation, camera barcode scan
@@ -30,10 +32,10 @@ Work top-to-bottom within the current phase. Check tasks off (`[x]`) in the same
 
 ## Phase 1b — Pantry & Demand Engine v0 (Days 46–70 → Gate G2)
 
-- [ ] 2.1 Pantry profile builder: staple picker + cadence; generates next `cycle` with proposed basket
+- [ ] 2.1 Pantry management: plan builder (variety/grind/size/cadence) generates next `cycle`; pause/skip/swap/cancel from account
 - [ ] 2.2 Cycle-confirm flow (the 5-tap review): confirm / edit / skip; every action emits `demand_events`; confirmed cycle → order
-- [ ] 2.3 Substitution preferences per pantry item; auto-substitution on shortage with event capture
-- [ ] 2.4 B2B standing-order templates (weekly cadence) + sell-through quick-entry form (<3 min for 20 SKUs)
+- [ ] 2.3 Variant-swap preferences (White↔Yellow, grind) with event capture on shortage
+- [ ] 2.4 ~~B2B standing-order templates~~ deferred to Phase 2 (wholesale channel not in MVP)
 - [ ] 2.5 Forecast v0 nightly job: trailing moving average × seasonal index + committed-demand floor, per SKU × warehouse, 4-week horizon; versioned `forecasts` inserts
 - [ ] 2.6 Reorder suggestions in admin (forecast − on-hand − inbound vs. reorder point by perishability class) → one-click PO draft
 - [ ] 2.7 Forecast override UI with reason codes; forecast-vs-actual logging + WAPE metric

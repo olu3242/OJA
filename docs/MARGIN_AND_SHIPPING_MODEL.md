@@ -1,8 +1,8 @@
-# Oja — Margin and Shipping Protection Model
+# GAARII — Margin and Shipping Protection Model
 
 ## Purpose
 
-This document protects Oja from launching a Garri subscription at a price that looks attractive but loses money after shipping, packaging, payment processing, and customer acquisition.
+This document protects GAARII from launching a Garri subscription at a price that looks attractive but loses money after shipping, packaging, payment processing, and customer acquisition.
 
 ## Market Anchor
 
@@ -14,7 +14,7 @@ Observed U.S. online garri pricing indicates roughly:
 | 10 lb     |       ~$25.99 |        ~$2.60/lb |
 | 20 lb     |       ~$49.99 |        ~$2.50/lb |
 
-Oja should not compete only on raw price/lb. The subscription is selling availability, convenience, predictability, and authentic supply — not commodity cassava alone.
+GAARII should not compete as the cheapest garri seller — it is the reliable monthly pantry-staple subscription. The subscription is selling availability, convenience, predictability, and authentic supply — not commodity cassava alone.
 
 ## Shipping Reality
 

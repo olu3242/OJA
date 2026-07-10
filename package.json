@@ -2,18 +2,18 @@
   "name": "oja-platform",
   "version": "0.1.0",
   "private": true,
-  "description": "Oja — AI-powered just-in-time supply chain platform for authentic African raw foods. The Sysco of African food.",
+  "description": "GAARII — America's first premium Garri subscription, built on the Oja platform (AI-powered just-in-time supply chain). Single-product MVP: Premium Nigerian Garri, delivered monthly, nationwide U.S.",
   "author": "Zenith AI Automation Agency",
   "license": "UNLICENSED",
   "homepage": "https://oja.market",
   "keywords": [
-    "african-food",
+    "garri",
+    "nigerian-food",
+    "subscription",
+    "pantry-staples",
     "supply-chain",
     "jit-logistics",
-    "ai-demand-forecasting",
-    "food-distribution",
-    "marketplace",
-    "b2b2c"
+    "ai-demand-forecasting"
   ],
   "scripts": {
     "dev": "next dev",
@@ -54,6 +54,7 @@
     "prettier": "^3",
     "prisma": "^7.8.0",
     "tailwindcss": "^4",
+    "tsx": "^4.23.0",
     "typescript": "^5"
   },
   "future_dependencies_notes": "App shell scaffolded (Next.js App Router + Tailwind). Still to add per docs/IMPLEMENTATION_STRATEGY.md as tasks land: prisma, trpc, zod, @stripe/stripe-js, vitest, playwright."

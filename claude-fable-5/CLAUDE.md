@@ -1,6 +1,8 @@
-# CLAUDE.md — Agent Brief for Building Oja
+# CLAUDE.md — Agent Brief for Building GAARII (on the Oja platform)
 
-You are building **Oja**, an AI-powered, just-in-time supply chain platform for authentic African raw foods ("the Sysco of African food"). This file is your standing brief for every session in this repo. Read it fully before writing code.
+You are building **GAARII — America's first premium Garri subscription**, on the Oja platform (an AI-powered, just-in-time supply chain). This file is your standing brief for every session in this repo. Read it fully before writing code.
+
+> **Product direction (2026-07-09):** GAARII is **not** a Nigerian grocery marketplace. It is a **single-product subscription company**. The MVP sells only Premium Nigerian Garri (White/Ijebu + Yellow), subscription-only, nationwide U.S., monthly deliveries, pause/skip/cancel anytime. Keep the schema and services product-agnostic (extensible to Phase 2 staples), but expose exactly one product in every customer-facing surface. Seed data contains only the two garri SKUs.
 
 ## Start here, in order
 
@@ -13,9 +15,9 @@ You are building **Oja**, an AI-powered, just-in-time supply chain platform for 
    - `IMPLEMENTATION_STRATEGY.md` — stack decisions and 90-day gates
    - `PRODUCT_STRATEGY.md`, `PRICING_STRATEGY.md`, `GTM.md` — business context for judgment calls
 
-## What Oja is (30-second version)
+## What GAARII is (30-second version)
 
-Customers (households, stores, restaurants, community groups) register **committed recurring demand** — pantry profiles and standing orders — instead of only one-off purchases. A **demand engine** turns that plus order history into SKU-level regional forecasts. Procurement and micro-warehouse fulfillment run **just-in-time** against those forecasts. The demand data is the moat; the storefront and logistics are how it's earned.
+Households subscribe to a **Garri plan** — variety (White Ijebu / Yellow), grind, quantity tier (Starter 3–5 lb / Family 10–15 lb / Stock-Up 20–25 lb), monthly cadence — with pantry management built in (pause/skip/swap/cancel anytime, cycle-confirm before each delivery). That subscription base is **committed recurring demand**; a **demand engine** turns it plus history into regional forecasts, and procurement + 3PL parcel fulfillment run **just-in-time** against them. The demand data is the moat; the subscription and logistics are how it's earned. Roadmap: Phase 1 garri only → Phase 2 Nigerian pantry staples (egusi, beans, rice, elubo, fufu, plantain flour, palm oil) + B2B wholesale → Phase 3 AI-powered pantry management.
 
 ## Stack (do not deviate without logging a decision)
 
@@ -43,7 +45,8 @@ Customers (households, stores, restaurants, community groups) register **committ
 - **When the plan is ambiguous**, prefer the PRD; if still ambiguous, make the smallest reasonable choice and record it in `PROGRESS_LOG.md` under "Decisions".
 - **Do not gold-plate.** Phase 1 is P0 scope only (PRD §4). Resist building Phase 2 features early — the plan sequences them deliberately.
 - **Mobile-first** for customer and warehouse surfaces; warehouse flows need large tap targets and camera barcode scanning.
-- African-food domain care: SKU names always pair English + local names (e.g., "Egusi (melon seed)"); support halal flags, origin country, and perishability class as first-class catalog fields.
+- Domain care: SKU names always pair English + local names (e.g., "Garri (Gari, Cassava Grits)"); support halal flags, origin country, and perishability class as first-class catalog fields.
+- **Single-product discipline:** customer-facing surfaces show only Premium Garri. Do not seed or expose other SKUs, category browsing, or marketplace UI — the schema supports them; the MVP hides them.
 
 ## Repo layout (target once app scaffold lands)
 
