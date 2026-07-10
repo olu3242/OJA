@@ -52,7 +52,7 @@ Work top-to-bottom within the current phase. Check tasks off (`[x]`) in the same
 - [ ] 3.4 Load/failure hardening: durable checkout write queue, idempotent courier sync, Sentry wiring
 - [x] 3.5 Ops runbooks in `/docs/runbooks/`: receiving day, delivery day, recall drill, refund handling
 - [ ] 3.6 Accessibility + mobile pass on customer and warehouse surfaces
-- [ ] 3.7 **Gate G3 checklist**: seed-to-pilot data migration plan, throttled zone rollout switch, on-call notes
+- [x] 3.7 **Gate G3 checklist**: seed-to-pilot data migration plan, throttled zone rollout switch, on-call notes
 
 ## Phase 2 — Engine & Scale (Months 4–9) _(do not start before G3)_
 
