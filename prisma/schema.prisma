@@ -45,6 +45,9 @@ model Account {
   // Fulfillment context
   deliveryZone String?
 
+  subscriptions Subscription[]
+  orders        Order[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -108,6 +111,10 @@ model Sku {
   updatedAt DateTime @updatedAt
 
   priceBookEntries PriceBookEntry[]
+  poLines          PoLine[]
+  lots             Lot[]
+  orderLines       OrderLine[]
+  forecasts        Forecast[]
 
   @@index([category])
   @@index([active])
@@ -155,4 +162,378 @@ model PriceBookEntry {
 
   @@unique([priceBookId, skuId, minQty])
   @@map("price_book_entries")
+}
+
+// ---------- warehouses & procurement ----------
+
+model Warehouse {
+  id     String @id @default(cuid())
+  code   String @unique
+  name   String
+  region String
+
+  lots           Lot[]
+  purchaseOrders PurchaseOrder[]
+  forecasts      Forecast[]
+
+  createdAt DateTime @default(now())
+
+  @@map("warehouses")
+}
+
+model Supplier {
+  id           String  @id @default(cuid())
+  name         String
+  country      String // ISO 3166-1 alpha-2
+  contactEmail String?
+  fastPay      Boolean @default(false)
+
+  purchaseOrders PurchaseOrder[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("suppliers")
+}
+
+enum PoStatus {
+  DRAFT
+  PLACED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
+model PurchaseOrder {
+  id          String    @id @default(cuid())
+  supplierId  String
+  warehouseId String
+  status      PoStatus  @default(DRAFT)
+  expectedAt  DateTime?
+  placedAt    DateTime?
+
+  supplier  Supplier  @relation(fields: [supplierId], references: [id])
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+  lines     PoLine[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@map("purchase_orders")
+}
+
+model PoLine {
+  id            String @id @default(cuid())
+  poId          String
+  skuId         String
+  qtyUnits      Int
+  unitCostCents Int
+  receivedUnits Int    @default(0)
+
+  po   PurchaseOrder @relation(fields: [poId], references: [id], onDelete: Cascade)
+  sku  Sku           @relation(fields: [skuId], references: [id])
+  lots Lot[]
+
+  @@map("po_lines")
+}
+
+// ---------- inventory ledger (append-only) ----------
+
+model Lot {
+  id          String    @id @default(cuid())
+  skuId       String
+  warehouseId String
+  poLineId    String?
+  lotCode     String    @unique
+  expiresAt   DateTime?
+  receivedAt  DateTime  @default(now())
+
+  sku       Sku            @relation(fields: [skuId], references: [id])
+  warehouse Warehouse      @relation(fields: [warehouseId], references: [id])
+  poLine    PoLine?        @relation(fields: [poLineId], references: [id])
+  txns      InventoryTxn[]
+
+  @@index([skuId, warehouseId, expiresAt])
+  @@map("lots")
+}
+
+enum TxnType {
+  RECEIVE
+  QC_FAIL
+  PICK
+  SHIP
+  ADJUST
+  TRANSFER_OUT
+  TRANSFER_IN
+}
+
+model InventoryTxn {
+  id          String  @id @default(cuid())
+  lotId       String
+  type        TxnType
+  qtyUnits    Int // signed: + inbound, - outbound
+  orderLineId String?
+  reason      String?
+
+  lot       Lot        @relation(fields: [lotId], references: [id])
+  orderLine OrderLine? @relation(fields: [orderLineId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([lotId])
+  @@index([orderLineId])
+  @@map("inventory_txns")
+}
+
+// ---------- subscriptions & cycles (PRD v0.2 Garri plans) ----------
+
+enum PlanTier {
+  STARTER
+  FAMILY
+  STOCK_UP
+}
+
+enum GarriVariety {
+  WHITE_IJEBU
+  YELLOW
+}
+
+enum GarriGrind {
+  COARSE
+  FINE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+}
+
+model Subscription {
+  id          String             @id @default(cuid())
+  accountId   String
+  plan        PlanTier
+  variety     GarriVariety
+  grind       GarriGrind         @default(COARSE)
+  cadenceDays Int                @default(30)
+  qtyLbs      Int
+  priceCents  Int
+  status      SubscriptionStatus @default(ACTIVE)
+  pausedAt    DateTime?
+  cancelledAt DateTime?
+
+  account Account @relation(fields: [accountId], references: [id])
+  cycles  Cycle[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([accountId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+enum CycleStatus {
+  UPCOMING
+  CONFIRMED
+  SKIPPED
+  ORDERED
+  FULFILLED
+}
+
+model Cycle {
+  id             String      @id @default(cuid())
+  subscriptionId String
+  scheduledFor   DateTime
+  status         CycleStatus @default(UPCOMING)
+  confirmedAt    DateTime?
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id])
+  order        Order?
+
+  createdAt DateTime @default(now())
+
+  @@index([subscriptionId, scheduledFor])
+  @@index([status, scheduledFor])
+  @@map("cycles")
+}
+
+// ---------- orders ----------
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PICKING
+  PACKED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  accountId      String
+  subscriptionId String?
+  cycleId        String?     @unique
+  status         OrderStatus @default(PENDING)
+  totalCents     Int
+  addressLine1   String
+  city           String
+  state          String
+  zip            String
+  carrier        String?
+  trackingCode   String?
+  shippedAt      DateTime?
+  deliveredAt    DateTime?
+
+  account Account     @relation(fields: [accountId], references: [id])
+  cycle   Cycle?      @relation(fields: [cycleId], references: [id])
+  lines   OrderLine[]
+  refunds Refund[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([accountId])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderLine {
+  id             String @id @default(cuid())
+  orderId        String
+  skuId          String
+  qtyUnits       Int
+  unitPriceCents Int
+
+  order Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sku   Sku            @relation(fields: [skuId], references: [id])
+  txns  InventoryTxn[]
+
+  @@map("order_lines")
+}
+
+model Refund {
+  id          String @id @default(cuid())
+  orderId     String
+  reasonCode  String
+  amountCents Int
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@map("refunds")
+}
+
+// ---------- forecasts (versioned inserts, never updated) ----------
+
+enum ForecastSource {
+  V0
+  V1
+  OVERRIDE
+}
+
+model Forecast {
+  id           String         @id @default(cuid())
+  skuId        String
+  warehouseId  String
+  weekStart    DateTime
+  qtyUnits     Int
+  source       ForecastSource
+  version      Int
+  overrideOfId String?
+  reasonCode   String?
+
+  sku        Sku        @relation(fields: [skuId], references: [id])
+  warehouse  Warehouse  @relation(fields: [warehouseId], references: [id])
+  overrideOf Forecast?  @relation("ForecastOverride", fields: [overrideOfId], references: [id])
+  overrides  Forecast[] @relation("ForecastOverride")
+
+  createdAt DateTime @default(now())
+
+  @@index([skuId, warehouseId, weekStart])
+  @@map("forecasts")
+}
+
+// ---------- demand events (append-only intent stream) ----------
+
+enum DemandEventType {
+  SUBSCRIBE
+  CONFIRM
+  EDIT
+  SKIP
+  PAUSE
+  RESUME
+  CANCEL
+  SWAP
+  SHORTAGE_SWAP
+  OOS_VIEW
+  REFUND
+  DELIVERY
+}
+
+model DemandEvent {
+  id             String          @id @default(cuid())
+  type           DemandEventType
+  accountId      String?
+  subscriptionId String?
+  cycleId        String?
+  orderId        String?
+  skuId          String?
+  payload        Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([type, createdAt])
+  @@index([skuId, createdAt])
+  @@map("demand_events")
+}
+
+// ---------- misc ----------
+
+model WholesaleLead {
+  id           String  @id @default(cuid())
+  businessName String
+  email        String
+  businessType String
+  message      String?
+
+  createdAt DateTime @default(now())
+
+  @@map("wholesale_leads")
+}
+
+model NotificationLog {
+  id        String  @id @default(cuid())
+  accountId String?
+  channel   String // sms | email
+  template  String
+  payload   Json?
+
+  createdAt DateTime @default(now())
+
+  @@map("notification_logs")
+}
+
+enum TransferStatus {
+  DRAFT
+  IN_TRANSIT
+  COMPLETED
+}
+
+model TransferOrder {
+  id              String         @id @default(cuid())
+  fromWarehouseId String
+  toWarehouseId   String
+  skuId           String
+  qtyUnits        Int
+  status          TransferStatus @default(DRAFT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("transfer_orders")
 }

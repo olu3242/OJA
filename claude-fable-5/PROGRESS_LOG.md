@@ -79,3 +79,21 @@ Entry template:
 - **Verified:** format, lint, typecheck, seed (idempotent, 2 active SKUs), build all green; tests N/A (Vitest lands at 0.7).
 - **Next up:** Task 0.4 — schema v1 part 2 (subscription/cycle models should follow PRD v0.2's plan structure).
 - **Blockers:** none.
+
+## 2026-07-10 — Phases 0–3 build: subscription platform e2e (tasks 0.4–5.2)
+
+- **Tasks completed:** 0.4, 0.5, 0.7, 0.8, 1.1–1.10 (Gate G1), 2.1–2.3 + 2.5–2.9 (Gate G2), 3.1, 3.2, 3.5, 4.3, 5.1, 5.2
+- **What shipped:**
+  - **Schema part 2 (0.4):** subscriptions (plan/variety/grind/cadence per PRD v0.2) + cycles, orders/lines/refunds, suppliers/POs, warehouses/lots + append-only `inventory_txns`, versioned `forecasts`, append-only `demand_events`, wholesale leads, notification logs, transfer orders.
+  - **API/auth (0.5):** tRPC v11 with role-gated procedures (public/authed/staff/admin) at `/api/trpc`; HMAC-cookie dev-auth (`lib/auth.ts`) with find-or-create login — flagged for replacement by email OTP.
+  - **Services (`server/services/`):** subscriptions (subscribe/pause/resume/cancel/swap), cycles (confirm with first-delivery discount, skip, cadence cron), procurement (PO + receive with lot/QC), inventory (derived stock, FEFO allocation, recall, warehouse transfers), fulfillment (wave gen with shortage variant-swap, pick/pack, idempotent dispatch, deliver, refund), forecast (V0 committed-floor + trailing blend; V1 seasonal shadow; versioned inserts; overrides w/ reason codes; WAPE; reorder suggestions → one-click PO draft), metrics dashboard, markdown ladder, container planner. Stubs behind interfaces: payments, carrier, notifications.
+  - **Surfaces (0.8, 1.1–1.3):** customer (subscribe, account/pantry with cycle-confirm + pause/skip/swap/cancel, wholesale waitlist), warehouse (receive/QC, FEFO wave + pick, ship, deliver, stock tiles), admin (north-star dashboard, forecast run, reorder→PO draft→place, container plan, fresh deals, waitlist leads).
+  - **Jobs:** `npm run job:forecast`, `npm run job:cycles`.
+  - **Tests (0.7):** 29 green — unit (pricing floor incl. zone surcharges, markdown ladder, container math) + integration gates G1 (PO→receive→FEFO pick→ship→deliver→recall) and G2 (pantry events→forecast→PO draft→override) + G3/Phase-2/3 suite (refund, dashboard, transfers, fresh deals, container plan). Playwright browser e2e: login→subscribe→confirm→PAID. CI workflow with postgres service added.
+- **Decisions:**
+  - Plan defaults: Starter 4 lb/$29, Family 12 lb/$64 (hero), Stock-Up 22 lb/$104 — mid-range of published bands; unit tests enforce the 30% GM floor and flag that Starter only clears it at commercial parcel rates (per the margin doc's own warning).
+  - 4.1 delivered as TS V1 shadow (seasonal index) rather than a Python service — same shadow-mode intent, decision logged in plan banner.
+  - Deferred: 2.4/4.2/4.4–4.6 (B2B/wholesale, Phase 2 gate), 3.3 group orders, 5.3 Canada; partial: 3.4 (idempotent dispatch done; durable queue/Sentry pending), 3.6/3.7.
+- **Verified:** lint, typecheck, format, 29 vitest + 1 playwright green, production build (all routes compile; dynamic surfaces + static landing).
+- **Next up:** 3.4 hardening + 3.7 pilot checklist; swap payment/carrier/notification stubs when keys arrive.
+- **Blockers:** Stripe/Twilio/Resend/carrier keys; container Postgres runs ad-hoc (`/tmp/oja-pgdata`, port 5433) — CI uses a service container.

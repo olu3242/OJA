@@ -27,7 +27,11 @@
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
-    "landing": "npx serve landing-page"
+    "landing": "npx serve landing-page",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "job:forecast": "tsx jobs/forecast.ts",
+    "job:cycles": "tsx jobs/cycles.ts"
   },
   "directories": {
     "docs": "docs"
@@ -38,11 +42,16 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "@trpc/client": "^11.18.0",
+    "@trpc/server": "^11.18.0",
     "next": "16.2.10",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "superjson": "^2.2.6",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -55,7 +64,8 @@
     "prisma": "^7.8.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.0",
-    "typescript": "^5"
-  },
-  "future_dependencies_notes": "App shell scaffolded (Next.js App Router + Tailwind). Still to add per docs/IMPLEMENTATION_STRATEGY.md as tasks land: prisma, trpc, zod, @stripe/stripe-js, vitest, playwright."
+    "typescript": "^5",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.10"
+  }
 }

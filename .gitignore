@@ -30,3 +30,4 @@ coverage/
 
 # Prisma generated client
 /lib/generated/prisma
+test-results/

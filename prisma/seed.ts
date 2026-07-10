@@ -57,6 +57,41 @@ async function main() {
     data: { active: false },
   });
 
+  // Fulfillment node + suppliers (2 vetted processors per variety spec)
+  await db.warehouse.upsert({
+    where: { code: "HOU-1" },
+    create: { code: "HOU-1", name: "Houston 3PL", region: "US-CENTRAL" },
+    update: {},
+  });
+  for (const name of ["Ijebu Prime Processors", "Lagos Golden Cassava"]) {
+    const existing = await db.supplier.findFirst({ where: { name } });
+    if (!existing) {
+      await db.supplier.create({
+        data: {
+          name,
+          country: "NG",
+          contactEmail: `${name.split(" ")[0].toLowerCase()}@example.ng`,
+        },
+      });
+    }
+  }
+
+  // Staff accounts for the warehouse/admin surfaces (dev-auth stub)
+  await db.account.upsert({
+    where: { email: "admin@gaarii.test" },
+    create: { email: "admin@gaarii.test", name: "GAARII Admin", role: "ADMIN" },
+    update: { role: "ADMIN" },
+  });
+  await db.account.upsert({
+    where: { email: "warehouse@gaarii.test" },
+    create: {
+      email: "warehouse@gaarii.test",
+      name: "GAARII Warehouse",
+      role: "WAREHOUSE",
+    },
+    update: { role: "WAREHOUSE" },
+  });
+
   const active = await db.sku.findMany({
     where: { active: true },
     select: { code: true, nameEn: true },
