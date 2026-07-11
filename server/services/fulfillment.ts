@@ -165,6 +165,8 @@ export async function dispatch(orderId: string) {
   await notify(order.accountId, "out_for_delivery", {
     trackingCode: shipment.trackingCode,
   });
+  // Mirror the shipment (carrier/tracking) + shipped status into canonical.
+  await mirrorAccount(order.accountId);
   return updated;
 }
 
@@ -187,6 +189,8 @@ export async function markDelivered(orderId: string) {
     payload: { qtyUnits: order.lines.reduce((s, l) => s + l.qtyUnits, 0) },
   });
   await notify(order.accountId, "delivered", { orderId: order.id });
+  // Mirror the delivered status + delivered_at into canonical.
+  await mirrorAccount(order.accountId);
   return order;
 }
 

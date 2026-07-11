@@ -172,3 +172,13 @@ Entry template:
 - **Verified:** 2 new dual-write/read tests (canonical order history with refunded total; legacy fallback for an unmirrored account) + flag-off assertion extended to orders. Suite now 80 green; typecheck/lint/format/build all green.
 - **Next up:** converge + cut over the `shipments` domain (carrier/tracking) so delivery cards read fully from canonical; then decommission legacy reads domain-by-domain once production parity is sustained.
 - **Blockers:** none code-side; Supabase/Google keys remain the OAuth activation gate.
+
+## 2026-07-11 — Convergence phase 8: shipments domain (carrier/tracking)
+
+- **What shipped:**
+  - **Convergence engine** (`server/repositories/convergence.ts`): each dispatched legacy order (one with a tracking code) now converges a canonical `public.shipments` row — carrier, tracking code, shipped/delivered timestamps, and a status derived from the order (`in_transit`, or `delivered` once `deliveredAt` is set). Mapped via a synthetic `order_shipment` `legacy_map` key so re-runs update rather than duplicate. `ConvergenceReport` gains a `shipments` count; `auditOrphans` gains a "shipments without order" check. Legacy order status transitions (picking/packed/shipped/delivered) already mirror via the mapped-order UPDATE from phase 6 — the canonical order enum covers all of them.
+  - **Live-mirror wiring:** `mirrorAccount` now fires after `fulfillment.dispatch` (shipment + `shipped` status) and `fulfillment.markDelivered` (`delivered` status + `delivered_at`).
+  - **Read cutover:** `NormalizedOrder` gains `carrier`/`trackingCode`; `canonicalReadOrders` left-joins `public.shipments`, `legacyReadOrders` reads the order's own fields. The account-page Deliveries card renders tracking again — now sourced from canonical when the read flag is on — completing the orders-domain read cutover.
+- **Verified:** new dual-write test drives `dispatch` → shipment (`in_transit`/`shipped`) → `markDelivered` (`delivered` + `delivered_at`) and asserts the canonical read surfaces the tracking code; test-cleanup blocks delete `shipments` ahead of `orders`. Suite now 81 green; batch `npm run converge` reports the `shipments` column with zero orphans; typecheck/lint/format/build all green.
+- **Next up:** the orders domain now reads fully from canonical; decommission legacy reads domain-by-domain once production parity is sustained, and extend the cutover to the remaining read surfaces (admin/warehouse).
+- **Blockers:** none code-side; Supabase/Google keys remain the OAuth activation gate.

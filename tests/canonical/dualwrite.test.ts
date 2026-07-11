@@ -11,7 +11,11 @@ import {
 } from "@/server/repositories/canonical-read";
 import { subscribe, pause, resume } from "@/server/services/subscriptions";
 import { confirmCycle } from "@/server/services/cycles";
-import { refundOrder } from "@/server/services/fulfillment";
+import {
+  refundOrder,
+  dispatch,
+  markDelivered,
+} from "@/server/services/fulfillment";
 import { createStandingOrder } from "@/server/services/wholesale";
 import {
   createGroupOrder,
@@ -36,6 +40,7 @@ describe("live dual-write + read cutover", () => {
     // Clean canonical commerce so parity reflects only live dual-writes.
     const c = await adminClient();
     await c.query(`delete from public.legacy_map`);
+    await c.query(`delete from public.shipments`);
     await c.query(`delete from public.refunds`);
     await c.query(`delete from public.order_items`);
     await c.query(`update public.subscription_deliveries set order_id = null`);
@@ -126,6 +131,56 @@ describe("live dual-write + read cutover", () => {
     // Live writes alone kept the two schemas in parity — no converge() called.
     const parity = await parityCheck();
     expect(parity.inParity).toBe(true);
+  });
+
+  it("mirrors dispatch → shipment + delivery status transitions (shipments)", async () => {
+    const order = await db.order.findFirstOrThrow({
+      where: { accountId: household.id },
+    });
+    // Advance to PACKED so dispatch's guard passes (skip the warehouse flow).
+    await db.order.update({
+      where: { id: order.id },
+      data: { status: "PACKED" },
+    });
+    const shipped = await dispatch(order.id);
+    expect(shipped.status).toBe("SHIPPED");
+    expect(shipped.trackingCode).toBeTruthy();
+
+    let c = await adminClient();
+    let sh = await c.query(
+      `select sh.status, sh.carrier, sh.tracking_code, o.status as order_status
+         from public.shipments sh join public.orders o on o.id = sh.order_id`,
+    );
+    await c.end();
+    expect(sh.rowCount).toBe(1);
+    expect(sh.rows[0]).toMatchObject({
+      status: "in_transit",
+      order_status: "shipped",
+    });
+    expect(sh.rows[0].tracking_code).toBe(shipped.trackingCode);
+
+    await markDelivered(order.id);
+    c = await adminClient();
+    sh = await c.query(
+      `select sh.status, sh.delivered_at, o.status as order_status
+         from public.shipments sh join public.orders o on o.id = sh.order_id`,
+    );
+    await c.end();
+    expect(sh.rows[0]).toMatchObject({
+      status: "delivered",
+      order_status: "delivered",
+    });
+    expect(sh.rows[0].delivered_at).toBeTruthy();
+
+    // Read cutover surfaces canonical tracking (no batch converge called).
+    process.env.FLAG_CANONICAL_READ = "1";
+    clearFlagCache();
+    const read = await readOrders(household.id);
+    delete process.env.FLAG_CANONICAL_READ;
+    clearFlagCache();
+    expect(read.source).toBe("canonical");
+    expect(read.orders[0].status).toBe("DELIVERED");
+    expect(read.orders[0].trackingCode).toBe(shipped.trackingCode);
   });
 
   it("mirrors a refund: order → refunded + canonical refund row, parity holds (refunds)", async () => {

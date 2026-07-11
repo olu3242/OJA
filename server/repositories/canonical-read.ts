@@ -27,6 +27,8 @@ export type NormalizedOrder = {
   status: string;
   totalCents: number;
   refundedCents: number;
+  carrier: string | null;
+  trackingCode: string | null;
   lines: NormalizedOrderLine[];
 };
 
@@ -113,6 +115,8 @@ async function legacyReadOrders(accountId: string): Promise<NormalizedOrder[]> {
     status: o.status,
     totalCents: o.totalCents,
     refundedCents: o.refunds.reduce((s, r) => s + r.amountCents, 0),
+    carrier: o.carrier,
+    trackingCode: o.trackingCode,
     lines: o.lines.map((l) => ({
       qtyLbs: l.qtyUnits,
       variety: skuToVariety(l.sku.code),
@@ -130,10 +134,13 @@ async function canonicalReadOrders(
     `select o.id, o.status, o.total_cents, o.created_at,
             coalesce((select sum(r.amount_cents) from public.refunds r
                        where r.order_id = o.id), 0) as refunded_cents,
+            sh.carrier, sh.tracking_code,
             i.qty, v.variant
        from public.orders o
        join public.order_items i on i.order_id = o.id
        join public.product_variants v on v.id = i.product_variant_id
+       left join public.shipments sh
+         on sh.order_id = o.id and sh.deleted_at is null
       where o.customer_id = $1 and o.deleted_at is null
       order by o.created_at desc, o.id`,
     [customerId],
@@ -146,6 +153,8 @@ async function canonicalReadOrders(
         status: r.status.toUpperCase(),
         totalCents: r.total_cents,
         refundedCents: Number(r.refunded_cents),
+        carrier: r.carrier ?? null,
+        trackingCode: r.tracking_code ?? null,
         lines: [],
       };
       byOrder.set(r.id, order);

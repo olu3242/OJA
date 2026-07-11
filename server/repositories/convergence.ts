@@ -20,6 +20,7 @@ export type ConvergenceReport = {
   orders: number;
   orderItems: number;
   refunds: number;
+  shipments: number;
   skipped: number;
   orphans: string[];
 };
@@ -33,6 +34,7 @@ function emptyReport(): ConvergenceReport {
     orders: 0,
     orderItems: 0,
     refunds: 0,
+    shipments: 0,
     skipped: 0,
     orphans: [],
   };
@@ -327,6 +329,52 @@ async function convergeOneAccount(
       await mapPut(c, "refunds", refund.id, "refunds", rf.rows[0].id, orgId);
       report.refunds++;
     }
+
+    // 7) Shipment — one per dispatched order (has tracking); status + carrier
+    // mirror onto the mapped row so in_transit → delivered transitions land.
+    if (order.trackingCode) {
+      const shipStatus = order.deliveredAt ? "delivered" : "in_transit";
+      const existingShip = await mapGet(c, "order_shipment", order.id);
+      if (existingShip) {
+        await c.query(
+          `update public.shipments
+              set status=$2, carrier=$3, tracking_code=$4, shipped_at=$5, delivered_at=$6
+            where id=$1`,
+          [
+            existingShip,
+            shipStatus,
+            order.carrier,
+            order.trackingCode,
+            order.shippedAt,
+            order.deliveredAt,
+          ],
+        );
+      } else {
+        const sh = await c.query(
+          `insert into public.shipments
+             (organization_id, order_id, carrier, tracking_code, status, shipped_at, delivered_at)
+           values ($1,$2,$3,$4,$5,$6,$7) returning id`,
+          [
+            orgId,
+            orderId,
+            order.carrier,
+            order.trackingCode,
+            shipStatus,
+            order.shippedAt,
+            order.deliveredAt,
+          ],
+        );
+        await mapPut(
+          c,
+          "order_shipment",
+          order.id,
+          "shipments",
+          sh.rows[0].id,
+          orgId,
+        );
+        report.shipments++;
+      }
+    }
   }
 }
 
@@ -357,6 +405,11 @@ async function auditOrphans(c: PoolClient, report: ConvergenceReport) {
       "refunds without order",
       `select count(*)::int n from public.refunds r
        where not exists (select 1 from public.orders o where o.id = r.order_id)`,
+    ],
+    [
+      "shipments without order",
+      `select count(*)::int n from public.shipments sh
+       where not exists (select 1 from public.orders o where o.id = sh.order_id)`,
     ],
   ];
   for (const [label, sql] of orphanChecks) {

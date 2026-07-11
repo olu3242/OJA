@@ -169,6 +169,12 @@ export default async function AccountPage() {
             </span>{" "}
             — ${(o.totalCents / 100).toFixed(2)} —{" "}
             <span className="font-bold text-oja-green">{o.status}</span>
+            {o.trackingCode && (
+              <span className="text-oja-green-deep/60">
+                {" "}
+                · {o.carrier} {o.trackingCode}
+              </span>
+            )}
             {o.refundedCents > 0 && (
               <span className="font-semibold text-red-700">
                 {" "}
