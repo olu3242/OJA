@@ -8,6 +8,13 @@ import { parityCheck } from "@/server/repositories/reporting";
 import { readSubscriptions } from "@/server/repositories/canonical-read";
 import { subscribe, pause, resume } from "@/server/services/subscriptions";
 import { confirmCycle } from "@/server/services/cycles";
+import { refundOrder } from "@/server/services/fulfillment";
+import { createStandingOrder } from "@/server/services/wholesale";
+import {
+  createGroupOrder,
+  joinGroupOrder,
+  closeGroupOrder,
+} from "@/server/services/group";
 
 /**
  * Convergence phases 3–5: live dual-write (subscription lifecycle + cycle/order)
@@ -26,6 +33,7 @@ describe("live dual-write + read cutover", () => {
     // Clean canonical commerce so parity reflects only live dual-writes.
     const c = await adminClient();
     await c.query(`delete from public.legacy_map`);
+    await c.query(`delete from public.refunds`);
     await c.query(`delete from public.order_items`);
     await c.query(`update public.subscription_deliveries set order_id = null`);
     await c.query(`delete from public.orders`);
@@ -115,6 +123,121 @@ describe("live dual-write + read cutover", () => {
     // Live writes alone kept the two schemas in parity — no converge() called.
     const parity = await parityCheck();
     expect(parity.inParity).toBe(true);
+  });
+
+  it("mirrors a refund: order → refunded + canonical refund row, parity holds (refunds)", async () => {
+    const order = await db.order.findFirstOrThrow({
+      where: { accountId: household.id },
+    });
+    await refundOrder(order.id, "FRESHNESS");
+
+    const c = await adminClient();
+    const canon = await c.query(
+      `select o.status, r.amount_cents, r.reason_code
+         from public.orders o
+         join public.refunds r on r.order_id = o.id`,
+    );
+    await c.end();
+    expect(canon.rowCount).toBe(1);
+    expect(canon.rows[0]).toMatchObject({
+      status: "refunded",
+      reason_code: "FRESHNESS",
+    });
+    expect(canon.rows[0].amount_cents).toBe(order.totalCents);
+
+    // Refund count now matches on both sides; revenue unaffected → still parity.
+    const parity = await parityCheck();
+    expect(parity.inParity).toBe(true);
+  });
+
+  it("mirrors a wholesale standing order as WHOLESALE_STANDING (standing orders)", async () => {
+    const store = await db.account.create({
+      data: {
+        email: `store${Date.now()}@test.gaarii`,
+        name: "Lagos Market",
+        businessName: "Lagos Market",
+        role: "STORE",
+        b2bVerified: true,
+        b2bVerifiedAt: new Date(),
+      },
+    });
+    await createStandingOrder({
+      accountId: store.id,
+      variety: "WHITE_IJEBU",
+      qtyLbs: 100,
+    });
+
+    const c = await adminClient();
+    const canon = await c.query(
+      `select s.plan, s.cadence_days, s.status, i.qty
+         from public.subscriptions s
+         join public.legacy_map m on m.canonical_id = s.customer_id
+           and m.legacy_table = 'accounts' and m.legacy_id = $1
+         join public.subscription_items i on i.subscription_id = s.id`,
+      [store.id],
+    );
+    await c.end();
+    expect(canon.rowCount).toBe(1);
+    expect(canon.rows[0]).toMatchObject({
+      plan: "WHOLESALE_STANDING",
+      cadence_days: 7,
+      status: "active",
+    });
+    expect(Number(canon.rows[0].qty)).toBe(100);
+
+    // Fully mirrored store account (+1 customer, +1 active sub both sides).
+    const parity = await parityCheck();
+    expect(parity.inParity).toBe(true);
+  });
+
+  it("mirrors an aggregated group order onto the creator's tenant (group buying)", async () => {
+    const creator = await db.account.create({
+      data: {
+        email: `creator${Date.now()}@test.gaarii`,
+        name: "Host",
+        role: "COMMUNITY",
+      },
+    });
+    const group = await createGroupOrder(creator.id, {
+      line1: "9 Drop Rd",
+      city: "Houston",
+      state: "TX",
+      zip: "77002",
+    });
+    const m1 = await db.account.create({
+      data: {
+        email: `gm1${Date.now()}@test.gaarii`,
+        name: "M1",
+        role: "HOUSEHOLD",
+      },
+    });
+    const m2 = await db.account.create({
+      data: {
+        email: `gm2${Date.now()}@test.gaarii`,
+        name: "M2",
+        role: "HOUSEHOLD",
+      },
+    });
+    await joinGroupOrder(group.code, m1.id, "FAMILY", "WHITE_IJEBU");
+    await joinGroupOrder(group.code, m2.id, "FAMILY", "WHITE_IJEBU");
+    const { order } = await closeGroupOrder(group.code);
+
+    const c = await adminClient();
+    const canon = await c.query(
+      `select o.status, o.total_cents, sum(i.qty)::int as qty
+         from public.orders o
+         join public.order_items i on i.order_id = o.id
+         join public.legacy_map m on m.canonical_id = o.customer_id
+           and m.legacy_table = 'accounts' and m.legacy_id = $1
+        group by o.id, o.status, o.total_cents`,
+      [creator.id],
+    );
+    await c.end();
+    expect(canon.rowCount).toBe(1);
+    expect(canon.rows[0].status).toBe("paid");
+    expect(canon.rows[0].total_cents).toBe(order.totalCents);
+    // Two FAMILY members × 12 lb, aggregated into one canonical order line set.
+    expect(canon.rows[0].qty).toBe(24);
   });
 
   it("does NOT mirror when the flag is off (kill-switch)", async () => {

@@ -4,6 +4,7 @@ import { emitDemandEvent } from "@/lib/events";
 import { PLANS, type PlanTier } from "@/lib/pricing";
 import { skuForVariety, type Variety } from "./subscriptions";
 import { payments } from "./payments";
+import { mirrorAccount } from "@/server/repositories/canonical-write";
 
 /**
  * Group buying (tasks 3.3 / 4.4): a shareable link aggregates multiple payers
@@ -120,6 +121,8 @@ export async function closeGroupOrder(code: string) {
     orderId: order.id,
     payload: { group: code, members: group.members.length, discount },
   });
+  // Mirror the aggregated group order onto the creator's canonical tenant.
+  await mirrorAccount(group.creatorId);
 
   return { order, discount, members: group.members.length };
 }

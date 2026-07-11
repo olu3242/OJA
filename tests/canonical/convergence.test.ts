@@ -53,6 +53,7 @@ describe("legacy → canonical convergence", () => {
     // Clear any prior convergence state in the canonical DB for a clean assert
     const c = await adminClient();
     await c.query(`delete from public.legacy_map`);
+    await c.query(`delete from public.refunds`);
     await c.query(`delete from public.order_items`);
     await c.query(`update public.subscription_deliveries set order_id = null`);
     await c.query(`delete from public.orders`);

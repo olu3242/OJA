@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { emitDemandEvent } from "@/lib/events";
 import { allocateFefo, ShortageError } from "./inventory";
 import { notify } from "./notifications";
+import { mirrorAccount } from "@/server/repositories/canonical-write";
 
 // Carrier adapter — real parcel API in production; stub issues tracking codes.
 export interface CarrierAdapter {
@@ -205,5 +206,7 @@ export async function refundOrder(orderId: string, reasonCode: string) {
     payload: { reasonCode },
   });
   await notify(order.accountId, "refund_processed", { orderId, reasonCode });
+  // Mirror the refund + order status transition (paid → refunded) into canonical.
+  await mirrorAccount(order.accountId);
   return refund;
 }

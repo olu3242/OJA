@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { emitDemandEvent } from "@/lib/events";
 import { skuForVariety, type Variety } from "./subscriptions";
 import { notify } from "./notifications";
+import { mirrorAccount } from "@/server/repositories/canonical-write";
 
 /**
  * Wholesale channel (tasks 2.4 + 4.6, Phase 2): waitlist leads graduate into
@@ -93,5 +94,7 @@ export async function createStandingOrder(input: {
     subscriptionId: sub.id,
     payload: { wholesale: true, qtyLbs: input.qtyLbs, unitPriceCents: unit },
   });
+  // Mirror the standing order (canonical plan WHOLESALE_STANDING) into canonical.
+  await mirrorAccount(input.accountId);
   return sub;
 }

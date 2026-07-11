@@ -19,6 +19,7 @@ export type ConvergenceReport = {
   deliveries: number;
   orders: number;
   orderItems: number;
+  refunds: number;
   skipped: number;
   orphans: string[];
 };
@@ -31,6 +32,7 @@ function emptyReport(): ConvergenceReport {
     deliveries: 0,
     orders: 0,
     orderItems: 0,
+    refunds: 0,
     skipped: 0,
     orphans: [],
   };
@@ -38,7 +40,7 @@ function emptyReport(): ConvergenceReport {
 
 const ACCOUNT_INCLUDE = {
   subscriptions: { include: { cycles: true } },
-  orders: { include: { lines: { include: { sku: true } } } },
+  orders: { include: { lines: { include: { sku: true } }, refunds: true } },
 } satisfies Prisma.AccountInclude;
 
 type AccountForConvergence = Prisma.AccountGetPayload<{
@@ -246,67 +248,85 @@ async function convergeOneAccount(
     }
   }
 
-  // 5) Orders + items
+  // 5) Orders + items (insert-only), status transitions + refunds (mirrored)
   for (const order of account.orders) {
-    if (await mapGet(c, "orders", order.id)) {
-      report.skipped++;
-      continue;
-    }
-    const deliveryId = order.cycleId
-      ? await mapGet(c, "cycles", order.cycleId)
-      : null;
-    const row = await c.query(
-      `insert into public.orders
-         (organization_id, customer_id, subscription_delivery_id, status, currency,
-          subtotal_cents, total_cents, ship_line1, ship_city, ship_region,
-          ship_postal_code, ship_country, created_at)
-       values ($1,$2,$3,$4,'USD',$5,$5,$6,$7,$8,$9,$10,$11) returning id`,
-      [
-        orgId,
-        customerId,
-        deliveryId,
+    let orderId = await mapGet(c, "orders", order.id);
+    if (orderId) {
+      // Mirror lifecycle transitions on a mapped order (refund/cancel → status).
+      await c.query(`update public.orders set status=$2 where id=$1`, [
+        orderId,
         order.status.toLowerCase(),
-        order.totalCents,
-        order.addressLine1,
-        order.city,
-        order.state,
-        order.zip,
-        order.country,
-        order.createdAt,
-      ],
-    );
-    const orderId = row.rows[0].id as string;
-    if (deliveryId) {
-      await c.query(
-        `update public.subscription_deliveries set order_id = $2 where id = $1`,
-        [deliveryId, orderId],
+      ]);
+      report.skipped++;
+    } else {
+      const deliveryId = order.cycleId
+        ? await mapGet(c, "cycles", order.cycleId)
+        : null;
+      const row = await c.query(
+        `insert into public.orders
+           (organization_id, customer_id, subscription_delivery_id, status, currency,
+            subtotal_cents, total_cents, ship_line1, ship_city, ship_region,
+            ship_postal_code, ship_country, created_at)
+         values ($1,$2,$3,$4,'USD',$5,$5,$6,$7,$8,$9,$10,$11) returning id`,
+        [
+          orgId,
+          customerId,
+          deliveryId,
+          order.status.toLowerCase(),
+          order.totalCents,
+          order.addressLine1,
+          order.city,
+          order.state,
+          order.zip,
+          order.country,
+          order.createdAt,
+        ],
       );
-    }
-    for (const line of order.lines) {
-      const variantId = variants.get(line.sku.code);
-      if (!variantId) {
-        report.orphans.push(
-          `order_line ${line.id}: unknown sku ${line.sku.code}`,
+      orderId = row.rows[0].id as string;
+      if (deliveryId) {
+        await c.query(
+          `update public.subscription_deliveries set order_id = $2 where id = $1`,
+          [deliveryId, orderId],
         );
-        continue;
       }
-      const li = await c.query(
-        `insert into public.order_items (organization_id, order_id, product_variant_id, qty, unit_price_cents)
-         values ($1,$2,$3,$4,$5) returning id`,
-        [orgId, orderId, variantId, line.qtyUnits, line.unitPriceCents],
-      );
-      await mapPut(
-        c,
-        "order_lines",
-        line.id,
-        "order_items",
-        li.rows[0].id,
-        orgId,
-      );
-      report.orderItems++;
+      for (const line of order.lines) {
+        const variantId = variants.get(line.sku.code);
+        if (!variantId) {
+          report.orphans.push(
+            `order_line ${line.id}: unknown sku ${line.sku.code}`,
+          );
+          continue;
+        }
+        const li = await c.query(
+          `insert into public.order_items (organization_id, order_id, product_variant_id, qty, unit_price_cents)
+           values ($1,$2,$3,$4,$5) returning id`,
+          [orgId, orderId, variantId, line.qtyUnits, line.unitPriceCents],
+        );
+        await mapPut(
+          c,
+          "order_lines",
+          line.id,
+          "order_items",
+          li.rows[0].id,
+          orgId,
+        );
+        report.orderItems++;
+      }
+      await mapPut(c, "orders", order.id, "orders", orderId, orgId);
+      report.orders++;
     }
-    await mapPut(c, "orders", order.id, "orders", orderId, orgId);
-    report.orders++;
+
+    // 6) Refunds (freshness/quality guarantee) — insert-only, mapped idempotent.
+    for (const refund of order.refunds) {
+      if (await mapGet(c, "refunds", refund.id)) continue;
+      const rf = await c.query(
+        `insert into public.refunds (organization_id, order_id, amount_cents, reason_code)
+         values ($1,$2,$3,$4) returning id`,
+        [orgId, orderId, refund.amountCents, refund.reasonCode],
+      );
+      await mapPut(c, "refunds", refund.id, "refunds", rf.rows[0].id, orgId);
+      report.refunds++;
+    }
   }
 }
 
@@ -332,6 +352,11 @@ async function auditOrphans(c: PoolClient, report: ConvergenceReport) {
       "deliveries without subscription",
       `select count(*)::int n from public.subscription_deliveries d
        where not exists (select 1 from public.subscriptions s where s.id = d.subscription_id)`,
+    ],
+    [
+      "refunds without order",
+      `select count(*)::int n from public.refunds r
+       where not exists (select 1 from public.orders o where o.id = r.order_id)`,
     ],
   ];
   for (const [label, sql] of orphanChecks) {

@@ -149,3 +149,16 @@ Entry template:
 - **Verified:** 7 new tests (live subscription mirror, lifecycle transitions, cycle→order mirror + live parity, kill-switch drift, canonical read, parity-gated legacy fallback, read-flag-off); suite now 75 green; lint/typecheck/format/build all green. Flags default OFF so the shared services are unaffected when convergence isn't active.
 - **Next up:** extend dual-write to remaining commerce mutations (group orders, wholesale standing orders, refunds); add per-domain read cutovers; then decommission legacy reads domain-by-domain once production parity is sustained.
 - **Blockers:** none code-side; Supabase/Google keys remain the OAuth activation gate.
+
+## 2026-07-11 — Convergence phase 6: dual-write across the full commerce surface
+
+- **What shipped:**
+  - **Convergence engine** (`server/repositories/convergence.ts`): the order loop is no longer insert-only. Already-mapped orders now mirror their status transitions (e.g. `paid → refunded`), and legacy `Refund` rows converge into canonical `public.refunds` (insert-only, `legacy_map`-idempotent). `ConvergenceReport` gains a `refunds` count; `auditOrphans` gains a "refunds without order" check; `ACCOUNT_INCLUDE` pulls `orders.refunds`.
+  - **Live-mirror wiring:** `mirrorAccount` now fires after the remaining commerce mutations —
+    - `wholesale.createStandingOrder` → the cadence-7 subscription converges as `WHOLESALE_STANDING`;
+    - `group.closeGroupOrder` → the aggregated drop-point order mirrors onto the creator's canonical tenant;
+    - `fulfillment.refundOrder` → the `paid → refunded` transition and the refund row both mirror.
+  - All three ride the existing `canonical_dual_write` flag (default OFF, best-effort, reconciled by the hourly `legacy_convergence` job).
+- **Verified:** 3 new dual-write tests (refund → canonical `refunded` + refund row with parity held; wholesale standing order → `WHOLESALE_STANDING` with parity held; group order → aggregated canonical order); test-cleanup blocks updated to delete `refunds` ahead of `orders`. Suite now 78 green; batch `npm run converge` reports the new `refunds` column with zero orphans; lint/typecheck/format/build all green.
+- **Next up:** per-domain read cutovers (orders/refunds/group), then decommission legacy reads domain-by-domain once production parity is sustained.
+- **Blockers:** none code-side; Supabase/Google keys remain the OAuth activation gate.
