@@ -21,6 +21,8 @@ import * as group from "./services/group";
 import * as wholesale from "./services/wholesale";
 import * as supplier from "./services/supplier";
 import * as identity from "./repositories/identity";
+import * as reporting from "./repositories/reporting";
+import * as convergence from "./repositories/convergence";
 import { supabaseUser } from "@/lib/supabase/server";
 
 const staff = roleProcedure("WAREHOUSE", "ADMIN");
@@ -271,6 +273,9 @@ export const appRouter = router({
     wholesaleLeads: admin.query(() =>
       db.wholesaleLead.findMany({ orderBy: { createdAt: "desc" } }),
     ),
+    // Convergence phase 2 — dual-read parity + on-demand backfill.
+    convergenceParity: admin.query(() => reporting.parityCheck()),
+    runConvergence: admin.mutation(() => convergence.convergeLegacyData()),
   }),
   identity: router({
     // Supabase-session identity (Google OAuth); null when signed out.

@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { currentAccount } from "@/lib/auth";
@@ -33,6 +34,8 @@ export default async function AdminPage() {
     ? await caller.admin.containerPlan({ warehouseId: warehouse.id })
     : null;
   const freshDeals = await caller.admin.freshDeals();
+  // Convergence phase 2 dual-read panel — tolerate an unconfigured canonical DB.
+  const parity = await caller.admin.convergenceParity().catch(() => null);
 
   const tiles: [string, string][] = [
     ["Active subscribers", String(dash.subscribers.active)],
@@ -64,6 +67,65 @@ export default async function AdminPage() {
           </div>
         ))}
       </section>
+
+      {parity && (
+        <section className="mb-10 rounded-xl border border-oja-green/20 bg-white p-4">
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-oja-green-deep">
+              Canonical convergence (dual-read)
+            </h2>
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-bold ${
+                parity.inParity
+                  ? "bg-oja-green text-white"
+                  : "bg-oja-orange-soft text-oja-green-deep"
+              }`}
+            >
+              {parity.inParity ? "IN PARITY" : `${parity.drift.length} DRIFTED`}
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-sm">
+            <div className="font-bold text-oja-green-deep/60">metric</div>
+            <div className="font-bold text-oja-green-deep/60">legacy</div>
+            <div className="font-bold text-oja-green-deep/60">canonical</div>
+            {(
+              [
+                [
+                  "customers",
+                  parity.legacy.customers,
+                  parity.canonical.customers,
+                ],
+                [
+                  "active subs",
+                  parity.legacy.activeSubscriptions,
+                  parity.canonical.activeSubscriptions,
+                ],
+                ["orders", parity.legacy.orders, parity.canonical.orders],
+                [
+                  "revenue ¢",
+                  parity.legacy.revenueCents,
+                  parity.canonical.revenueCents,
+                ],
+              ] as [string, number, number][]
+            ).map(([m, l, c]) => (
+              <Fragment key={m}>
+                <div>{m}</div>
+                <div>{l}</div>
+                <div className={l === c ? "" : "font-bold text-oja-orange"}>
+                  {c}
+                </div>
+              </Fragment>
+            ))}
+          </div>
+          {!parity.inParity && (
+            <p className="mt-3 text-sm text-oja-green-deep/70">
+              Run <code>npm run converge</code> (or the hourly{" "}
+              <code>legacy_convergence</code> task) to reconcile before any read
+              cutover.
+            </p>
+          )}
+        </section>
+      )}
 
       <section className="mb-10">
         <h2 className="mb-3 text-xl font-bold text-oja-green-deep">

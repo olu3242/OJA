@@ -131,3 +131,10 @@ Entry template:
 - **Verified:** 4 new tests (backfill counts, data parity incl. first-delivery discount preservation, idempotent re-run, legacy_map bridge) — suite now 64 green; lint/typecheck/format/build green; `canonical:verify` still clean (124 tables).
 - **Next up:** cut one read path (e.g. admin dashboard) over to canonical views, then domain-by-domain write cutover per ERD convergence map.
 - **Blockers:** none code-side; Supabase/Google keys remain the activation gate for live OAuth.
+
+## 2026-07-11 — Convergence phase 2: canonical read path (dual-read parity)
+
+- **What shipped:** migration `0005` (hourly `legacy_convergence` scheduled task + `v_commerce_kpis` invoker view); `server/repositories/reporting.ts` — `legacyKpis`/`canonicalKpis`/`parityCheck` field-by-field dual-read comparison; admin tRPC `convergenceParity` (query) + `runConvergence` (mutation); admin dashboard dual-read panel (IN PARITY / N DRIFTED badge, per-metric legacy-vs-canonical table, guarded so an unconfigured canonical DB is tolerated); `jobs/converge.ts` + `npm run job:converge` scheduled sync (converge → parity check, non-zero exit on orphans or drift).
+- **Verified:** 4 new parity tests (drift-before/parity-after, drift detection + re-converge restore, KPI-view read, scheduled-task registration); suite now 68 green; lint/typecheck/format/build all green.
+- **Next up:** first write cutover — route one commerce mutation (e.g. subscription pause) dual-write to canonical behind a feature flag, guarded by the parity gate.
+- **Blockers:** none code-side; Supabase/Google keys remain the OAuth activation gate.

@@ -35,7 +35,8 @@
     "canonical:migrate": "tsx scripts/canonical.ts migrate",
     "canonical:verify": "tsx scripts/canonical.ts verify",
     "canonical:report": "tsx scripts/canonical.ts report",
-    "converge": "tsx scripts/converge.ts"
+    "converge": "tsx scripts/converge.ts",
+    "job:converge": "tsx jobs/converge.ts"
   },
   "directories": {
     "docs": "docs"
