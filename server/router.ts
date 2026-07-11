@@ -140,6 +140,11 @@ export const appRouter = router({
         orderBy: { createdAt: "desc" },
       }),
     ),
+    // Read cutover: normalized delivery history from canonical when the
+    // `canonical_read` flag is on (with refunded totals), else legacy.
+    mineSource: authedProcedure.query(({ ctx }) =>
+      canonicalReadRepo.readOrders(ctx.account.id),
+    ),
   }),
 
   wholesale: router({

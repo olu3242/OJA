@@ -18,10 +18,11 @@ export default async function AccountPage() {
   const account = await currentAccount();
   if (!account) redirect("/login");
   const caller = createCaller({ account });
-  const [subs, orders] = await Promise.all([
+  const [subs, ordersRead] = await Promise.all([
     caller.subscription.mine(),
-    caller.order.mine(),
+    caller.order.mineSource(),
   ]);
+  const orders = ordersRead.orders;
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-12">
@@ -151,22 +152,27 @@ export default async function AccountPage() {
         <p className="text-oja-green-deep/60">No deliveries yet.</p>
       )}
       <ul className="flex flex-col gap-2">
-        {orders.map((o) => (
+        {orders.map((o, i) => (
           <li
-            key={o.id}
+            key={i}
             className="rounded-lg border border-oja-green/15 bg-white px-4 py-3 text-sm"
           >
             <span className="font-semibold">
               {o.lines
-                .map((l) => `${l.qtyUnits} lb ${l.sku.nameEn}`)
+                .map(
+                  (l) =>
+                    `${l.qtyLbs} lb ${
+                      l.variety === "WHITE_IJEBU" ? "White (Ijebu)" : "Yellow"
+                    } Garri`,
+                )
                 .join(", ")}
             </span>{" "}
             — ${(o.totalCents / 100).toFixed(2)} —{" "}
             <span className="font-bold text-oja-green">{o.status}</span>
-            {o.trackingCode && (
-              <span className="text-oja-green-deep/60">
+            {o.refundedCents > 0 && (
+              <span className="font-semibold text-red-700">
                 {" "}
-                · {o.carrier} {o.trackingCode}
+                · refunded ${(o.refundedCents / 100).toFixed(2)}
               </span>
             )}
           </li>

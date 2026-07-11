@@ -162,3 +162,13 @@ Entry template:
 - **Verified:** 3 new dual-write tests (refund → canonical `refunded` + refund row with parity held; wholesale standing order → `WHOLESALE_STANDING` with parity held; group order → aggregated canonical order); test-cleanup blocks updated to delete `refunds` ahead of `orders`. Suite now 78 green; batch `npm run converge` reports the new `refunds` column with zero orphans; lint/typecheck/format/build all green.
 - **Next up:** per-domain read cutovers (orders/refunds/group), then decommission legacy reads domain-by-domain once production parity is sustained.
 - **Blockers:** none code-side; Supabase/Google keys remain the OAuth activation gate.
+
+## 2026-07-11 — Convergence phase 7: orders read cutover (per-domain)
+
+- **What shipped:**
+  - **Canonical read** (`server/repositories/canonical-read.ts`): extracted the shared `resolveCustomerId` bridge lookup and added `readOrders(accountId)` — a normalized delivery-history read (`status`, `totalCents`, `refundedCents`, per-line `qtyLbs`/`variety`) served from canonical when `canonical_read` is on, else legacy. Refunded totals are summed per order from `public.refunds`, so the new refund dual-write is visible on the read side. Same safe fallback as subscriptions: an unmirrored account reads legacy rather than an empty list.
+  - **tRPC** `order.mineSource` alongside the existing legacy `order.mine`.
+  - **UI**: the account-page "Deliveries" section now consumes `order.mineSource` and renders a refunded badge. Carrier/tracking (the un-converged `shipments` domain) is intentionally out of this cutover and stays legacy until shipments converge.
+- **Verified:** 2 new dual-write/read tests (canonical order history with refunded total; legacy fallback for an unmirrored account) + flag-off assertion extended to orders. Suite now 80 green; typecheck/lint/format/build all green.
+- **Next up:** converge + cut over the `shipments` domain (carrier/tracking) so delivery cards read fully from canonical; then decommission legacy reads domain-by-domain once production parity is sustained.
+- **Blockers:** none code-side; Supabase/Google keys remain the OAuth activation gate.

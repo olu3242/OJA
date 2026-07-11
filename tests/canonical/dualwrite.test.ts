@@ -5,7 +5,10 @@ import { adminClient } from "./helpers";
 import { resetDb } from "../helpers";
 import { clearFlagCache } from "@/lib/flags";
 import { parityCheck } from "@/server/repositories/reporting";
-import { readSubscriptions } from "@/server/repositories/canonical-read";
+import {
+  readSubscriptions,
+  readOrders,
+} from "@/server/repositories/canonical-read";
 import { subscribe, pause, resume } from "@/server/services/subscriptions";
 import { confirmCycle } from "@/server/services/cycles";
 import { refundOrder } from "@/server/services/fulfillment";
@@ -286,6 +289,63 @@ describe("live dual-write + read cutover", () => {
     });
   });
 
+  it("serves order history from canonical with refunded totals (order read cutover)", async () => {
+    process.env.FLAG_CANONICAL_READ = "1";
+    clearFlagCache();
+    // household's one order was confirmed (phase 4) then refunded (refunds test).
+    const read = await readOrders(household.id);
+    expect(read.source).toBe("canonical");
+    expect(read.orders).toHaveLength(1);
+    expect(read.orders[0]).toMatchObject({
+      status: "REFUNDED",
+      totalCents: Math.round(6400 * 0.9),
+      refundedCents: Math.round(6400 * 0.9),
+    });
+    expect(read.orders[0].lines).toEqual([
+      { qtyLbs: 12, variety: "WHITE_IJEBU" },
+    ]);
+  });
+
+  it("order read falls back to legacy for an unmirrored account", async () => {
+    process.env.FLAG_CANONICAL_READ = "1";
+    process.env.FLAG_CANONICAL_DUAL_WRITE = "0"; // legacy-only
+    clearFlagCache();
+    const walkin = await db.account.create({
+      data: {
+        email: `walkin${Date.now()}@test.gaarii`,
+        name: "Walkin",
+        role: "HOUSEHOLD",
+      },
+    });
+    const sku = await db.sku.findFirstOrThrow({ where: { code: "GAR-YEL" } });
+    await db.order.create({
+      data: {
+        accountId: walkin.id,
+        status: "PAID",
+        totalCents: 2900,
+        addressLine1: "7 Walk St",
+        city: "Austin",
+        state: "TX",
+        zip: "73301",
+        lines: {
+          create: { skuId: sku.id, qtyUnits: 4, unitPriceCents: 725 },
+        },
+      },
+    });
+    process.env.FLAG_CANONICAL_DUAL_WRITE = "1";
+    clearFlagCache();
+
+    const read = await readOrders(walkin.id);
+    expect(read.source).toBe("legacy"); // unmirrored → safe fallback, not empty
+    expect(read.orders).toHaveLength(1);
+    expect(read.orders[0]).toMatchObject({
+      status: "PAID",
+      totalCents: 2900,
+      refundedCents: 0,
+    });
+    expect(read.orders[0].lines).toEqual([{ qtyLbs: 4, variety: "YELLOW" }]);
+  });
+
   it("falls back to legacy read for an unmirrored account (parity-gated)", async () => {
     process.env.FLAG_CANONICAL_READ = "1";
     clearFlagCache();
@@ -320,7 +380,7 @@ describe("live dual-write + read cutover", () => {
   it("read flag off always serves legacy", async () => {
     delete process.env.FLAG_CANONICAL_READ;
     clearFlagCache();
-    const read = await readSubscriptions(household.id);
-    expect(read.source).toBe("legacy");
+    expect((await readSubscriptions(household.id)).source).toBe("legacy");
+    expect((await readOrders(household.id)).source).toBe("legacy");
   });
 });
