@@ -20,6 +20,8 @@ import * as container from "./services/container";
 import * as group from "./services/group";
 import * as wholesale from "./services/wholesale";
 import * as supplier from "./services/supplier";
+import * as identity from "./repositories/identity";
+import { supabaseUser } from "@/lib/supabase/server";
 
 const staff = roleProcedure("WAREHOUSE", "ADMIN");
 const admin = roleProcedure("ADMIN");
@@ -270,6 +272,47 @@ export const appRouter = router({
       db.wholesaleLead.findMany({ orderBy: { createdAt: "desc" } }),
     ),
   }),
+  identity: router({
+    // Supabase-session identity (Google OAuth); null when signed out.
+    me: publicProcedure.query(async () => {
+      const user = await supabaseUser();
+      if (!user) return null;
+      return identity.getProfile(user.id);
+    }),
+    completeProfile: publicProcedure
+      .input(
+        z.object({
+          fullName: z.string().min(1),
+          country: z.string().length(2),
+          phone: z.string().optional(),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        const user = await supabaseUser();
+        if (!user) throw new Error("Not signed in");
+        await identity.completeProfileSetup(user.id, {
+          ...input,
+          phone: input.phone ?? null,
+        });
+        return { ok: true };
+      }),
+    completeOrganization: publicProcedure
+      .input(
+        z.object({
+          organizationId: z.string().uuid(),
+          name: z.string().min(1),
+          kind: z.string(),
+          country: z.string().length(2),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        const user = await supabaseUser();
+        if (!user) throw new Error("Not signed in");
+        await identity.completeOrganizationSetup(user.id, input);
+        return { ok: true };
+      }),
+  }),
+
   group: router({
     create: authedProcedure
       .input(

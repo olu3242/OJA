@@ -29,6 +29,46 @@ export function verifySessionToken(token: string | undefined): string | null {
 }
 
 export async function currentAccount(): Promise<Account | null> {
+  // 1) Supabase (Google OAuth) session — canonical identity, bridged to the
+  //    commerce account via profiles.legacy_account_id (created on demand).
+  try {
+    const { supabaseUser } = await import("@/lib/supabase/server");
+    const user = await supabaseUser();
+    if (user?.email) {
+      const { getProfile } = await import("@/server/repositories/identity");
+      const { canonicalPool } = await import("@/lib/canonical-db");
+      const profile = await getProfile(user.id);
+      if (profile?.legacy_account_id) {
+        const linked = await db.account.findUnique({
+          where: { id: profile.legacy_account_id },
+        });
+        if (linked) return linked;
+      }
+      const account =
+        (await db.account.findUnique({
+          where: { email: user.email.toLowerCase() },
+        })) ??
+        (await db.account.create({
+          data: {
+            email: user.email.toLowerCase(),
+            name: profile?.full_name ?? user.email.split("@")[0],
+            role: "HOUSEHOLD",
+          },
+        }));
+      await canonicalPool
+        .query(
+          `update public.profiles set legacy_account_id = $2, updated_by = $1
+            where id = $1 and legacy_account_id is null`,
+          [user.id, account.id],
+        )
+        .catch(() => undefined);
+      return account;
+    }
+  } catch {
+    // Supabase not configured/reachable — fall through to legacy session.
+  }
+
+  // 2) Legacy HMAC cookie session (dev fallback; disabled UI in production).
   const jar = await cookies();
   const accountId = verifySessionToken(jar.get(SESSION_COOKIE)?.value);
   if (!accountId) return null;

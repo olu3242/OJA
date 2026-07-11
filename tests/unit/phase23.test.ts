@@ -42,3 +42,26 @@ describe("Canada readiness (task 5.3)", () => {
     expect(regionSurchargeCents("US", "AK")).toBe(1500);
   });
 });
+
+describe("OAuth redirect resolution (localhost / preview / production)", () => {
+  it("prefers explicit site URL, then Vercel preview, then localhost", async () => {
+    const { siteUrl, oauthCallbackUrl } =
+      await import("@/lib/supabase/redirect");
+    const env = process.env;
+    env.NEXT_PUBLIC_SITE_URL = "https://gaarii.com/";
+    expect(siteUrl()).toBe("https://gaarii.com");
+    delete env.NEXT_PUBLIC_SITE_URL;
+    env.NEXT_PUBLIC_VERCEL_URL = "gaarii-git-preview.vercel.app";
+    expect(siteUrl()).toBe("https://gaarii-git-preview.vercel.app");
+    delete env.NEXT_PUBLIC_VERCEL_URL;
+    delete env.VERCEL_URL;
+    expect(siteUrl()).toBe("http://localhost:3000");
+    // open-redirect guard
+    expect(oauthCallbackUrl("//evil.com")).toBe(
+      "http://localhost:3000/auth/callback?next=%2F",
+    );
+    expect(oauthCallbackUrl("/account")).toBe(
+      "http://localhost:3000/auth/callback?next=%2Faccount",
+    );
+  });
+});

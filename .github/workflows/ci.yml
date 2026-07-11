@@ -21,6 +21,7 @@ jobs:
           --health-interval 5s --health-timeout 3s --health-retries 10
     env:
       DATABASE_URL: postgresql://oja:oja@localhost:5432/oja_test
+      SUPABASE_DB_URL: postgresql://oja:oja@localhost:5432/oja_canonical
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -30,6 +31,8 @@ jobs:
       - run: npm ci
       - run: npx prisma migrate deploy
       - run: npx prisma generate
+      - run: npx tsx scripts/canonical.ts migrate
+      - run: npx tsx scripts/canonical.ts verify
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run format:check

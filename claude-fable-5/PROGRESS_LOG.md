@@ -112,3 +112,15 @@ Entry template:
 - **Verified:** 41 vitest tests green (8 files) including the new `phase23` unit + `phase23-channels` integration suites; lint, typecheck, format, production build (new routes `/group/*`, `/api/webhooks/pos`) all green.
 - **Next up:** the plan is complete — future work is external-dependency swaps per `docs/runbooks/G3_PILOT_CHECKLIST.md` and re-planning Phase 2+ against real pilot data.
 - **Blockers:** same external keys as before; nothing code-side.
+
+## 2026-07-11 — Supabase Google Auth + canonical schema (identity convergence)
+
+- **What shipped:**
+  - **Canonical schema** (`supabase/migrations/0001–0003`): 123 tables across 18 domains (identity/RBAC, customers, group ordering, wholesale, suppliers, catalog, orders, payments, POS, supply chain, forecasting, event store, auditing, notifications, files, marketing, analytics, admin). Conventions enforced mechanically (§Z pass): UUID PKs, created/updated/deleted_at, organization_id, created_by/updated_by, updated_at trigger, RLS enabled, every FK indexed; optimistic-locking `version` triggers; audit-log triggers on sensitive tables; 3 invoker views + 1 materialized KPI view; idempotent seed (8 roles, 14 permissions, currencies, country pricing, garri catalog, templates, flags).
+  - **RLS**: deny-by-default; SECURITY DEFINER helpers (`is_org_member/is_org_admin/is_platform_admin`); tenant isolation, self-scoped identity tables, admin-only forensic stores, public catalog reference read, anon waitlist insert without read-back.
+  - **Google auth (Supabase, PKCE)**: browser client + SSR server client, session-refresh middleware, `/auth/callback` (code exchange → idempotent provisioning: profile → oauth identity guard → personal org → household_customer role → onboarding state → legacy-email linking → login_history), `/auth/signout`, Google sign-in/up buttons with loading/error states, `/onboarding` two-step wizard with account-linking notice; `currentAccount()` bridges Supabase identity to the Prisma commerce account.
+  - **Toolchain**: `canonical:migrate|verify|report` (transactional, checksum-locked; verify exits non-zero on drift); CI applies + verifies canonical schema.
+  - **Docs** (`docs/auth/`): ERD + convergence map, OAuth flow diagram, generated MIGRATION_REPORT + RLS_REPORT, deployment guide, security review, production readiness with conditional **GO**.
+- **Verified:** 60 vitest tests green (18 new: migration conformance, RLS as `authenticated`/`anon` roles, provisioning idempotency/no-duplicate-users/linking); lint, typecheck, format, build (new routes: /auth/callback, /auth/signout, /onboarding) all green against live Postgres 16.
+- **Decisions:** canonical DB is a separate database locally (`oja_canonical`) and the Supabase project DB in prod; commerce stays on the tested Prisma path and converges domain-by-domain per the ERD map; dev email sign-in renders only in non-production builds; activation of the live Google flow requires Supabase project + Google OAuth client (external keys — G3-checklist class).
+- **Blockers:** Supabase project + Google OAuth credentials (user-owned; ~1 afternoon of dashboard work per DEPLOYMENT_GUIDE).

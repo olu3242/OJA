@@ -5,7 +5,11 @@ export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     environment: "node",
-    include: ["tests/unit/**/*.test.ts", "tests/integration/**/*.test.ts"],
+    include: [
+      "tests/unit/**/*.test.ts",
+      "tests/integration/**/*.test.ts",
+      "tests/canonical/**/*.test.ts",
+    ],
     setupFiles: ["tests/setup.ts"],
     fileParallelism: false, // integration tests share one Postgres database
     testTimeout: 30_000,
