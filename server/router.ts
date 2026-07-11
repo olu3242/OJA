@@ -23,6 +23,7 @@ import * as supplier from "./services/supplier";
 import * as identity from "./repositories/identity";
 import * as reporting from "./repositories/reporting";
 import * as convergence from "./repositories/convergence";
+import * as canonicalReadRepo from "./repositories/canonical-read";
 import { supabaseUser } from "@/lib/supabase/server";
 
 const staff = roleProcedure("WAREHOUSE", "ADMIN");
@@ -65,6 +66,11 @@ export const appRouter = router({
         include: { cycles: { orderBy: { scheduledFor: "desc" }, take: 3 } },
         orderBy: { createdAt: "desc" },
       }),
+    ),
+    // Read cutover (phase 5): normalized read from canonical when the
+    // `canonical_read` flag is on, else legacy — `source` says which answered.
+    mineSource: authedProcedure.query(({ ctx }) =>
+      canonicalReadRepo.readSubscriptions(ctx.account.id),
     ),
     pause: authedProcedure
       .input(z.object({ id: z.string() }))

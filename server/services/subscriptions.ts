@@ -12,6 +12,7 @@ import {
 } from "@/lib/pricing";
 import { payments } from "./payments";
 import { notify } from "./notifications";
+import { mirrorAccount } from "@/server/repositories/canonical-write";
 
 export type Variety = "WHITE_IJEBU" | "YELLOW";
 export type Grind = "COARSE" | "FINE";
@@ -83,6 +84,7 @@ export async function subscribe(input: {
     plan: input.plan,
     priceCents,
   });
+  await mirrorAccount(input.accountId);
 
   return {
     subscription,
@@ -97,6 +99,7 @@ export async function pause(subscriptionId: string) {
     data: { status: "PAUSED", pausedAt: new Date() },
   });
   await emitDemandEvent("PAUSE", { accountId: sub.accountId, subscriptionId });
+  await mirrorAccount(sub.accountId);
   return sub;
 }
 
@@ -106,6 +109,7 @@ export async function resume(subscriptionId: string) {
     data: { status: "ACTIVE", pausedAt: null },
   });
   await emitDemandEvent("RESUME", { accountId: sub.accountId, subscriptionId });
+  await mirrorAccount(sub.accountId);
   return sub;
 }
 
@@ -115,6 +119,7 @@ export async function cancel(subscriptionId: string) {
     data: { status: "CANCELLED", cancelledAt: new Date() },
   });
   await emitDemandEvent("CANCEL", { accountId: sub.accountId, subscriptionId });
+  await mirrorAccount(sub.accountId);
   return sub;
 }
 
@@ -137,5 +142,6 @@ export async function swap(
     subscriptionId,
     payload: changes as Record<string, string>,
   });
+  await mirrorAccount(sub.accountId);
   return sub;
 }

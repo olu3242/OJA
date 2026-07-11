@@ -4,6 +4,7 @@ import { FIRST_DELIVERY_DISCOUNT } from "@/lib/pricing";
 import { skuForVariety, type Grind, type Variety } from "./subscriptions";
 import { payments } from "./payments";
 import { notify } from "./notifications";
+import { mirrorAccount } from "@/server/repositories/canonical-write";
 
 /**
  * Confirm a cycle into a paid order (the 5-tap review). Optional edits apply
@@ -99,6 +100,7 @@ export async function confirmCycle(
     orderId: order.id,
     totalCents,
   });
+  await mirrorAccount(sub.accountId);
 
   return order;
 }
@@ -119,6 +121,7 @@ export async function skipCycle(cycleId: string) {
     subscriptionId: cycle.subscriptionId,
     cycleId,
   });
+  await mirrorAccount(cycle.subscription.accountId);
   return updated;
 }
 

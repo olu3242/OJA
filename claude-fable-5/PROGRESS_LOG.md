@@ -138,3 +138,14 @@ Entry template:
 - **Verified:** 4 new parity tests (drift-before/parity-after, drift detection + re-converge restore, KPI-view read, scheduled-task registration); suite now 68 green; lint/typecheck/format/build all green.
 - **Next up:** first write cutover — route one commerce mutation (e.g. subscription pause) dual-write to canonical behind a feature flag, guarded by the parity gate.
 - **Blockers:** none code-side; Supabase/Google keys remain the OAuth activation gate.
+
+## 2026-07-11 — Convergence phases 3–5: live dual-write + read cutover
+
+- **What shipped:**
+  - **Refactor:** extracted `convergeOneAccount`/`auditOrphans` from `convergeLegacyData`; added `convergeAccount(id)` — the O(1) per-account path (batch behavior unchanged; existing convergence/parity tests still green). The per-account path now also mirrors lifecycle _updates_ (status/price/qty/delivery-status), not just inserts.
+  - **Phase 3 — dual-write foundation:** `lib/flags.ts` (env-override → canonical `feature_flags`, 30s cache, fail-closed), migration `0006` (registers `canonical_dual_write` + `canonical_read`, default OFF), `server/repositories/canonical-write.ts#mirrorAccount` (flag-gated, best-effort, never throws into the legacy path). Wired into subscribe/pause/resume/cancel/swap.
+  - **Phase 4 — dual-write extension:** wired the mirror into cycle confirm/skip, so the confirmed-cycle → delivery → order graph mirrors live. Parity holds from live writes alone (no batch converge).
+  - **Phase 5 — read cutover:** `server/repositories/canonical-read.ts#readSubscriptions` serves canonical when `canonical_read` is on, with a safe fallback to legacy for unmirrored accounts (never an empty pantry); exposed as tRPC `subscription.mineSource` returning `{ source, subscriptions }`.
+- **Verified:** 7 new tests (live subscription mirror, lifecycle transitions, cycle→order mirror + live parity, kill-switch drift, canonical read, parity-gated legacy fallback, read-flag-off); suite now 75 green; lint/typecheck/format/build all green. Flags default OFF so the shared services are unaffected when convergence isn't active.
+- **Next up:** extend dual-write to remaining commerce mutations (group orders, wholesale standing orders, refunds); add per-domain read cutovers; then decommission legacy reads domain-by-domain once production parity is sustained.
+- **Blockers:** none code-side; Supabase/Google keys remain the OAuth activation gate.
