@@ -124,3 +124,10 @@ Entry template:
 - **Verified:** 60 vitest tests green (18 new: migration conformance, RLS as `authenticated`/`anon` roles, provisioning idempotency/no-duplicate-users/linking); lint, typecheck, format, build (new routes: /auth/callback, /auth/signout, /onboarding) all green against live Postgres 16.
 - **Decisions:** canonical DB is a separate database locally (`oja_canonical`) and the Supabase project DB in prod; commerce stays on the tested Prisma path and converges domain-by-domain per the ERD map; dev email sign-in renders only in non-production builds; activation of the live Google flow requires Supabase project + Google OAuth client (external keys — G3-checklist class).
 - **Blockers:** Supabase project + Google OAuth credentials (user-owned; ~1 afternoon of dashboard work per DEPLOYMENT_GUIDE).
+
+## 2026-07-11 — Convergence step 1: legacy commerce → canonical schema (C5)
+
+- **What shipped:** migration `0004_convergence.sql` (`legacy_map` bridge table, full conventions); `server/repositories/convergence.ts` + `npm run converge` — idempotent, all-or-nothing backfill of legacy Prisma commerce (accounts → organizations + customers, subscriptions → subscriptions + items, cycles → subscription_deliveries, orders → orders + items with delivery back-links), Google-profile membership attach when a profile already links the legacy account, and a built-in orphan audit that rolls the whole transaction back on any dangling reference.
+- **Verified:** 4 new tests (backfill counts, data parity incl. first-delivery discount preservation, idempotent re-run, legacy_map bridge) — suite now 64 green; lint/typecheck/format/build green; `canonical:verify` still clean (124 tables).
+- **Next up:** cut one read path (e.g. admin dashboard) over to canonical views, then domain-by-domain write cutover per ERD convergence map.
+- **Blockers:** none code-side; Supabase/Google keys remain the activation gate for live OAuth.
