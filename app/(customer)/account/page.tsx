@@ -10,6 +10,23 @@ import {
   skipCycleAction,
   swapAction,
 } from "@/lib/actions";
+import {
+  Badge,
+  Button,
+  Card,
+  cardClasses,
+  EmptyState,
+  PageMain,
+  PageTitle,
+  SectionTitle,
+} from "@/components/ui";
+import type { BadgeVariant } from "@/components/ui";
+
+const STATUS_BADGE: Record<string, BadgeVariant> = {
+  ACTIVE: "success",
+  PAUSED: "warning",
+  CANCELLED: "neutral",
+};
 
 export const metadata = { title: "My pantry" };
 export const dynamic = "force-dynamic";
@@ -25,43 +42,30 @@ export default async function AccountPage() {
   const orders = ordersRead.orders;
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-12">
-      <h1 className="mb-8 text-3xl font-extrabold text-oja-green-deep">
-        My pantry
-      </h1>
+    <PageMain width="3xl">
+      <PageTitle className="mb-8">My pantry</PageTitle>
 
       {subs.length === 0 && (
-        <p className="rounded-xl border border-oja-green/20 bg-white p-6">
+        <Card>
           No subscription yet —{" "}
           <a href="/subscribe" className="font-bold text-oja-orange underline">
             choose your Garri plan
           </a>
           .
-        </p>
+        </Card>
       )}
 
       {subs.map((sub) => (
-        <section
-          key={sub.id}
-          className="mb-8 rounded-xl border border-oja-green/20 bg-white p-6"
-        >
+        <section key={sub.id} className={cardClasses("lg", "mb-8")}>
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-xl font-bold text-oja-green-deep">
+            <SectionTitle>
               {PLANS[sub.plan].label} ·{" "}
               {sub.variety === "WHITE_IJEBU" ? "White (Ijebu)" : "Yellow"} ·{" "}
               {sub.grind.toLowerCase()}
-            </h2>
-            <span
-              className={`rounded-full px-3 py-1 text-xs font-bold ${
-                sub.status === "ACTIVE"
-                  ? "bg-oja-green text-white"
-                  : sub.status === "PAUSED"
-                    ? "bg-oja-orange-soft text-oja-green-deep"
-                    : "bg-gray-200 text-gray-600"
-              }`}
-            >
+            </SectionTitle>
+            <Badge variant={STATUS_BADGE[sub.status] ?? "neutral"}>
               {sub.status}
-            </span>
+            </Badge>
           </div>
           <p className="mb-4 text-sm text-oja-green-deep/70">
             {sub.qtyLbs} lb of Premium Garri every {sub.cadenceDays} days · $
@@ -81,22 +85,16 @@ export default async function AccountPage() {
                   {sub.status === "ACTIVE" && (
                     <form action={confirmCycleAction}>
                       <input type="hidden" name="cycleId" value={cycle.id} />
-                      <button
-                        className="rounded-full bg-oja-orange px-5 py-2 font-bold text-white"
-                        type="submit"
-                      >
+                      <Button type="submit" size="sm">
                         Confirm delivery
-                      </button>
+                      </Button>
                     </form>
                   )}
                   <form action={skipCycleAction}>
                     <input type="hidden" name="cycleId" value={cycle.id} />
-                    <button
-                      className="rounded-full border-2 border-oja-green px-5 py-2 font-bold text-oja-green"
-                      type="submit"
-                    >
+                    <Button type="submit" variant="secondary" size="sm">
                       Skip this one
-                    </button>
+                    </Button>
                   </form>
                 </div>
               </div>
@@ -147,10 +145,8 @@ export default async function AccountPage() {
         </section>
       ))}
 
-      <h2 className="mb-4 text-xl font-bold text-oja-green-deep">Deliveries</h2>
-      {orders.length === 0 && (
-        <p className="text-oja-green-deep/60">No deliveries yet.</p>
-      )}
+      <SectionTitle className="mb-4">Deliveries</SectionTitle>
+      {orders.length === 0 && <EmptyState>No deliveries yet.</EmptyState>}
       <ul className="flex flex-col gap-2">
         {orders.map((o, i) => (
           <li
@@ -184,6 +180,6 @@ export default async function AccountPage() {
           </li>
         ))}
       </ul>
-    </main>
+    </PageMain>
   );
 }

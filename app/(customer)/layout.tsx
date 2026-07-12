@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { currentAccount } from "@/lib/auth";
 import { logoutAction } from "@/lib/actions";
+import { buttonClasses } from "@/components/ui";
 
 export default async function CustomerLayout({
   children,
@@ -29,10 +30,7 @@ export default async function CustomerLayout({
                 </button>
               </form>
             ) : (
-              <Link
-                href="/login"
-                className="rounded-full bg-oja-orange px-4 py-1.5 font-bold text-white"
-              >
+              <Link href="/login" className={buttonClasses("primary", "sm")}>
                 Sign in
               </Link>
             )}

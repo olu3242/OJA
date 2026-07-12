@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { currentAccount } from "@/lib/auth";
 import { subscribeAction } from "@/lib/actions";
 import { PLANS } from "@/lib/pricing";
+import { Button, Input, PageMain, PageTitle, Select } from "@/components/ui";
 
 export const metadata = { title: "Choose your Garri plan" };
 
@@ -10,10 +11,8 @@ export default async function SubscribePage() {
   if (!account) redirect("/login");
 
   return (
-    <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-12">
-      <h1 className="mb-2 text-3xl font-extrabold text-oja-green-deep">
-        Choose your Garri plan
-      </h1>
+    <PageMain width="2xl">
+      <PageTitle className="mb-2">Choose your Garri plan</PageTitle>
       <p className="mb-8 text-oja-green-deep/70">
         One product: Premium Nigerian Garri. The only difference between plans
         is quantity — shipping is included in every price.
@@ -51,73 +50,54 @@ export default async function SubscribePage() {
           <legend className="mb-2 font-bold text-oja-green-deep">
             Variety & grind
           </legend>
-          <select
-            name="variety"
-            aria-label="Garri variety"
-            className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
-          >
+          <Select name="variety" aria-label="Garri variety">
             <option value="WHITE_IJEBU">White Garri (Ijebu)</option>
             <option value="YELLOW">Yellow Garri</option>
-          </select>
-          <select
-            name="grind"
-            aria-label="Grind"
-            className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
-          >
+          </Select>
+          <Select name="grind" aria-label="Grind">
             <option value="COARSE">Coarse</option>
             <option value="FINE">Fine</option>
-          </select>
+          </Select>
         </fieldset>
 
         <fieldset className="grid gap-3 sm:grid-cols-2">
           <legend className="mb-2 font-bold text-oja-green-deep">
             Delivery address
           </legend>
-          <input
+          <Input
             name="line1"
             required
             placeholder="Street address"
             aria-label="Street address"
-            className="rounded-lg border border-oja-green/30 bg-white px-4 py-3 sm:col-span-2"
+            className="sm:col-span-2"
           />
-          <input
-            name="city"
-            required
-            placeholder="City"
-            aria-label="City"
-            className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
-          />
+          <Input name="city" required placeholder="City" aria-label="City" />
           <div className="grid grid-cols-2 gap-3">
-            <input
+            <Input
               name="state"
               required
               maxLength={2}
               placeholder="State (TX)"
               aria-label="State"
-              className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
             />
-            <input
+            <Input
               name="zip"
               required
               placeholder="ZIP"
               aria-label="ZIP code"
-              className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
             />
           </div>
         </fieldset>
 
-        <button
-          type="submit"
-          className="rounded-full bg-oja-orange px-8 py-4 text-lg font-bold text-white"
-        >
+        <Button type="submit" size="lg">
           Start my subscription
-        </button>
+        </Button>
         <p className="text-sm text-oja-green-deep/60">
           10% off your first delivery. Pause, skip, or cancel anytime. AK/HI/PR
           carry a delivery-zone surcharge so every shipment stays above our
           quality-sustaining margin floor.
         </p>
       </form>
-    </main>
+    </PageMain>
   );
 }

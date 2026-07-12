@@ -4,6 +4,14 @@ import { currentAccount } from "@/lib/auth";
 import { groupCloseAction, groupJoinAction } from "@/lib/actions";
 import { PLANS } from "@/lib/pricing";
 import { groupDiscountPct } from "@/server/services/group";
+import {
+  Button,
+  Card,
+  cardClasses,
+  PageMain,
+  PageTitle,
+  Select,
+} from "@/components/ui";
 
 export const metadata = { title: "Group order" };
 export const dynamic = "force-dynamic";
@@ -27,16 +35,16 @@ export default async function GroupPage({
   const isCreator = account?.id === group.creatorId;
 
   return (
-    <main className="mx-auto w-full max-w-xl flex-1 px-6 py-12">
-      <h1 className="mb-2 text-3xl font-extrabold text-oja-green-deep">
+    <PageMain width="xl">
+      <PageTitle className="mb-2">
         Group order <span className="text-oja-orange">{code}</span>
-      </h1>
+      </PageTitle>
       <p className="mb-6 text-oja-green-deep/70">
         Delivery to {group.addressLine1}, {group.city}, {group.state}. Status:{" "}
         <b>{group.status}</b>
       </p>
 
-      <section className="mb-8 rounded-xl border border-oja-green/20 bg-white p-5">
+      <Card className="mb-8">
         <p className="font-bold text-oja-green-deep">
           {group.members.length} member(s) · ${(gross / 100).toFixed(2)} gross ·
           current discount {(discount * 100).toFixed(0)}%
@@ -50,40 +58,27 @@ export default async function GroupPage({
             </li>
           ))}
         </ul>
-      </section>
+      </Card>
 
       {group.status === "OPEN" && account && !isMember && (
         <form
           action={groupJoinAction}
-          className="mb-6 flex flex-col gap-3 rounded-xl border border-oja-green/20 bg-white p-5"
+          className={cardClasses("md", "mb-6 flex flex-col gap-3")}
         >
           <input type="hidden" name="code" value={code} />
           <label className="font-bold text-oja-green-deep">
             Join with your plan
           </label>
-          <select
-            name="plan"
-            aria-label="Plan"
-            className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
-          >
+          <Select name="plan" aria-label="Plan">
             <option value="STARTER">Starter — 3–5 lb</option>
             <option value="FAMILY">Family — 10–15 lb</option>
             <option value="STOCK_UP">Stock-Up — 20–25 lb</option>
-          </select>
-          <select
-            name="variety"
-            aria-label="Variety"
-            className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
-          >
+          </Select>
+          <Select name="variety" aria-label="Variety">
             <option value="WHITE_IJEBU">White Garri (Ijebu)</option>
             <option value="YELLOW">Yellow Garri</option>
-          </select>
-          <button
-            type="submit"
-            className="rounded-full bg-oja-orange px-6 py-3 font-bold text-white"
-          >
-            Join group order
-          </button>
+          </Select>
+          <Button type="submit">Join group order</Button>
         </form>
       )}
       {!account && (
@@ -93,14 +88,11 @@ export default async function GroupPage({
       {group.status === "OPEN" && isCreator && group.members.length > 0 && (
         <form action={groupCloseAction}>
           <input type="hidden" name="code" value={code} />
-          <button
-            type="submit"
-            className="rounded-full border-2 border-oja-green px-6 py-3 font-bold text-oja-green"
-          >
+          <Button type="submit" variant="secondary">
             Close group & place the order
-          </button>
+          </Button>
         </form>
       )}
-    </main>
+    </PageMain>
   );
 }

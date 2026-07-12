@@ -44,7 +44,7 @@ export function GoogleSignInButton({
         onClick={start}
         disabled={loading}
         aria-busy={loading}
-        className="flex items-center justify-center gap-3 rounded-full border-2 border-oja-green bg-white px-6 py-3 font-bold text-oja-green-deep disabled:opacity-60"
+        className="flex items-center justify-center gap-3 rounded-full border-2 border-oja-green bg-white px-6 py-3 font-bold text-oja-green-deep transition-colors hover:bg-oja-green/5 focus-visible:ring-2 focus-visible:ring-oja-orange/50 focus-visible:ring-offset-2 focus-visible:ring-offset-oja-cream focus-visible:outline-none disabled:pointer-events-none disabled:opacity-60"
       >
         <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
           <path

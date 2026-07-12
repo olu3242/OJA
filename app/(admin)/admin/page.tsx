@@ -4,6 +4,16 @@ import { db } from "@/lib/db";
 import { currentAccount } from "@/lib/auth";
 import { createCaller } from "@/server/router";
 import { draftPoAction, placePoAction, runForecastAction } from "@/lib/actions";
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  PageMain,
+  PageTitle,
+  SectionTitle,
+  StatTile,
+} from "@/components/ui";
 
 export const metadata = { title: "Admin" };
 export const dynamic = "force-dynamic";
@@ -54,42 +64,22 @@ export default async function AdminPage() {
   ];
 
   return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
-      <h1 className="mb-6 text-3xl font-extrabold text-oja-green-deep">
-        Admin — north star
-      </h1>
+    <PageMain width="5xl">
+      <PageTitle className="mb-6">Admin — north star</PageTitle>
 
       <section className="mb-10 grid gap-3 sm:grid-cols-3">
         {tiles.map(([label, value]) => (
-          <div
-            key={label}
-            className="rounded-xl border border-oja-green/20 bg-white p-4"
-          >
-            <div className="text-xs font-bold tracking-wide text-oja-green-deep/60 uppercase">
-              {label}
-            </div>
-            <div className="text-2xl font-extrabold text-oja-green-deep">
-              {value}
-            </div>
-          </div>
+          <StatTile key={label} label={label} value={value} />
         ))}
       </section>
 
       {parity && (
-        <section className="mb-10 rounded-xl border border-oja-green/20 bg-white p-4">
+        <Card padding="sm" className="mb-10">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-oja-green-deep">
-              Canonical convergence (dual-read)
-            </h2>
-            <span
-              className={`rounded-full px-3 py-1 text-xs font-bold ${
-                parity.inParity
-                  ? "bg-oja-green text-white"
-                  : "bg-oja-orange-soft text-oja-green-deep"
-              }`}
-            >
+            <SectionTitle>Canonical convergence (dual-read)</SectionTitle>
+            <Badge variant={parity.inParity ? "success" : "warning"}>
               {parity.inParity ? "IN PARITY" : `${parity.drift.length} DRIFTED`}
-            </span>
+            </Badge>
           </div>
           <div className="grid grid-cols-3 gap-2 text-sm">
             <div className="font-bold text-oja-green-deep/60">metric</div>
@@ -131,32 +121,24 @@ export default async function AdminPage() {
               cutover.
             </p>
           )}
-        </section>
+        </Card>
       )}
 
       <section className="mb-10">
-        <h2 className="mb-3 text-xl font-bold text-oja-green-deep">
-          Demand engine
-        </h2>
+        <SectionTitle className="mb-3">Demand engine</SectionTitle>
         <div className="flex flex-wrap items-center gap-3">
           <form action={runForecastAction}>
-            <button
-              type="submit"
-              className="rounded-full bg-oja-orange px-5 py-2 font-bold text-white"
-            >
+            <Button type="submit" size="sm">
               Run forecast now
-            </button>
+            </Button>
           </form>
           {warehouse && suppliers[0] && suggestions.length > 0 && (
             <form action={draftPoAction}>
               <input type="hidden" name="warehouseId" value={warehouse.id} />
               <input type="hidden" name="supplierId" value={suppliers[0].id} />
-              <button
-                type="submit"
-                className="rounded-full bg-oja-green px-5 py-2 font-bold text-white"
-              >
+              <Button type="submit" variant="success" size="sm">
                 Draft PO from suggestions
-              </button>
+              </Button>
             </form>
           )}
         </div>
@@ -175,12 +157,8 @@ export default async function AdminPage() {
       </section>
 
       <section className="mb-10">
-        <h2 className="mb-3 text-xl font-bold text-oja-green-deep">
-          Draft POs
-        </h2>
-        {draftPos.length === 0 && (
-          <p className="text-sm text-oja-green-deep/60">None.</p>
-        )}
+        <SectionTitle className="mb-3">Draft POs</SectionTitle>
+        {draftPos.length === 0 && <EmptyState>None.</EmptyState>}
         {draftPos.map((po) => (
           <form
             key={po.id}
@@ -192,21 +170,16 @@ export default async function AdminPage() {
               PO {po.id.slice(-6)}:{" "}
               {po.lines.map((l) => `${l.qtyUnits} lb ${l.sku.code}`).join(", ")}
             </span>
-            <button
-              type="submit"
-              className="rounded-full bg-oja-green px-4 py-1 font-bold text-white"
-            >
+            <Button type="submit" variant="success" size="sm">
               Place
-            </button>
+            </Button>
           </form>
         ))}
       </section>
 
       <section className="mb-10 grid gap-6 sm:grid-cols-2">
         <div>
-          <h2 className="mb-3 text-xl font-bold text-oja-green-deep">
-            Container plan (12-week)
-          </h2>
+          <SectionTitle className="mb-3">Container plan (12-week)</SectionTitle>
           {containerPlan ? (
             <p className="text-sm">
               Shortfall {containerPlan.shortfallLbs.toLocaleString()} lb →{" "}
@@ -214,19 +187,15 @@ export default async function AdminPage() {
               <b>{containerPlan.orderByWeeks.toFixed(1)}</b> weeks.
             </p>
           ) : (
-            <p className="text-sm text-oja-green-deep/60">
-              No warehouse configured.
-            </p>
+            <EmptyState>No warehouse configured.</EmptyState>
           )}
         </div>
         <div>
-          <h2 className="mb-3 text-xl font-bold text-oja-green-deep">
+          <SectionTitle className="mb-3">
             Fresh deals (markdown ladder)
-          </h2>
+          </SectionTitle>
           {freshDeals.length === 0 && (
-            <p className="text-sm text-oja-green-deep/60">
-              No lots at expiry risk.
-            </p>
+            <EmptyState>No lots at expiry risk.</EmptyState>
           )}
           <ul className="text-sm">
             {freshDeals.map((d) => (
@@ -240,9 +209,9 @@ export default async function AdminPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-xl font-bold text-oja-green-deep">
+        <SectionTitle className="mb-3">
           Wholesale waitlist ({leads.length})
-        </h2>
+        </SectionTitle>
         <ul className="text-sm">
           {leads.slice(0, 10).map((l) => (
             <li key={l.id}>
@@ -251,6 +220,6 @@ export default async function AdminPage() {
           ))}
         </ul>
       </section>
-    </main>
+    </PageMain>
   );
 }

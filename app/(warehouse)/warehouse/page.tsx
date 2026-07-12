@@ -8,6 +8,16 @@ import {
   waveAction,
 } from "@/lib/actions";
 import { stockOnHand } from "@/server/services/inventory";
+import {
+  Button,
+  Card,
+  EmptyState,
+  Input,
+  PageMain,
+  PageTitle,
+  SectionTitle,
+  StatTile,
+} from "@/components/ui";
 
 export const metadata = { title: "Warehouse" };
 export const dynamic = "force-dynamic";
@@ -38,47 +48,23 @@ export default async function WarehousePage() {
     : [];
 
   return (
-    <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10">
-      <h1 className="mb-6 text-3xl font-extrabold text-oja-green-deep">
+    <PageMain width="4xl">
+      <PageTitle className="mb-6">
         Warehouse{warehouse ? ` — ${warehouse.name}` : ""}
-      </h1>
+      </PageTitle>
 
       <section className="mb-8 grid gap-3 sm:grid-cols-3">
         {stock.map((s) => (
-          <div
-            key={s.code}
-            className="rounded-xl border border-oja-green/20 bg-white p-4"
-          >
-            <div className="text-xs font-bold text-oja-green-deep/60">
-              {s.code}
-            </div>
-            <div className="text-2xl font-extrabold text-oja-green-deep">
-              {s.onHand} lb
-            </div>
-          </div>
+          <StatTile key={s.code} label={s.code} value={`${s.onHand} lb`} />
         ))}
-        <div className="rounded-xl border border-oja-green/20 bg-white p-4">
-          <div className="text-xs font-bold text-oja-green-deep/60">
-            ORDERS AWAITING PICK
-          </div>
-          <div className="text-2xl font-extrabold text-oja-orange">
-            {paidOrders}
-          </div>
-        </div>
+        <StatTile label="Orders awaiting pick" value={paidOrders} accent />
       </section>
 
       <section className="mb-8">
-        <h2 className="mb-3 text-xl font-bold text-oja-green-deep">
-          Receive against PO
-        </h2>
-        {openPos.length === 0 && (
-          <p className="text-sm text-oja-green-deep/60">No open POs.</p>
-        )}
+        <SectionTitle className="mb-3">Receive against PO</SectionTitle>
+        {openPos.length === 0 && <EmptyState>No open POs.</EmptyState>}
         {openPos.map((po) => (
-          <div
-            key={po.id}
-            className="mb-4 rounded-xl border border-oja-green/20 bg-white p-4"
-          >
+          <Card key={po.id} padding="sm" className="mb-4">
             <p className="mb-2 text-sm font-bold text-oja-green-deep">
               PO {po.id.slice(-6)} · {po.supplier.name}
               {po.expectedAt &&
@@ -95,63 +81,51 @@ export default async function WarehousePage() {
                 <span className="text-oja-green-deep/60">
                   {line.receivedUnits}/{line.qtyUnits} lb received
                 </span>
-                <input
+                <Input
+                  fieldSize="sm"
                   name="qtyUnits"
                   type="number"
                   min={1}
                   defaultValue={line.qtyUnits - line.receivedUnits}
-                  className="w-24 rounded border border-oja-green/30 px-2 py-1"
+                  className="w-24"
                 />
-                <input
+                <Input
+                  fieldSize="sm"
                   name="lotCode"
                   required
                   placeholder="Lot code"
-                  className="w-32 rounded border border-oja-green/30 px-2 py-1"
+                  className="w-32"
                 />
-                <input
-                  name="expiresAt"
-                  type="date"
-                  className="rounded border border-oja-green/30 px-2 py-1"
-                />
+                <Input fieldSize="sm" name="expiresAt" type="date" />
                 <label className="flex items-center gap-1">
                   <input type="checkbox" name="qcPassed" defaultChecked /> QC
                   pass
                 </label>
-                <button
-                  type="submit"
-                  className="rounded-full bg-oja-green px-4 py-1 font-bold text-white"
-                >
+                <Button type="submit" variant="success" size="sm">
                   Receive
-                </button>
+                </Button>
               </form>
             ))}
-          </div>
+          </Card>
         ))}
       </section>
 
       <section className="mb-8">
-        <h2 className="mb-3 text-xl font-bold text-oja-green-deep">
-          Pick & pack (FEFO)
-        </h2>
+        <SectionTitle className="mb-3">Pick &amp; pack (FEFO)</SectionTitle>
         {warehouse && (
           <form action={waveAction}>
             <input type="hidden" name="warehouseId" value={warehouse.id} />
-            <button
-              type="submit"
-              className="rounded-full bg-oja-orange px-5 py-2 font-bold text-white"
-            >
-              Generate wave & pick{" "}
+            <Button type="submit" size="sm">
+              Generate wave &amp; pick{" "}
               {paidOrders > 0 ? `(${paidOrders} orders)` : ""}
-            </button>
+            </Button>
           </form>
         )}
       </section>
 
       <section className="mb-8">
-        <h2 className="mb-3 text-xl font-bold text-oja-green-deep">Dispatch</h2>
-        {packedOrders.length === 0 && (
-          <p className="text-sm text-oja-green-deep/60">Nothing packed.</p>
-        )}
+        <SectionTitle className="mb-3">Dispatch</SectionTitle>
+        {packedOrders.length === 0 && <EmptyState>Nothing packed.</EmptyState>}
         {packedOrders.map((o) => (
           <form
             key={o.id}
@@ -163,20 +137,15 @@ export default async function WarehousePage() {
             <span>
               {o.city}, {o.state}
             </span>
-            <button
-              type="submit"
-              className="rounded-full bg-oja-green px-4 py-1 font-bold text-white"
-            >
+            <Button type="submit" variant="success" size="sm">
               Ship
-            </button>
+            </Button>
           </form>
         ))}
       </section>
 
       <section>
-        <h2 className="mb-3 text-xl font-bold text-oja-green-deep">
-          In transit
-        </h2>
+        <SectionTitle className="mb-3">In transit</SectionTitle>
         {shippedOrders.map((o) => (
           <form
             key={o.id}
@@ -187,15 +156,12 @@ export default async function WarehousePage() {
             <span className="font-semibold">
               {o.carrier} {o.trackingCode}
             </span>
-            <button
-              type="submit"
-              className="rounded-full border-2 border-oja-green px-4 py-1 font-bold text-oja-green"
-            >
+            <Button type="submit" variant="secondary" size="sm">
               Mark delivered
-            </button>
+            </Button>
           </form>
         ))}
       </section>
-    </main>
+    </PageMain>
   );
 }

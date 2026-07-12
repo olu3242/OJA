@@ -1,6 +1,7 @@
 import { loginAction } from "@/lib/actions";
 import { isSupabaseConfigured } from "@/lib/supabase/redirect";
 import { GoogleSignInButton } from "./google-button";
+import { Alert, Button, Input, PageMain, PageTitle } from "@/components/ui";
 
 export const metadata = { title: "Sign in" };
 
@@ -23,18 +24,15 @@ export default async function LoginPage({
   const googleReady = isSupabaseConfigured();
 
   return (
-    <main className="mx-auto flex max-w-sm flex-1 flex-col justify-center gap-6 px-6 py-16">
-      <h1 className="text-2xl font-extrabold text-oja-green-deep">
+    <PageMain width="sm" centered>
+      <PageTitle size="sm">
         Welcome to GAARII<span className="text-oja-orange">.</span>
-      </h1>
+      </PageTitle>
 
       {error && (
-        <p
-          role="alert"
-          className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800"
-        >
+        <Alert variant="error">
           {ERRORS[error] ?? "Something went wrong — please try again."}
-        </p>
+        </Alert>
       )}
 
       {googleReady ? (
@@ -47,11 +45,11 @@ export default async function LoginPage({
           </p>
         </div>
       ) : (
-        <p className="rounded-lg border border-oja-green/20 bg-white px-4 py-3 text-sm text-oja-green-deep/70">
+        <Alert variant="info">
           Google sign-in activates when <code>NEXT_PUBLIC_SUPABASE_URL</code>{" "}
           and <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> are set (see
           docs/auth/DEPLOYMENT_GUIDE.md).
-        </p>
+        </Alert>
       )}
 
       {process.env.NODE_ENV !== "production" && (
@@ -60,30 +58,23 @@ export default async function LoginPage({
             Development sign-in (disabled in production)
           </summary>
           <form action={loginAction} className="mt-3 flex flex-col gap-3">
-            <input
+            <Input
               type="email"
               name="email"
               required
               placeholder="you@email.com"
               aria-label="Email address"
-              className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
             />
-            <input
+            <Input
               type="text"
               name="name"
               placeholder="Your name (optional)"
               aria-label="Your name"
-              className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
             />
-            <button
-              type="submit"
-              className="rounded-full bg-oja-orange px-6 py-3 font-bold text-white"
-            >
-              Continue
-            </button>
+            <Button type="submit">Continue</Button>
           </form>
         </details>
       )}
-    </main>
+    </PageMain>
   );
 }

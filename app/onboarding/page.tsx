@@ -6,6 +6,7 @@ import {
   organizationSetupAction,
 } from "@/lib/auth-actions";
 import { db } from "@/lib/db";
+import { Button, Input, PageMain, PageTitle, Select } from "@/components/ui";
 
 export const metadata = { title: "Set up your account" };
 export const dynamic = "force-dynamic";
@@ -28,12 +29,12 @@ export default async function OnboardingPage() {
     : "profile";
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-6 px-6 py-16">
-      <h1 className="text-2xl font-extrabold text-oja-green-deep">
+    <PageMain width="md" centered>
+      <PageTitle size="sm">
         {step === "profile"
           ? "Set up your profile"
           : "Set up your pantry organization"}
-      </h1>
+      </PageTitle>
 
       {legacy && (
         <p className="rounded-lg border border-oja-green/30 bg-oja-orange-soft/40 px-4 py-3 text-sm text-oja-green-deep">
@@ -44,35 +45,27 @@ export default async function OnboardingPage() {
 
       {step === "profile" ? (
         <form action={profileSetupAction} className="flex flex-col gap-3">
-          <input
+          <Input
             name="fullName"
             required
             defaultValue={profile.full_name ?? ""}
             placeholder="Full name"
             aria-label="Full name"
-            className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
           />
-          <select
+          <Select
             name="country"
             defaultValue={profile.country}
             aria-label="Country"
-            className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
           >
             <option value="US">United States</option>
             <option value="CA">Canada</option>
-          </select>
-          <input
+          </Select>
+          <Input
             name="phone"
             placeholder="Phone (optional, for delivery updates)"
             aria-label="Phone"
-            className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
           />
-          <button
-            type="submit"
-            className="rounded-full bg-oja-orange px-6 py-3 font-bold text-white"
-          >
-            Continue
-          </button>
+          <Button type="submit">Continue</Button>
         </form>
       ) : (
         <form action={organizationSetupAction} className="flex flex-col gap-3">
@@ -81,43 +74,35 @@ export default async function OnboardingPage() {
             name="organizationId"
             value={profile.default_organization_id ?? ""}
           />
-          <input
+          <Input
             name="name"
             required
             defaultValue={`${profile.full_name ?? "My"} pantry`}
             placeholder="Organization name"
             aria-label="Organization name"
-            className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
           />
-          <select
+          <Select
             name="kind"
             defaultValue="household"
             aria-label="Organization type"
-            className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
           >
             <option value="household">Household</option>
             <option value="group">Community / group organizer</option>
             <option value="business">Store (wholesale)</option>
             <option value="restaurant">Restaurant</option>
             <option value="supplier">Supplier</option>
-          </select>
-          <select
+          </Select>
+          <Select
             name="country"
             defaultValue={profile.country}
             aria-label="Country"
-            className="rounded-lg border border-oja-green/30 bg-white px-4 py-3"
           >
             <option value="US">United States</option>
             <option value="CA">Canada</option>
-          </select>
-          <button
-            type="submit"
-            className="rounded-full bg-oja-orange px-6 py-3 font-bold text-white"
-          >
-            Finish setup
-          </button>
+          </Select>
+          <Button type="submit">Finish setup</Button>
         </form>
       )}
-    </main>
+    </PageMain>
   );
 }
