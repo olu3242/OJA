@@ -36,14 +36,21 @@ export default async function AdminPage() {
   const freshDeals = await caller.admin.freshDeals();
   // Convergence phase 2 dual-read panel — tolerate an unconfigured canonical DB.
   const parity = await caller.admin.convergenceParity().catch(() => null);
+  // Read cutover: commerce KPI tiles from canonical when the flag is on, else
+  // legacy — tolerate an unconfigured canonical DB by falling back to `dash`.
+  const commerce = await caller.admin.commerceKpis().catch(() => null);
+  const commerceSource = commerce?.source ?? "legacy";
+  const activeSubs =
+    commerce?.kpis.activeSubscriptions ?? dash.subscribers.active;
+  const refundedOrders = commerce?.kpis.refundedOrders ?? dash.refunds;
 
   const tiles: [string, string][] = [
-    ["Active subscribers", String(dash.subscribers.active)],
+    [`Active subscribers · ${commerceSource}`, String(activeSubs)],
     ["Cycle-confirm rate", pct(dash.cycleConfirmRate)],
     ["On-time ship rate", pct(dash.onTimeShipRate)],
     ["GM after shipping", pct(dash.grossMarginAfterShipping)],
     ["WAPE v0 / v1", `${pct(dash.wape.v0)} / ${pct(dash.wape.v1)}`],
-    ["Refunds", String(dash.refunds)],
+    [`Refunded orders · ${commerceSource}`, String(refundedOrders)],
   ];
 
   return (

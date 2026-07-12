@@ -95,12 +95,20 @@ describe("Gate G2 — pantry & demand engine v0 e2e", () => {
   });
 
   it("suggests reorders (forecast − on-hand − inbound + safety) and drafts a PO", async () => {
-    const suggestions = await reorderSuggestions(fx.warehouse.id);
+    // Pin `now` to the forecast anchor so coverage doesn't drift with the
+    // wall clock (the forecast above was generated at 2026-07-10).
+    const now = new Date("2026-07-10T09:00:00Z");
+    const suggestions = await reorderSuggestions(fx.warehouse.id, now);
     const white = suggestions.find((s) => s.skuCode === "GAR-WHT-IJEBU");
     expect(white).toBeDefined();
     expect(white!.suggestedUnits).toBeGreaterThanOrEqual(30); // 4wk×6 + 6 safety, no stock
 
-    const po = await draftPoFromSuggestions(fx.warehouse.id, fx.supplier.id);
+    const po = await draftPoFromSuggestions(
+      fx.warehouse.id,
+      fx.supplier.id,
+      150,
+      now,
+    );
     expect(po).not.toBeNull();
     expect(po!.status).toBe("DRAFT");
     expect(po!.lines.some((l) => l.skuId === fx.white.id)).toBe(true);

@@ -287,6 +287,9 @@ export const appRouter = router({
     // Convergence phase 2 — dual-read parity + on-demand backfill.
     convergenceParity: admin.query(() => reporting.parityCheck()),
     runConvergence: admin.mutation(() => convergence.convergeLegacyData()),
+    // Read cutover: commerce KPI tiles served from canonical when the flag is
+    // on (with legacy fallback); `source` says which schema answered.
+    commerceKpis: admin.query(() => canonicalReadRepo.readCommerceKpis()),
   }),
   identity: router({
     // Supabase-session identity (Google OAuth); null when signed out.

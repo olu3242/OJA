@@ -226,8 +226,9 @@ export async function draftPoFromSuggestions(
   warehouseId: string,
   supplierId: string,
   unitCostCents = 150, // placeholder landed cost per lb until supplier quotes land
+  now = new Date(),
 ) {
-  const suggestions = await reorderSuggestions(warehouseId);
+  const suggestions = await reorderSuggestions(warehouseId, now);
   if (suggestions.length === 0) return null;
   return db.purchaseOrder.create({
     data: {

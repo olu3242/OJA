@@ -8,6 +8,7 @@ import { parityCheck } from "@/server/repositories/reporting";
 import {
   readSubscriptions,
   readOrders,
+  readCommerceKpis,
 } from "@/server/repositories/canonical-read";
 import { subscribe, pause, resume } from "@/server/services/subscriptions";
 import { confirmCycle } from "@/server/services/cycles";
@@ -430,6 +431,20 @@ describe("live dual-write + read cutover", () => {
     const read = await readSubscriptions(fresh.id);
     expect(read.source).toBe("legacy"); // not mirrored → safe fallback, not empty
     expect(read.subscriptions).toHaveLength(1);
+  });
+
+  it("serves commerce KPIs from canonical under the read flag (admin read cutover)", async () => {
+    process.env.FLAG_CANONICAL_READ = "1";
+    clearFlagCache();
+    const on = await readCommerceKpis();
+    expect(on.source).toBe("canonical");
+    // household + wholesale store standing order are mirrored & active.
+    expect(on.kpis.activeSubscriptions).toBeGreaterThanOrEqual(2);
+    expect(on.kpis.refundedOrders).toBeGreaterThanOrEqual(1); // household refund
+
+    delete process.env.FLAG_CANONICAL_READ;
+    clearFlagCache();
+    expect((await readCommerceKpis()).source).toBe("legacy");
   });
 
   it("read flag off always serves legacy", async () => {

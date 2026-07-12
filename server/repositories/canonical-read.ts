@@ -1,6 +1,7 @@
 import { canonicalPool } from "@/lib/canonical-db";
 import { db } from "@/lib/db";
 import { canonicalReadEnabled } from "@/lib/flags";
+import { canonicalKpis, legacyKpis, type CommerceKpis } from "./reporting";
 
 /**
  * Read cutover (convergence phase 5). A single normalized read served from the
@@ -174,4 +175,25 @@ export async function readOrders(accountId: string): Promise<OrdersRead> {
     }
   }
   return { source: "legacy", orders: await legacyReadOrders(accountId) };
+}
+
+export type CommerceKpisRead = {
+  source: "canonical" | "legacy";
+  kpis: CommerceKpis;
+};
+
+/**
+ * Admin read cutover: the commerce KPI tiles served from the canonical
+ * `v_commerce_kpis` view when `canonical_read` is on, else legacy counts. The
+ * parity gate (reporting.parityCheck) proves the two agree before enabling.
+ */
+export async function readCommerceKpis(): Promise<CommerceKpisRead> {
+  if (await canonicalReadEnabled()) {
+    try {
+      return { source: "canonical", kpis: await canonicalKpis() };
+    } catch {
+      // fall through to legacy — a read cutover must never hard-fail the page
+    }
+  }
+  return { source: "legacy", kpis: await legacyKpis() };
 }

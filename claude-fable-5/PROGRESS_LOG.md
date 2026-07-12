@@ -182,3 +182,12 @@ Entry template:
 - **Verified:** new dual-write test drives `dispatch` → shipment (`in_transit`/`shipped`) → `markDelivered` (`delivered` + `delivered_at`) and asserts the canonical read surfaces the tracking code; test-cleanup blocks delete `shipments` ahead of `orders`. Suite now 81 green; batch `npm run converge` reports the `shipments` column with zero orphans; typecheck/lint/format/build all green.
 - **Next up:** the orders domain now reads fully from canonical; decommission legacy reads domain-by-domain once production parity is sustained, and extend the cutover to the remaining read surfaces (admin/warehouse).
 - **Blockers:** none code-side; Supabase/Google keys remain the OAuth activation gate.
+
+## 2026-07-11 — Convergence phase 9: admin read cutover + forecast test fix
+
+- **What shipped:**
+  - **Admin read cutover:** `canonical-read.readCommerceKpis()` returns `{ source, kpis }` — the commerce KPI tiles from the canonical `v_commerce_kpis` view when `canonical_read` is on (reusing `reporting.canonicalKpis`), else `reporting.legacyKpis`, with the same never-hard-fail fallback. Exposed as tRPC `admin.commerceKpis`. The admin dashboard's "Active subscribers" and "Refunded orders" tiles now read source-aware values with a `· canonical`/`· legacy` badge, tolerating an unconfigured canonical DB by falling back to the legacy `dashboard()` numbers. This extends the read cutover from the customer surface to the admin surface, gated by the same parity check that already backs the dual-read panel.
+  - **Test fix (pre-existing flake):** `g2-pantry-forecast`'s reorder-suggestion assertion used the real wall clock while its forecast was anchored at 2026-07-10, so coverage drifted a week (30 → 24 lb) as the date advanced. Added an optional `now` passthrough to `draftPoFromSuggestions` and pinned `now` in the test to the forecast anchor — deterministic regardless of run date.
+- **Verified:** new dual-write test (canonical-sourced commerce KPIs under the flag; legacy when off) + the forecast fix; suite now 82 green; typecheck/lint/format/build all green.
+- **Next up:** decommission legacy reads domain-by-domain once production parity is sustained; remaining candidate read surfaces are warehouse/supply-chain (POs, lots) which depend on converging those domains' writes first.
+- **Blockers:** none code-side; Supabase/Google keys remain the OAuth activation gate.
