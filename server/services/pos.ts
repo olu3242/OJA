@@ -9,6 +9,7 @@ import { emitDemandEvent } from "@/lib/events";
 export type SellThroughPayload = {
   source: "square" | "clover" | "manual";
   storeAccountId: string;
+  eventId?: string; // provider event id → webhook idempotency key
   entries: { skuCode: string; unitsSold: number; periodEnd: string }[];
 };
 

@@ -590,3 +590,19 @@ model GroupOrderMember {
   @@unique([groupOrderId, accountId])
   @@map("group_order_members")
 }
+
+/// Webhook idempotency ledger (WS9 reliability): one row per (source, eventKey).
+/// A replayed webhook finds an existing PROCESSED row and short-circuits instead
+/// of re-running the handler — protecting against duplicate provider deliveries.
+model WebhookEvent {
+  id        String   @id @default(cuid())
+  source    String // "pos", "stripe", …
+  eventKey  String // provider event id / idempotency key
+  status    String   @default("PROCESSED") // PROCESSED | FAILED
+  result    Json?
+  createdAt DateTime @default(now())
+
+  @@unique([source, eventKey])
+  @@index([source, createdAt])
+  @@map("webhook_events")
+}
