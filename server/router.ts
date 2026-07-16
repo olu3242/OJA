@@ -25,6 +25,7 @@ import * as reporting from "./repositories/reporting";
 import * as convergence from "./repositories/convergence";
 import * as canonicalReadRepo from "./repositories/canonical-read";
 import * as paymentsRepo from "./repositories/payments";
+import * as dlq from "@/lib/dlq";
 import { supabaseUser } from "@/lib/supabase/server";
 
 const staff = roleProcedure("WAREHOUSE", "ADMIN");
@@ -293,6 +294,9 @@ export const appRouter = router({
     commerceKpis: admin.query(() => canonicalReadRepo.readCommerceKpis()),
     // Live payment KPIs from the canonical ledger (WS10 Phase 12).
     paymentMetrics: admin.query(() => paymentsRepo.paymentMetrics()),
+    // Dead-letter queue depth (WS9 reliability) + inspection list.
+    deadLetterCount: admin.query(() => dlq.deadLetterCount()),
+    deadLetters: admin.query(() => dlq.listDeadLetters()),
   }),
   identity: router({
     // Supabase-session identity (Google OAuth); null when signed out.

@@ -6,6 +6,7 @@ import {
 } from "@/server/services/pos";
 import { captureError } from "@/lib/observability";
 import { withIdempotency } from "@/lib/idempotency";
+import { recordDeadLetter } from "@/lib/dlq";
 import { rateLimit, clientKey, rateLimitHeaders } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -39,11 +40,16 @@ export async function POST(req: Request) {
   if (req.headers.get("x-webhook-secret") !== secret) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+  let payload: SellThroughPayload;
   try {
-    const payload = (await req.json()) as SellThroughPayload;
-    if (!payload?.storeAccountId || !Array.isArray(payload.entries)) {
-      return NextResponse.json({ error: "invalid payload" }, { status: 400 });
-    }
+    payload = (await req.json()) as SellThroughPayload;
+  } catch {
+    return NextResponse.json({ error: "invalid json" }, { status: 400 });
+  }
+  if (!payload?.storeAccountId || !Array.isArray(payload.entries)) {
+    return NextResponse.json({ error: "invalid payload" }, { status: 400 });
+  }
+  try {
     const { replayed, result } = await withIdempotency(
       "pos",
       idempotencyKey(payload),
@@ -51,7 +57,14 @@ export async function POST(req: Request) {
     );
     return NextResponse.json({ results: result, replayed });
   } catch (error) {
+    // Never lose the event: dead-letter it for inspection + replay.
     captureError(error, { route: "webhooks/pos" });
+    await recordDeadLetter({
+      source: "pos",
+      eventKey: idempotencyKey(payload),
+      payload,
+      error,
+    }).catch(() => {});
     return NextResponse.json({ error: "ingest failed" }, { status: 500 });
   }
 }

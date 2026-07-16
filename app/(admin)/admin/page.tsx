@@ -55,6 +55,8 @@ export default async function AdminPage() {
   const refundedOrders = commerce?.kpis.refundedOrders ?? dash.refunds;
   // Payment ledger KPIs (WS10) — tolerate an unconfigured canonical DB.
   const pay = await caller.admin.paymentMetrics().catch(() => null);
+  // Dead-letter queue depth (WS9) — ops signal for stuck webhook/event handlers.
+  const dlqDepth = await caller.admin.deadLetterCount().catch(() => 0);
 
   const tiles: [string, string][] = [
     [`Active subscribers · ${commerceSource}`, String(activeSubs)],
@@ -73,6 +75,7 @@ export default async function AdminPage() {
         {tiles.map(([label, value]) => (
           <StatTile key={label} label={label} value={value} />
         ))}
+        <StatTile label="Dead letters" value={dlqDepth} accent={dlqDepth > 0} />
       </section>
 
       {pay && (

@@ -606,3 +606,22 @@ model WebhookEvent {
   @@index([source, createdAt])
   @@map("webhook_events")
 }
+
+/// Dead-letter queue (WS9 reliability): a webhook/event handler that fails
+/// permanently (after retries) lands here with its payload + error so it can be
+/// inspected and replayed instead of being silently lost.
+model DeadLetter {
+  id        String   @id @default(cuid())
+  source    String // "pos", "stripe", "event", …
+  eventKey  String // the handler's idempotency/event key
+  payload   Json
+  error     String
+  attempts  Int      @default(1)
+  status    String   @default("PENDING") // PENDING | REPLAYED | DISCARDED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([source, eventKey])
+  @@map("dead_letters")
+}

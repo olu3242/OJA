@@ -102,7 +102,7 @@ order(PAID) ─wave─► allocateFefo (shortage → variant swap) ─► PICK t
 | 6   | Supply chain    | DONE    | Supplier→PO→receive→forecast→wave→pick→pack→ship→deliver→returns — driven end-to-end in the E2E test.                                                                                                                             |
 | 7   | Operations      | PARTIAL | Admin + warehouse dashboards live-query. GAP: dedicated finance/supplier/executive dashboards (data exists; views not built).                                                                                                     |
 | 8   | AI copilots     | GAP     | Not built. Event streams (`demand_events`, `payment_events`) exist to consume; copilots need an LLM integration (external).                                                                                                       |
-| 9   | Observability   | PARTIAL | Structured logs, correlation IDs on payment events, health/status probes, retries/timeouts, webhook replay. GAP: OTel tracing, alerts, DLQ (external/infra).                                                                      |
+| 9   | Observability   | PARTIAL | Structured logs, correlation IDs on payment events, health/status probes, retries/timeouts, webhook replay, dead-letter queue (`processWithDlq`/replay + admin tile, tested). GAP: OTel tracing, alerts (external/infra).         |
 | 10  | Security        | DONE\*  | RLS tenant isolation, RBAC procedures, OAuth, security headers/CSP, webhook signature verify, per-IP rate limiting on webhooks (429, verified over HTTP), duplicate-charge/refund/webhook guards, Zod validation. GAP: nonce CSP. |
 | 11  | Performance     | PARTIAL | Prod build clean; FK indexes throughout; no N+1 in the tested paths. GAP: formal P95 benchmark + Lighthouse not captured.                                                                                                         |
 | 12  | Database        | DONE    | 123 canonical tables, RLS, FK indexes, optimistic-locking, matview, additive migrations; `canonical:verify` clean; **E2E orphan sweep = 0**.                                                                                      |
@@ -125,7 +125,7 @@ remaining blockers are, as predicted, mostly external:
 | Live Stripe key + webhook registration                   | Infrastructure | HIGH     |
 | Supabase project + Google OAuth credentials              | Infrastructure | HIGH     |
 | Email/password auth + invitations                        | Engineering    | MEDIUM   |
-| OTel/Sentry, alerts, DLQ (rate limiting shipped)         | Infrastructure | MEDIUM   |
+| OTel/Sentry, alerts (rate limiting + DLQ shipped)        | Infrastructure | MEDIUM   |
 | Finance/supplier/executive dashboards                    | Engineering    | MEDIUM   |
 | AI copilots                                              | Engineering    | LOW      |
 | Container/deploy/DR automation                           | Operations     | MEDIUM   |
