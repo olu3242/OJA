@@ -4,9 +4,13 @@ import { verifyStripeEvent, StripeSignatureError } from "@/lib/stripe";
 import { withIdempotency } from "@/lib/idempotency";
 import { captureError } from "@/lib/observability";
 import { canonicalPool } from "@/lib/canonical-db";
+import { rateLimit, clientKey, rateLimitHeaders } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+// Per-IP flood protection ahead of signature verification.
+const RATE = { limit: 300, windowMs: 60_000 };
 
 /**
  * Stripe webhook (WS10 Phase 2/10). The signature is verified against the raw
@@ -53,6 +57,13 @@ async function applyStripeEvent(
 }
 
 export async function POST(req: Request) {
+  const limit = rateLimit(`stripe:${clientKey(req)}`, RATE);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: "rate limited" },
+      { status: 429, headers: rateLimitHeaders(limit) },
+    );
+  }
   const rawBody = await req.text();
   const signature = req.headers.get("stripe-signature");
 

@@ -6,8 +6,12 @@ import {
 } from "@/server/services/pos";
 import { captureError } from "@/lib/observability";
 import { withIdempotency } from "@/lib/idempotency";
+import { rateLimit, clientKey, rateLimitHeaders } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
+
+// Per-IP flood protection on the unauthenticated ingress surface.
+const RATE = { limit: 120, windowMs: 60_000 };
 
 // POS sell-through webhook (task 4.2). Square/Clover adapters normalize into
 // this shape; a shared secret gates ingestion until per-provider signature
@@ -24,6 +28,13 @@ function idempotencyKey(payload: SellThroughPayload): string {
 }
 
 export async function POST(req: Request) {
+  const limit = rateLimit(`pos:${clientKey(req)}`, RATE);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: "rate limited" },
+      { status: 429, headers: rateLimitHeaders(limit) },
+    );
+  }
   const secret = process.env.POS_WEBHOOK_SECRET ?? "dev-pos-secret";
   if (req.headers.get("x-webhook-secret") !== secret) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
