@@ -49,6 +49,10 @@ describe("live dual-write + read cutover", () => {
     await c.query(`delete from public.subscription_deliveries`);
     await c.query(`delete from public.subscription_items`);
     await c.query(`delete from public.subscriptions`);
+    await c.query(`delete from public.payment_events`);
+    await c.query(`delete from public.payments`);
+    await c.query(`delete from public.credits`);
+    await c.query(`delete from public.wallets`);
     await c.query(`delete from public.customers`);
     await c.end();
     process.env.FLAG_CANONICAL_DUAL_WRITE = "1";

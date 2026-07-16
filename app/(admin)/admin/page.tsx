@@ -53,6 +53,8 @@ export default async function AdminPage() {
   const activeSubs =
     commerce?.kpis.activeSubscriptions ?? dash.subscribers.active;
   const refundedOrders = commerce?.kpis.refundedOrders ?? dash.refunds;
+  // Payment ledger KPIs (WS10) — tolerate an unconfigured canonical DB.
+  const pay = await caller.admin.paymentMetrics().catch(() => null);
 
   const tiles: [string, string][] = [
     [`Active subscribers · ${commerceSource}`, String(activeSubs)],
@@ -72,6 +74,28 @@ export default async function AdminPage() {
           <StatTile key={label} label={label} value={value} />
         ))}
       </section>
+
+      {pay && (
+        <section className="mb-10">
+          <SectionTitle className="mb-3">Payments (ledger)</SectionTitle>
+          <div className="grid gap-3 sm:grid-cols-4">
+            <StatTile
+              label="Net revenue"
+              value={`$${(pay.netCents / 100).toFixed(2)}`}
+              accent
+            />
+            <StatTile
+              label="MRR"
+              value={`$${(pay.mrrCents / 100).toFixed(2)}`}
+            />
+            <StatTile
+              label="Captured"
+              value={`$${(pay.capturedCents / 100).toFixed(2)}`}
+            />
+            <StatTile label="Refund rate" value={`${pay.refundRatePct}%`} />
+          </div>
+        </section>
+      )}
 
       {parity && (
         <Card padding="sm" className="mb-10">

@@ -24,6 +24,7 @@ import * as identity from "./repositories/identity";
 import * as reporting from "./repositories/reporting";
 import * as convergence from "./repositories/convergence";
 import * as canonicalReadRepo from "./repositories/canonical-read";
+import * as paymentsRepo from "./repositories/payments";
 import { supabaseUser } from "@/lib/supabase/server";
 
 const staff = roleProcedure("WAREHOUSE", "ADMIN");
@@ -290,6 +291,8 @@ export const appRouter = router({
     // Read cutover: commerce KPI tiles served from canonical when the flag is
     // on (with legacy fallback); `source` says which schema answered.
     commerceKpis: admin.query(() => canonicalReadRepo.readCommerceKpis()),
+    // Live payment KPIs from the canonical ledger (WS10 Phase 12).
+    paymentMetrics: admin.query(() => paymentsRepo.paymentMetrics()),
   }),
   identity: router({
     // Supabase-session identity (Google OAuth); null when signed out.
