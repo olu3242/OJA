@@ -69,7 +69,12 @@ export default async function AdminPage() {
 
   return (
     <PageMain width="5xl">
-      <PageTitle className="mb-6">Admin — north star</PageTitle>
+      <div className="mb-6 flex items-center justify-between">
+        <PageTitle>Admin — north star</PageTitle>
+        <a href="/admin/finance" className="text-sm text-oja-orange underline">
+          Finance dashboard →
+        </a>
+      </div>
 
       <section className="mb-10 grid gap-3 sm:grid-cols-3">
         {tiles.map(([label, value]) => (

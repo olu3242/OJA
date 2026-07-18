@@ -38,6 +38,8 @@ describe("E2E lifecycle — household journey (zero-gap)", () => {
     fx = await resetDb();
     const c = await adminClient();
     await c.query(`delete from public.legacy_map`);
+    await c.query(`delete from public.invoice_items`);
+    await c.query(`delete from public.invoices`);
     await c.query(`delete from public.payment_events`);
     await c.query(`delete from public.payments`);
     await c.query(`delete from public.credits`);

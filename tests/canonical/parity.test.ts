@@ -45,6 +45,8 @@ describe("dual-read parity (legacy ↔ canonical)", () => {
     await c.query(`delete from public.subscription_deliveries`);
     await c.query(`delete from public.subscription_items`);
     await c.query(`delete from public.subscriptions`);
+    await c.query(`delete from public.invoice_items`);
+    await c.query(`delete from public.invoices`);
     await c.query(`delete from public.payment_events`);
     await c.query(`delete from public.payments`);
     await c.query(`delete from public.credits`);

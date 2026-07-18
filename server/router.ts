@@ -25,6 +25,7 @@ import * as reporting from "./repositories/reporting";
 import * as convergence from "./repositories/convergence";
 import * as canonicalReadRepo from "./repositories/canonical-read";
 import * as paymentsRepo from "./repositories/payments";
+import * as invoicesRepo from "./repositories/invoices";
 import * as dlq from "@/lib/dlq";
 import { supabaseUser } from "@/lib/supabase/server";
 
@@ -297,6 +298,8 @@ export const appRouter = router({
     // Dead-letter queue depth (WS9 reliability) + inspection list.
     deadLetterCount: admin.query(() => dlq.deadLetterCount()),
     deadLetters: admin.query(() => dlq.listDeadLetters()),
+    // Invoice finance roll-up (WS10) — outstanding vs paid.
+    invoiceTotals: admin.query(() => invoicesRepo.invoiceTotals()),
   }),
   identity: router({
     // Supabase-session identity (Google OAuth); null when signed out.

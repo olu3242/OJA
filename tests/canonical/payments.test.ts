@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { migrate } from "../../scripts/canonical";
 import { adminClient } from "./helpers";
 import { resetDb } from "../helpers";
+import { db } from "@/lib/db";
 import {
   settlePayment,
   refundPayment,
@@ -28,6 +29,10 @@ describe("payment engine — ledger settlement", () => {
     await migrate();
     const fx = await resetDb();
     household = fx.household;
+    // Clear the legacy idempotency ledger so this run's fixed keys start fresh.
+    await db.webhookEvent.deleteMany({
+      where: { source: { in: ["payment", "refund"] } },
+    });
     const c = await adminClient();
     await c.query(`delete from public.payment_events`);
     await c.query(`delete from public.credits`);
