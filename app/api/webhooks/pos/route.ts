@@ -8,6 +8,7 @@ import { captureError } from "@/lib/observability";
 import { withIdempotency } from "@/lib/idempotency";
 import { recordDeadLetter } from "@/lib/dlq";
 import { rateLimit, clientKey, rateLimitHeaders } from "@/lib/rate-limit";
+import { logger, correlationIdFrom } from "@/lib/logger";
 
 export const runtime = "nodejs";
 
@@ -40,6 +41,7 @@ export async function POST(req: Request) {
   if (req.headers.get("x-webhook-secret") !== secret) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+  const correlationId = correlationIdFrom(req);
   let payload: SellThroughPayload;
   try {
     payload = (await req.json()) as SellThroughPayload;
@@ -49,19 +51,25 @@ export async function POST(req: Request) {
   if (!payload?.storeAccountId || !Array.isArray(payload.entries)) {
     return NextResponse.json({ error: "invalid payload" }, { status: 400 });
   }
+  const key = idempotencyKey(payload);
+  logger.info("pos.webhook.received", { correlationId, eventKey: key });
   try {
-    const { replayed, result } = await withIdempotency(
-      "pos",
-      idempotencyKey(payload),
-      () => ingestSellThrough(payload),
+    const { replayed, result } = await withIdempotency("pos", key, () =>
+      ingestSellThrough(payload),
     );
-    return NextResponse.json({ results: result, replayed });
+    return NextResponse.json(
+      { results: result, replayed },
+      {
+        headers: { "x-correlation-id": correlationId },
+      },
+    );
   } catch (error) {
     // Never lose the event: dead-letter it for inspection + replay.
-    captureError(error, { route: "webhooks/pos" });
+    logger.error("pos.webhook.failed", { correlationId, eventKey: key });
+    captureError(error, { route: "webhooks/pos", correlationId });
     await recordDeadLetter({
       source: "pos",
-      eventKey: idempotencyKey(payload),
+      eventKey: key,
       payload,
       error,
     }).catch(() => {});

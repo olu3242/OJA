@@ -5,6 +5,7 @@ import { withIdempotency } from "@/lib/idempotency";
 import { captureError } from "@/lib/observability";
 import { canonicalPool } from "@/lib/canonical-db";
 import { rateLimit, clientKey, rateLimitHeaders } from "@/lib/rate-limit";
+import { logger, correlationIdFrom } from "@/lib/logger";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -64,6 +65,7 @@ export async function POST(req: Request) {
       { status: 429, headers: rateLimitHeaders(limit) },
     );
   }
+  const correlationId = correlationIdFrom(req);
   const rawBody = await req.text();
   const signature = req.headers.get("stripe-signature");
 
@@ -74,17 +76,30 @@ export async function POST(req: Request) {
     if (e instanceof StripeSignatureError) {
       return NextResponse.json({ error: "invalid signature" }, { status: 400 });
     }
-    captureError(e, { route: "webhooks/stripe" });
+    captureError(e, { route: "webhooks/stripe", correlationId });
     return NextResponse.json({ error: "webhook error" }, { status: 500 });
   }
 
+  logger.info("stripe.webhook.received", {
+    correlationId,
+    eventId: event.id,
+    type: event.type,
+  });
   try {
     const { replayed, result } = await withIdempotency("stripe", event.id, () =>
       applyStripeEvent(event),
     );
-    return NextResponse.json({ received: true, replayed, ...result });
+    return NextResponse.json(
+      { received: true, replayed, ...result },
+      { headers: { "x-correlation-id": correlationId } },
+    );
   } catch (e) {
-    captureError(e, { route: "webhooks/stripe", eventId: event.id });
+    logger.error("stripe.webhook.failed", { correlationId, eventId: event.id });
+    captureError(e, {
+      route: "webhooks/stripe",
+      eventId: event.id,
+      correlationId,
+    });
     return NextResponse.json({ error: "processing failed" }, { status: 500 });
   }
 }
