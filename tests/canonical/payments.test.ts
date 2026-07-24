@@ -34,6 +34,8 @@ describe("payment engine — ledger settlement", () => {
       where: { source: { in: ["payment", "refund"] } },
     });
     const c = await adminClient();
+    await c.query(`delete from public.invoice_items`);
+    await c.query(`delete from public.invoices`);
     await c.query(`delete from public.payment_events`);
     await c.query(`delete from public.credits`);
     await c.query(`delete from public.wallets`);
@@ -76,6 +78,27 @@ describe("payment engine — ledger settlement", () => {
       provider: "ledger",
     });
     expect(ev.rows.map((r) => r.event_type)).toContain("payment.captured");
+  });
+
+  it("auto-generates a paid invoice matching the captured amount", async () => {
+    const res = await settlePayment({
+      accountId: household.id,
+      kind: "one_time",
+      amountCents: 5500,
+      description: "one-time garri",
+      idempotencyKey: "pay-invoice",
+    });
+    const c = await adminClient();
+    const inv = await c.query(
+      `select total_cents, paid_at from public.invoices
+        where customer_id = (select customer_id from public.payments where id = $1)
+          and total_cents = 5500`,
+      [res.paymentId],
+    );
+    await c.end();
+    expect(inv.rowCount).toBe(1);
+    expect(Number(inv.rows[0].total_cents)).toBe(5500);
+    expect(inv.rows[0].paid_at).not.toBeNull(); // marked paid on capture
   });
 
   it("is idempotent: a replayed settle returns the same payment, charges once", async () => {

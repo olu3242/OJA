@@ -1,7 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { withIdempotency } from "@/lib/idempotency";
 import { stripeClient, stripeConfigured } from "@/lib/stripe";
+import { captureError } from "@/lib/observability";
 import { convergeAccount } from "@/server/repositories/convergence";
+import {
+  generateInvoice,
+  markInvoicePaid,
+} from "@/server/repositories/invoices";
 import {
   appendPaymentEvent,
   recordPayment,
@@ -145,6 +150,28 @@ export async function settlePayment(input: SettleInput): Promise<SettleResult> {
           correlation_id: correlationId,
         },
       });
+      // Auto-generate a paid invoice for the captured payment (best-effort —
+      // a downstream artifact must never fail the charge). Runs inside the
+      // idempotent handler, so a replayed settle never duplicates the invoice.
+      try {
+        const invoice = await generateInvoice({
+          accountId: input.accountId,
+          orderId: input.orderId ?? null,
+          currency,
+          lines: [
+            {
+              description: `${input.kind} charge`,
+              unitPriceCents: input.amountCents,
+            },
+          ],
+        });
+        await markInvoicePaid(invoice.id);
+      } catch (e) {
+        captureError(e, {
+          autoInvoice: input.idempotencyKey,
+          correlationId,
+        });
+      }
       return {
         paymentId: payment.id,
         status: payment.status,
