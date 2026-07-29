@@ -150,6 +150,13 @@ export const appRouter = router({
     ),
   }),
 
+  invoice: router({
+    // Customer's invoices from the canonical billing tables (empty if unmirrored).
+    mine: authedProcedure.query(({ ctx }) =>
+      invoicesRepo.listInvoices(ctx.account.id),
+    ),
+  }),
+
   wholesale: router({
     join: publicProcedure
       .input(

@@ -55,6 +55,8 @@ describe("legacy → canonical convergence", () => {
     await c.query(`delete from public.legacy_map`);
     await c.query(`delete from public.shipments`);
     await c.query(`delete from public.refunds`);
+    await c.query(`delete from public.returns`);
+    await c.query(`delete from public.discounts`);
     await c.query(`delete from public.order_items`);
     await c.query(`update public.subscription_deliveries set order_id = null`);
     await c.query(`delete from public.orders`);

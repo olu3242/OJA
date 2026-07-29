@@ -35,9 +35,10 @@ export default async function AccountPage() {
   const account = await currentAccount();
   if (!account) redirect("/login");
   const caller = createCaller({ account });
-  const [subs, ordersRead] = await Promise.all([
+  const [subs, ordersRead, invoices] = await Promise.all([
     caller.subscription.mine(),
     caller.order.mineSource(),
+    caller.invoice.mine().catch(() => []),
   ]);
   const orders = ordersRead.orders;
 
@@ -180,6 +181,30 @@ export default async function AccountPage() {
           </li>
         ))}
       </ul>
+
+      {invoices.length > 0 && (
+        <>
+          <SectionTitle className="mt-8 mb-4">Invoices</SectionTitle>
+          <ul className="flex flex-col gap-2">
+            {invoices.map((inv) => (
+              <li
+                key={inv.id}
+                className="rounded-lg border border-oja-green/15 bg-white px-4 py-3 text-sm"
+              >
+                <span className="font-semibold">{inv.number}</span> — $
+                {(inv.totalCents / 100).toFixed(2)}{" "}
+                <span
+                  className={`font-bold ${
+                    inv.paidAt ? "text-oja-green" : "text-oja-orange"
+                  }`}
+                >
+                  {inv.paidAt ? "PAID" : "DUE"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </PageMain>
   );
 }
