@@ -71,9 +71,14 @@ export default async function AdminPage() {
     <PageMain width="5xl">
       <div className="mb-6 flex items-center justify-between">
         <PageTitle>Admin — north star</PageTitle>
-        <a href="/admin/finance" className="text-sm text-oja-orange underline">
-          Finance dashboard →
-        </a>
+        <div className="flex gap-4 text-sm">
+          <a href="/admin/exec" className="text-oja-orange underline">
+            Executive →
+          </a>
+          <a href="/admin/finance" className="text-oja-orange underline">
+            Finance →
+          </a>
+        </div>
       </div>
 
       <section className="mb-10 grid gap-3 sm:grid-cols-3">
