@@ -78,6 +78,9 @@ export default async function AdminPage() {
           <a href="/admin/finance" className="text-oja-orange underline">
             Finance →
           </a>
+          <a href="/admin/suppliers" className="text-oja-orange underline">
+            Suppliers →
+          </a>
         </div>
       </div>
 
