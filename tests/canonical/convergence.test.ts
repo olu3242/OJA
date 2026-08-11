@@ -67,6 +67,8 @@ describe("legacy → canonical convergence", () => {
     await c.query(`delete from public.invoices`);
     await c.query(`delete from public.payment_events`);
     await c.query(`delete from public.payments`);
+    await c.query(`delete from public.payment_attempts`);
+    await c.query(`delete from public.payment_methods`);
     await c.query(`delete from public.credits`);
     await c.query(`delete from public.wallets`);
     await c.query(`delete from public.customers`);
