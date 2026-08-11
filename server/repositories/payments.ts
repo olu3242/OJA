@@ -259,3 +259,81 @@ export async function paymentMetrics(): Promise<PaymentMetrics> {
     mrrCents: Math.round(Number(mrr.rows[0].cents)),
   };
 }
+
+/** Current wallet balance in cents for a customer + currency (0 if no wallet). */
+export async function walletBalance(
+  customerId: string,
+  currency = "USD",
+): Promise<number> {
+  const r = await canonicalPool.query(
+    `select balance_cents from public.wallets
+      where customer_id = $1 and currency = $2 and deleted_at is null`,
+    [customerId, currency],
+  );
+  return r.rowCount === 0 ? 0 : Number(r.rows[0].balance_cents);
+}
+
+export type CreditApplication = {
+  creditAppliedCents: number;
+  remainingCents: number;
+};
+
+/**
+ * Draw down wallet credit against an amount owed. Applies
+ * `min(balance, amountCents)` under a row lock (`for update`) so concurrent
+ * settles cannot double-spend, appends a NEGATIVE `credits` ledger entry
+ * (reason `applied_to_payment`), and returns how much was applied plus what
+ * still needs charging. A no-op when the wallet is empty.
+ */
+export async function applyWalletCredit(input: {
+  orgId: string;
+  customerId: string;
+  amountCents: number;
+  currency?: string;
+  referenceId?: string | null;
+}): Promise<CreditApplication> {
+  const currency = input.currency ?? "USD";
+  if (input.amountCents <= 0) {
+    return { creditAppliedCents: 0, remainingCents: 0 };
+  }
+  const c = await canonicalPool.connect();
+  try {
+    await c.query("begin");
+    const wallet = await c.query(
+      `select id, balance_cents from public.wallets
+        where customer_id = $1 and currency = $2 and deleted_at is null
+        for update`,
+      [input.customerId, currency],
+    );
+    if (wallet.rowCount === 0) {
+      await c.query("commit");
+      return { creditAppliedCents: 0, remainingCents: input.amountCents };
+    }
+    const walletId = wallet.rows[0].id as string;
+    const balance = Number(wallet.rows[0].balance_cents);
+    const applied = Math.min(balance, input.amountCents);
+    if (applied > 0) {
+      await c.query(
+        `insert into public.credits
+           (organization_id, wallet_id, amount_cents, reason, reference_id)
+         values ($1,$2,$3,'applied_to_payment',$4)`,
+        [input.orgId, walletId, -applied, input.referenceId ?? null],
+      );
+      await c.query(
+        `update public.wallets set balance_cents = balance_cents - $2, version = version + 1
+          where id = $1`,
+        [walletId, applied],
+      );
+    }
+    await c.query("commit");
+    return {
+      creditAppliedCents: applied,
+      remainingCents: input.amountCents - applied,
+    };
+  } catch (e) {
+    await c.query("rollback");
+    throw e;
+  } finally {
+    c.release();
+  }
+}
