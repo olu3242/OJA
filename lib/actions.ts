@@ -207,3 +207,12 @@ export async function groupCloseAction(formData: FormData) {
   await c.group.close({ code });
   redirect(`/group/${code}`);
 }
+
+export async function electFastPayAction(formData: FormData) {
+  const c = await caller();
+  await c.supplier.electFastPay({
+    supplierId: String(formData.get("supplierId")),
+    fastPay: String(formData.get("fastPay")) === "true",
+  });
+  redirect("/supplier");
+}
